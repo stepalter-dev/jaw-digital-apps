@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Molly's Field Journal — RDR2 Tips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #ecdfc0;
+    --paper-shadow: #c9b98d;
+    --paper-dark: #ded0aa;
+    --ink: #2a2016;
+    --ink-soft: #4a3d2b;
+    --leather: #4a2f1e;
+    --leather-dark: #35210f;
+    --rust: #9c3d2e;
+    --gold: #a6812e;
+    --sage: #5c6647;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--leather-dark);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(255,255,255,0.04), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(0,0,0,0.3), transparent 60%);
+    font-family: 'Libre Baskerville', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .journal {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.55), 0 2px 0 rgba(255,255,255,0.03) inset;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  /* ---------- SIDE TABS (desktop) ---------- */
+  .tabs {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--leather), var(--leather-dark));
+    padding: 90px 0 20px;
+    min-width: 66px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .tabs::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0px, transparent 2px 40px);
+    pointer-events: none;
+  }
+
+  .tab-btn {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px 14px 16px;
+    margin: 3px 0;
+    margin-right: -1px;
+    background: #3d2818;
+    color: #cdbb92;
+    font-family: 'Special Elite', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 3px 0 0 3px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
+    transition: transform .15s ease, background .15s ease, color .15s ease;
+    transform-origin: left center;
+  }
+
+  .tab-btn .icon { font-size: 16px; filter: grayscale(0.3) sepia(0.2); }
+  .tab-btn .count {
+    margin-left: auto;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    opacity: 0.65;
+  }
+
+  .tab-btn:hover { background: #4d3420; color: #ecdfc0; }
+
+  .tab-btn.active {
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateX(6px);
+    box-shadow: -3px 4px 10px rgba(0,0,0,0.35);
+  }
+  .tab-btn.active .count { color: var(--rust); opacity: 1; }
+
+  /* mobile strip */
+  .tabs-mobile {
+    display: none;
+  }
+
+  /* ---------- PAGE ---------- */
+  .page {
+    flex: 1;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.25), transparent 45%),
+      linear-gradient(var(--paper), var(--paper-dark));
+    background-color: var(--paper);
+    padding: 36px 40px 50px;
+    position: relative;
+    min-height: 640px;
+  }
+
+  .page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(60,45,20,0.05) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  header.title-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 3px double var(--ink-soft);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-family: 'Rye', serif;
+    font-weight: 400;
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--leather-dark);
+    margin: 0;
+    letter-spacing: 0.02em;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+  }
+
+  .subtitle {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+
+  .stamp {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--rust);
+    border: 2px solid var(--rust);
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.1;
+    transform: rotate(-9deg);
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  /* search */
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-plate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2a2016;
+    color: #e9d9b0;
+    padding: 9px 14px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.3);
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .search-plate input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #f3e7c9;
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    width: 100%;
+    letter-spacing: 0.03em;
+  }
+  .search-plate input::placeholder { color: #a3906a; }
+
+  .filter-pill {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    background: rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.15);
+    padding: 6px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .filter-pill.active {
+    background: var(--sage);
+    color: #f3edd8;
+    border-color: var(--sage);
+  }
+
+  /* entries */
+  .entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .entries.dashboard-mode { display: block; }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .dash-card {
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(60,45,20,0.15);
+    border-left: 4px solid var(--gold);
+    border-radius: 2px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .dash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 4px 10px rgba(60,45,20,0.15);
+  }
+  .dash-card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .dash-icon { font-size: 18px; }
+  .dash-label {
+    font-family: 'Special Elite', monospace;
+    font-size: 13.5px;
+    color: var(--leather-dark);
+  }
+  .dash-bar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .dash-bar-fill {
+    background: var(--sage);
+    height: 100%;
+    border-radius: 10px;
+    transition: width .3s ease;
+  }
+  .dash-count {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+
+  .reset-zone {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px dashed rgba(60,45,20,0.25);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .reset-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    color: var(--rust);
+    border: 1.5px solid var(--rust);
+    border-radius: 3px;
+    padding: 8px 14px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .reset-btn:hover { background: rgba(156,61,46,0.08); }
+  .reset-btn.armed {
+    background: var(--rust);
+    color: #f3e7c9;
+  }
+  .reset-hint {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    opacity: 0.75;
+  }
+
+  .entry {
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(60,45,20,0.15);
+    border-left: 4px solid var(--gold);
+    border-radius: 2px;
+    padding: 16px 16px 14px;
+    position: relative;
+    box-shadow: 2px 3px 8px rgba(60,45,20,0.08);
+  }
+
+  .entry.tracked { border-left-color: var(--sage); }
+
+  .entry-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .entry h3 {
+    font-family: 'Special Elite', monospace;
+    font-size: 14.5px;
+    margin: 0;
+    color: var(--leather-dark);
+    line-height: 1.35;
+  }
+
+  .fav-btn, .track-btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+    filter: grayscale(1) opacity(0.4);
+    transition: filter .15s ease, transform .15s ease;
+  }
+  .fav-btn.active { filter: none; opacity: 1; transform: scale(1.1); }
+
+  .entry p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+
+  .entry-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .track-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--ink-soft);
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    filter: none;
+    opacity: 0.75;
+  }
+  .track-btn .box {
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .entry.tracked .track-btn .box { background: var(--sage); border-color: var(--sage); }
+
+  .animal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: -4px 0 10px;
+  }
+  .animal-link-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+    padding: 3px 9px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .animal-link-btn:hover {
+    background: var(--gold);
+    color: #fff;
+  }
+  @keyframes flashHighlight {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(166,129,46,0); }
+    20% { box-shadow: 0 0 0 4px rgba(166,129,46,0.55); }
+  }
+  .entry.flash-highlight {
+    animation: flashHighlight 2.2s ease-out;
+  }
+  .entry.tracked .track-btn { color: var(--sage); opacity: 1; }
+  .track-btn.is-on .box { background: var(--sage); border-color: var(--sage); }
+  .track-btn.is-on { color: var(--sage); opacity: 1; }
+
+  .empty-state {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 40px 10px;
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  footer.note {
+    margin-top: 30px;
+    text-align: center;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 720px) {
+    .journal { flex-direction: column; }
+    .tabs { display: none; }
+    .tabs-mobile {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding: 12px;
+      background: var(--leather-dark);
+    }
+    .tabs-mobile .tab-btn {
+      margin: 0;
+      border-radius: 4px;
+      flex-shrink: 0;
+      box-shadow: none;
+    }
+    .tabs-mobile .tab-btn.active { transform: none; }
+    .page { padding: 26px 18px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="journal">
+  <nav class="tabs" id="tabs-desktop"></nav>
+
+  <main class="page">
+    <nav class="tabs-mobile" id="tabs-mobile"></nav>
+
+    <header class="title-block">
+      <div>
+        <h1>Molly's Field Journal</h1>
+        <div class="subtitle">— tips, tricks &amp; hints for the frontier —</div>
+      </div>
+      <div class="stamp">RDR2<br/>NOTES</div>
+    </header>
+
+    <div class="search-row">
+      <div class="search-plate">
+        <span>🔎</span>
+        <input id="search" type="text" placeholder="Search the journal…" />
+      </div>
+      <span class="filter-pill active" data-fav="all">All entries</span>
+      <span class="filter-pill" data-fav="favorites">★ Favorites only</span>
+      <span id="progress-tally" style="display:none; font-family:'Courier Prime', monospace; font-size:11px; color: var(--sage);"></span>
+    </div>
+
+    <div class="search-row" id="sub-row" style="display:none;"></div>
+
+    <div id="horse-name-bar" style="display:none; align-items:center; gap:10px; margin-bottom:20px; background: rgba(255,255,255,0.35); border: 1px solid rgba(60,45,20,0.15); border-left: 4px solid var(--gold); border-radius: 2px; padding: 12px 16px;">
+      <span style="font-family:'Special Elite', monospace; font-size:12.5px; color: var(--leather-dark);">🐴 Your horse's name:</span>
+      <input id="horse-name-input" type="text" placeholder="e.g. Hosea" style="flex:1; min-width:120px; background: transparent; border: none; border-bottom: 1.5px solid var(--ink-soft); font-family:'Libre Baskerville', serif; font-size: 14px; color: var(--ink); padding: 4px 2px; outline: none;" />
+    </div>
+
+    <section class="entries" id="entries"></section>
+
+    <footer class="note">JAW + MNB 2024</footer>
+  </main>
+</div>
+
+<script>
+const CATEGORIES = [
+  { id: 'compendium', label: 'Compendium',        icon: '📚' },
+  { id: 'challenges', label: 'Challenges',        icon: '🏆' },
+  { id: 'gold-medals', label: '100% Mission Tips', icon: '🏅' },
+  { id: 'arthur-only', label: "Can't Do as Arthur", icon: '⚠️' },
+  { id: 'crafting',  label: 'Crafting',           icon: '🔨' },
+  { id: 'clothing',  label: 'Clothing',           icon: '👔' },
+  { id: 'hunting',   label: 'Hunting & Skinning', icon: '🦌' },
+  { id: 'treasure',  label: 'Treasure Maps',      icon: '🗺️' },
+  { id: 'horses',    label: 'Horses & Bonding',   icon: '🐴' },
+  { id: 'gear',      label: 'Guns & Gear',        icon: '🔫' },
+  { id: 'money',     label: 'Making Money',       icon: '💰' },
+  { id: 'secrets',   label: 'Secrets & Oddities', icon: '👻' },
+];
+
+// Maps legendary animal names (as used in clothing recipes) to their Compendium entry id,
+// so clothing entries can link straight to the matching Legendary Animal card.
+// Which Clothing sub-tabs are the "Legendary" garment sets (vs the Perfect-pelt ones),
+// used for the Legendary Clothing shortcut pill.
+const LEGENDARY_CLOTHING_SUBS = ['bear-hunter','trophy-buck','dreamcatcher','beast-of-prey','huntsman','death-roll','stalker','ghost-bison'];
+
+const LEGENDARY_ANIMAL_IDS = {
+  'Alligator': 200, 'Beaver': 201, 'Bear': 202, 'Big Horn Ram': 203, 'Ram': 203,
+  'Boar': 204, 'Buck': 205, 'Cougar': 206, 'Coyote': 207, 'Elk': 208, 'Fox': 209,
+  'Moose': 210, 'Panther': 211, 'Pronghorn': 212, 'Tatanka Bison': 213, 'Bison': 213,
+  'White Bison': 214, 'Wolf': 215,
+};
+
+const SUBCATS = {
+  compendium: [
+    { id: 'legendary-fish',    label: 'Legendary Fish',    icon: '🐟' },
+    { id: 'legendary-animals', label: 'Legendary Animals', icon: '🐾' },
+    { id: 'regular-fish',      label: 'Regular Fish',      icon: '🎣' },
+    { id: 'small-critters',    label: 'Small Critters',    icon: '🐿️' },
+    { id: 'large-grazers',     label: 'Large Grazers',     icon: '🦬' },
+    { id: 'predators',         label: 'Predators',         icon: '🐺' },
+    { id: 'reptiles',          label: 'Reptiles & Amphibians', icon: '🐊' },
+    { id: 'birds-of-prey',     label: 'Birds of Prey',     icon: '🦅' },
+    { id: 'waterfowl',         label: 'Waterfowl',         icon: '🦆' },
+    { id: 'songbirds',         label: 'Songbirds',         icon: '🐦' },
+    { id: 'herbs',             label: 'Common Herbs',      icon: '🌿' },
+    { id: 'orchids',           label: 'Orchids',           icon: '🌺' },
+  ],
+  challenges: [
+    { id: 'bandit',          label: 'Bandit',          icon: '🔫' },
+    { id: 'explorer',        label: 'Explorer',        icon: '🗺️' },
+    { id: 'gambler',         label: 'Gambler',         icon: '🃏' },
+    { id: 'herbalist',       label: 'Herbalist',       icon: '🌿' },
+    { id: 'horseman',        label: 'Horseman',        icon: '🐴' },
+    { id: 'master-hunter',   label: 'Master Hunter',   icon: '🏹' },
+    { id: 'sharpshooter',    label: 'Sharpshooter',    icon: '🎯' },
+    { id: 'survivalist',     label: 'Survivalist',     icon: '🏕️' },
+    { id: 'weapons-expert',  label: 'Weapons Expert',  icon: '⚔️' },
+  ],
+  'gold-medals': [
+    { id: 'general',    label: 'How It Works', icon: 'ℹ️' },
+    { id: 'chapter-1',  label: 'Chapter 1',     icon: '1️⃣' },
+    { id: 'chapter-2',  label: 'Chapter 2',     icon: '2️⃣' },
+    { id: 'chapter-3',  label: 'Chapter 3',     icon: '3️⃣' },
+    { id: 'chapter-4',  label: 'Chapter 4',     icon: '4️⃣' },
+    { id: 'chapter-5',  label: 'Chapter 5',     icon: '5️⃣' },
+    { id: 'chapter-6',  label: 'Chapter 6',     icon: '6️⃣' },
+    { id: 'epilogue',   label: 'Epilogue',      icon: '🌅' },
+  ],
+  treasure: [
+    { id: 'jack-hall',   label: 'Jack Hall Gang',    icon: '🤠' },
+    { id: 'poisonous',   label: 'Poisonous Trail',   icon: '☠️' },
+    { id: 'high-stakes', label: 'High Stakes',       icon: '🎲' },
+    { id: 'other',       label: 'Other Hunts',       icon: '🔍' },
+  ],
+  horses: [
+    { id: 'breeds',  label: 'Wild Breeds',      icon: '🐎' },
+    { id: 'bonding', label: 'Bonding Methods',  icon: '❤️' },
+  ],
+  gear: [
+    { id: 'pistols',  label: 'Pistols & Revolvers', icon: '🔫' },
+    { id: 'rifles',   label: 'Rifles & Repeaters',  icon: '🎯' },
+    { id: 'bows',     label: 'Bows',                icon: '🏹' },
+    { id: 'shotguns', label: 'Shotguns',            icon: '💥' },
+    { id: 'general',  label: 'General Care',        icon: '🧰' },
+  ],
+  money: [
+    { id: 'small',  label: '$0–10',  icon: '🪙' },
+    { id: 'medium', label: '$11–50', icon: '💵' },
+    { id: 'big',    label: '$51+',   icon: '💰' },
+  ],
+  secrets: [
+    { id: 'ghosts',   label: 'Ghosts & Hauntings',  icon: '👻' },
+    { id: 'cryptids', label: 'Cryptids',             icon: '🦶' },
+    { id: 'ufos',     label: 'UFOs & Aliens',        icon: '🛸' },
+    { id: 'strange',  label: 'Strange Encounters',   icon: '🕯️' },
+  ],
+  crafting: [
+    { id: 'general',   label: 'How It Works',    icon: 'ℹ️' },
+    { id: 'tonics',    label: 'Tonics & Medicine', icon: '🧪' },
+    { id: 'horse-care', label: 'Horse Care',       icon: '🐎' },
+    { id: 'arrows',    label: 'Arrows & Ammo',     icon: '🏹' },
+    { id: 'tools',     label: 'Tools & Weapons',   icon: '🪓' },
+  ],
+  clothing: [
+    { id: 'bear-hunter',  label: 'The Bear Hunter',   icon: '🐻' },
+    { id: 'trophy-buck',  label: 'The Trophy Buck',   icon: '🦌' },
+    { id: 'dreamcatcher', label: 'The Dreamcatcher',  icon: '🦬' },
+    { id: 'beast-of-prey', label: 'The Beast of Prey', icon: '🐺' },
+    { id: 'huntsman',     label: 'The Huntsman',      icon: '🐾' },
+    { id: 'death-roll',   label: 'The Death Roll',    icon: '🐊' },
+    { id: 'stalker',      label: 'The Stalker',       icon: '🫎' },
+    { id: 'ghost-bison',  label: 'The Ghost Bison',   icon: '🦬' },
+    { id: 'rattler',       label: 'The Rattler',        icon: '🐍' },
+    { id: 'wrangler',      label: 'The Wrangler',       icon: '🐐' },
+    { id: 'bronco-buster', label: 'The Bronco Buster',  icon: '🐎' },
+    { id: 'marauder',      label: 'The Marauder',       icon: '🐂' },
+    { id: 'bounty-hunter', label: 'The Bounty Hunter',  icon: '🔫' },
+    { id: 'desperado',     label: 'The Desperado',      icon: '🐺' },
+    { id: 'night-wrangler', label: 'The Night Wrangler', icon: '🐆' },
+    { id: 'mountain-man',  label: 'The Mountain Man',   icon: '⛰️' },
+  ],
+};
+
+const TIPS = [
+  { id:120, cat:'compendium', sub:'regular-fish', title:'Bluegill', body:'All lakes and rivers, most active during rain. Best bait: Cheese.', trackable:true },
+  { id:121, cat:'compendium', sub:'regular-fish', title:'Chain Pickerel', body:'Lakes, rivers, and swamps, most active in sunny weather. Best bait: Corn.', trackable:true },
+  { id:122, cat:'compendium', sub:'regular-fish', title:'Redfin Pickerel', body:'Rivers in the south, most active on warm sunny days. Best bait: Bread.', trackable:true },
+  { id:123, cat:'compendium', sub:'regular-fish', title:'Rock Bass', body:'Any clear water, most active on sunny days. Best bait: Cheese or other natural bait.', trackable:true },
+  { id:124, cat:'compendium', sub:'regular-fish', title:'Smallmouth Bass', body:'Northern rivers, most active during rain. Best bait: any natural bait.', trackable:true },
+  { id:125, cat:'compendium', sub:'regular-fish', title:'Bullhead Catfish', body:'Swamps, most active during rain. Best bait: Cheese or corn.', trackable:true },
+  { id:126, cat:'compendium', sub:'regular-fish', title:'Perch', body:'Rivers and lakes across the map, most active in sunny weather. Best bait: Bread.', trackable:true },
+  { id:127, cat:'compendium', sub:'regular-fish', title:'Lake Sturgeon', body:'Southern lakes and swamps, most active during overcast weather. Best bait/lure: Lake Lure.', trackable:true },
+  { id:128, cat:'compendium', sub:'regular-fish', title:'Largemouth Bass', body:'Any waters in the south, most active during rain. Best bait: Crayfish.', trackable:true },
+  { id:129, cat:'compendium', sub:'regular-fish', title:'Steelhead Trout', body:'Lakes, mostly in the south, most active during rain. Best bait: Worms.', trackable:true },
+  { id:130, cat:'compendium', sub:'regular-fish', title:'Muskie', body:'Northern lakes, most active on overcast days. Best bait/lure: Lake Lure.', trackable:true },
+  { id:131, cat:'compendium', sub:'regular-fish', title:'Sockeye Salmon', body:'Rivers in the north, most active during overcast weather. Best bait/lure: River Lure.', trackable:true },
+  { id:132, cat:'compendium', sub:'regular-fish', title:'Northern Pike', body:'Northern rivers, most active in sunny weather. Best bait/lure: River Lure. Note: confirmed as its own species distinct from Muskie, though I still can\'t confirm a separate Legendary catch for it.', trackable:true },
+  { id:133, cat:'compendium', sub:'regular-fish', title:'Channel Catfish', body:'Muddy swamp waters, most active during rain. Best bait/lure: Swamp Lure.', trackable:true },
+  { id:134, cat:'compendium', sub:'regular-fish', title:'Longnose Gar', body:'Swamp waters, most active during rain. Best bait/lure: Swamp Lure.', trackable:true },
+  { id:200, cat:'compendium', sub:'legendary-animals', title:'Legendary Alligator — Lagras', body:'Lemoyne, on the western shore of Lagras Lake, a short way south of the main body of water.', trackable:true },
+  { id:201, cat:'compendium', sub:'legendary-animals', title:'Legendary Beaver — near Van Horn', body:'New Hanover, west of Van Horn Trading Post, north shore of a pond just south of Elysian Pool.', trackable:true },
+  { id:202, cat:'compendium', sub:'legendary-animals', title:'Legendary Bharati Grizzly Bear — O\'Creagh\'s Run', body:'Ambarino, Grizzlies East, north/west of O\'Creagh\'s Run. First encountered during a Chapter 2 story mission with Hosea — if you don\'t finish it off then, you can return to the same spot later.', trackable:true },
+  { id:203, cat:'compendium', sub:'legendary-animals', title:'Legendary Big Horn Ram — near Valentine', body:'Ambarino, just outside Valentine, wedged between the Dakota River and Cattail Pond.', trackable:true },
+  { id:204, cat:'compendium', sub:'legendary-animals', title:'Legendary Boar — Bluewater Marsh', body:'New Hanover, Bluewater Marsh, east side of the Kamassa River.', trackable:true },
+  { id:205, cat:'compendium', sub:'legendary-animals', title:'Legendary Buck — Big Valley', body:'West Elizabeth, Big Valley, west of Mount Shann, north of Lake Owanjila.', trackable:true },
+  { id:206, cat:'compendium', sub:'legendary-animals', title:'⚠ Legendary Cougar — Gaptooth Ridge (New Austin)', body:'New Austin, west of Tumbleweed, Gaptooth Ridge. New Austin isn\'t open in the main story until the Epilogue — this one can\'t be hunted as Arthur, only as John.', trackable:true },
+  { id:207, cat:'compendium', sub:'legendary-animals', title:'Legendary Coyote — near Dewberry Creek', body:'Western Lemoyne, near Eris Field, south of Dewberry Creek.', trackable:true },
+  { id:208, cat:'compendium', sub:'legendary-animals', title:'Legendary Elk — near Fort Wallace', body:'Ambarino, just east of Fort Wallace, roughly south of Bacchus Bridge.', trackable:true },
+  { id:209, cat:'compendium', sub:'legendary-animals', title:'Legendary Fox — Scarlett Meadows', body:'Western Lemoyne, near Mattock Pond, north of Rhodes.', trackable:true },
+  { id:210, cat:'compendium', sub:'legendary-animals', title:'Legendary Moose — Kamassa River', body:'Northeastern Ambarino, off the western shore of the Kamassa River.', trackable:true },
+  { id:211, cat:'compendium', sub:'legendary-animals', title:'⚠ Legendary Panther (Giaguaro) — Bolger Glade', body:'Lemoyne, south of Rhodes near Bolger Glade. Won\'t spawn at all until you\'ve completed 9 Master Hunter challenges — worth noting on the Challenges list once that\'s built.', trackable:true },
+  { id:212, cat:'compendium', sub:'legendary-animals', title:'⚠ Legendary Pronghorn — Rio Bravo (New Austin)', body:'New Austin, near Fort Mercer, west of Rio del Lobo Rock. Same as the Cougar — New Austin is Epilogue-only, so this one is John-only in a normal playthrough.', trackable:true },
+  { id:213, cat:'compendium', sub:'legendary-animals', title:'Legendary Tatanka Bison — south of Stillwater Creek', body:'Southern West Elizabeth, south of Stillwater Creek, near MacFarlane\'s Ranch and Thieves Landing.', trackable:true },
+  { id:214, cat:'compendium', sub:'legendary-animals', title:'Legendary White Bison — Lake Isabella', body:'Northwestern Ambarino, west of Barrow Lagoon, near the northeastern shore of Lake Isabella.', trackable:true },
+  { id:215, cat:'compendium', sub:'legendary-animals', title:'Legendary Wolf — Cotorra Springs', body:'Central Ambarino, north side of the Dakota River, around Cotorra Springs.', trackable:true },
+  { id:100, cat:'compendium', sub:'legendary-fish', title:'Legendary Bluegill — Flat Iron Lake', body:'Between the shore and the island south of Clemens Point. Best lure: Special Lake Lure.', trackable:true },
+  { id:101, cat:'compendium', sub:'legendary-fish', title:'Legendary Bullhead Catfish — Sisika Island', body:'West of Sisika Penitentiary, on the northern shore. Needs a boat to reach comfortably. Best lure: Special River Lure.', trackable:true },
+  { id:102, cat:'compendium', sub:'legendary-fish', title:'Legendary Chain Pickerel — Dakota River', body:'On the bend of the Dakota River, northwest of Flatneck Station, The Heartlands. Best lure: Special River Lure.', trackable:true },
+  { id:103, cat:'compendium', sub:'legendary-fish', title:'Legendary Channel Catfish — Rio Bravo', body:'Not available until you\'ve mailed the other 13 legendary fish to Jeremy Gill and he invites you on a trip — this one comes from a Stranger mission, not free fishing, and only opens up in the Epilogue.', trackable:true },
+  { id:104, cat:'compendium', sub:'legendary-fish', title:'Legendary Lake Sturgeon — near Saint Denis', body:'Fish from the railroad bridge between Rhodes and Saint Denis, near Caliga Hall — stand near the edge and watch for trains. Best lure: Special River Lure.', trackable:true },
+  { id:105, cat:'compendium', sub:'legendary-fish', title:'Legendary Largemouth Bass — San Luis River', body:'Southeast of Lake Don Julio, New Austin, south of Armadillo. Most sources say Special Lake Lure, though a couple list River Lure — worth trying both.', trackable:true },
+  { id:106, cat:'compendium', sub:'legendary-fish', title:'Legendary Longnose Gar — Lagras', body:'Northwest tip of the Lakay peninsula / southern shore of Bluewater Marsh. Best lure: Special Swamp Lure.', trackable:true },
+  { id:107, cat:'compendium', sub:'legendary-fish', title:'Legendary Muskie — Van Horn', body:'At the foot of the lighthouse by Van Horn Trading Post. Best lure: Special River Lure.', trackable:true },
+  { id:108, cat:'compendium', sub:'legendary-fish', title:'Legendary Perch — Elysian Pool', body:'Near Annesburg. Best lure: Special Lake Lure.', trackable:true },
+  { id:109, cat:'compendium', sub:'legendary-fish', title:'Legendary Redfin Pickerel — Stillwater Creek', body:'East of MacFarlane\'s Ranch, near where it meets the Lower Montana River, west of Thieves Landing. Best lure: Special Lake Lure.', trackable:true },
+  { id:110, cat:'compendium', sub:'legendary-fish', title:'Legendary Rock Bass — Aurora Basin', body:'Western border of West Elizabeth, due west of Blackwater. Best lure: Special Lake Lure.', trackable:true },
+  { id:111, cat:'compendium', sub:'legendary-fish', title:'Legendary Smallmouth Bass — Owanjila Lake', body:'West of Strawberry. Best lure: Special Lake Lure.', trackable:true },
+  { id:112, cat:'compendium', sub:'legendary-fish', title:'Legendary Sockeye Salmon — Lake Isabella', body:'Western Ambarino, near where Beartooth Beck feeds the lake, west of Barrow Lagoon. Dress warm. Best lure: Special Lake Lure (a couple of sources say River Lure — Lake is the majority pick).', trackable:true },
+  { id:113, cat:'compendium', sub:'legendary-fish', title:'Legendary Steelhead Trout — Roanoke Valley', body:'North of Annesburg, at Willard\'s Rest near the waterfall. Best lure: Special River Lure.', trackable:true },
+  { id:114, cat:'compendium', sub:'legendary-fish', title:'⚠ Legendary Northern Pike — unverified', body:'Listed as a species in some compendium references, but I couldn\'t confirm a separate legendary catch for it distinct from the Muskie across current sources. Flagging rather than guessing — will dig further before we call this one done.', trackable:false },
+  { id:140, cat:'compendium', sub:'small-critters', title:'Squirrel', body:'Common in forests all over the map. Easy to spot, surprisingly hard to get a perfect pelt from — they\'re small and skittish, so a body shot ruins the hide. Aim for the head with a low-caliber weapon.', trackable:true },
+  { id:141, cat:'compendium', sub:'small-critters', title:'Chipmunk', body:'Rarer than squirrels and pickier about habitat. Good spots: the Taxidermist\'s house area northeast of Strawberry in Big Valley, Scarlett Meadows, near Wapiti, and the woods around Annesburg. Daytime is best.', trackable:true },
+  { id:142, cat:'compendium', sub:'small-critters', title:'Opossum', body:'Nocturnal. The hills immediately east of Emerald Ranch are reliable at night. They\'ll play dead when you approach — that\'s your shot.', trackable:true },
+  { id:143, cat:'compendium', sub:'small-critters', title:'Raccoon', body:'North of Owanjila near Strawberry, Cumberland Forest, and around Rhodes.', trackable:true },
+  { id:144, cat:'compendium', sub:'small-critters', title:'Rat', body:'Common near towns and water — Armadillo, the area between Owanjila and Strawberry, and the water-facing outskirts of Saint Denis.', trackable:true },
+  { id:145, cat:'compendium', sub:'small-critters', title:'Skunk', body:'Nocturnal, fairly common everywhere. Strawberry, Ringneck Creek in northwest Lemoyne, and around Van Horn Trading Post are reliable. Don\'t skin it — it\'s a "collected" item, not a skinned one.', trackable:true },
+  { id:146, cat:'compendium', sub:'small-critters', title:'Badger', body:'Found almost everywhere except Grizzlies West. Best odds west of the Kamassa River in Lemoyne, Tall Trees northeast of Aurora Basin, and north of Bacchus Station near Donner Falls.', trackable:true },
+  { id:147, cat:'compendium', sub:'small-critters', title:'Muskrat', body:'Highest concentration in Bluewater Marsh, but shows up along most major waterways — Dewberry Creek and the river feeding Owanjila Lake are both solid bets. Semiaquatic, so stick close to water.', trackable:true },
+  { id:148, cat:'compendium', sub:'small-critters', title:'Armadillo', body:'New Austin only — Cholla Springs and around the town of Armadillo are the classic spots.', trackable:true },
+  { id:149, cat:'compendium', sub:'small-critters', title:'Bat', body:'Nocturnal and easy to miss. Try the north side of Aurora Basin in Tall Trees, Bolger Glade southeast of Rhodes, or the northwest side of Elysian Pool southwest of Annesburg.', trackable:true },
+  { id:150, cat:'compendium', sub:'small-critters', title:'Beaver', body:'South side of Owanjila near Strawberry, or north of Lake Isabella in West Elizabeth — generally anywhere calm rivers and lakes meet timber.', trackable:true },
+  { id:151, cat:'compendium', sub:'small-critters', title:'Rabbit', body:'The easiest one on this list — extremely common almost everywhere on the map, no special trip needed.', trackable:true },
+  { id:160, cat:'compendium', sub:'large-grazers', title:'Whitetail Deer', body:'Extremely common in the forests of New Hanover, Lemoyne, and West Elizabeth. Skittish — keep your distance and use a rifle or a bow with poison arrows for a clean kill.', trackable:true },
+  { id:161, cat:'compendium', sub:'large-grazers', title:'Whitetail Buck', body:'Same forests as the deer, but the antlered male. Same approach: distance and a rifle.', trackable:true },
+  { id:162, cat:'compendium', sub:'large-grazers', title:'Elk', body:'Northeast of Valentine, in Cumberland Forest, usually mixed in among whitetail deer. Scoped rifle, aim for the head.', trackable:true },
+  { id:163, cat:'compendium', sub:'large-grazers', title:'American Bison', body:'Herds roam The Heartlands, native to the plains of New Hanover and West Elizabeth. Big animal — bring a high-powered rifle (Carcano) or a bow with Improved Arrows, not a light one.', trackable:true },
+  { id:164, cat:'compendium', sub:'large-grazers', title:'Wild Boar', body:'New Hanover, Lemoyne, and West Elizabeth, especially swamps — they tend to avoid alligator territory. Rifle or bow with poison arrows for a clean hide.', trackable:true },
+  { id:165, cat:'compendium', sub:'large-grazers', title:'Moose', body:'Genuinely rare and patchy — even experienced players report long searches. Best bets: Owanjila Lake (Strawberry), the southwest shore of Lake Isabella, Aurora Basin, Barrow Lagoon, and around Cattail Pond. Scoped rifle, headshot only — they won\'t sit still long.', trackable:true },
+  { id:166, cat:'compendium', sub:'large-grazers', title:'Bighorn Sheep / Ram', body:'Western Grizzlies near the train tracks west of Valentine by Cattail Pond, and around Mount Shann in West Elizabeth.', trackable:true },
+  { id:167, cat:'compendium', sub:'large-grazers', title:'Pronghorn', body:'Common in grasslands across New Hanover and West Elizabeth — unlike the Legendary Pronghorn, the regular one is NOT New Austin-locked, so this one\'s fine to get as Arthur.', trackable:true },
+  { id:180, cat:'compendium', sub:'predators', title:'Gray Wolf', body:'Hunt in packs. Reliable spots: Aurora Basin and around Hanging Dog Ranch. They rarely attack alone — if you see one, assume there are at least two more nearby.', trackable:true },
+  { id:181, cat:'compendium', sub:'predators', title:'Coyote', body:'Widespread — New Austin, West Elizabeth, Lemoyne, and New Hanover all have them. Rare in Grizzlies West specifically. Bow or repeater for a clean kill.', trackable:true },
+  { id:182, cat:'compendium', sub:'predators', title:'Cougar', body:'New Austin, New Hanover, and West Elizabeth — frequent around MacFarlane\'s Ranch, Stillwater Creek, Plainview, and Rio Bravo near Fort Mercer. Dangerous: if you\'ve taken ANY damage before it charges, its attack is an instant kill. Only a full health bar protects you. A poison arrow or throwing knife to the torso is the safer approach.', trackable:true },
+  { id:183, cat:'compendium', sub:'predators', title:'Red Fox', body:'Forested areas of Lemoyne, eastern New Hanover, and the western woodlands of West Elizabeth.', trackable:true },
+  { id:184, cat:'compendium', sub:'predators', title:'Gray Fox', body:'Same general range as the Red Fox, but more common in Lemoyne and New Hanover forests. Dewberry Creek in Lemoyne is a reliable spot.', trackable:true },
+  { id:185, cat:'compendium', sub:'predators', title:'American Black Bear', body:'Less common than grizzlies — try the area around the "O" in Ambarino, north of Strawberry in West Elizabeth, or east of Aurora Basin in Tall Trees. More timid than a grizzly and often runs rather than charges.', trackable:true },
+  { id:186, cat:'compendium', sub:'predators', title:'Grizzly Bear', body:'Tall Trees (north of the Lower Montana River), west of Wallace Station in West Elizabeth, the Dakota River east of Window Rock, and north of O\'Creagh\'s Run in Grizzlies East. Much more aggressive than a black bear — bring a scoped rifle and keep distance.', trackable:true },
+  { id:187, cat:'compendium', sub:'predators', title:'⚠ Bobcat — not actually in RDR2', body:'Worth knowing: the Bobcat isn\'t a real, huntable species in RDR2 despite showing up on some old fan lists. It exists in the original Red Dead Redemption (Mexico), and there are leftover compendium/item assets suggesting it was planned for RDR2, but it was cut before release. Don\'t spend time hunting for it — it\'s not there.', trackable:false },
+  { id:190, cat:'compendium', sub:'reptiles', title:'American Alligator', body:'Southern Bluewater Marsh and around Bayou Nwa, Lemoyne. A rifle is needed to pierce the armored hide.', trackable:true },
+  { id:191, cat:'compendium', sub:'reptiles', title:'Snapping Turtle', body:'Native to the Lemoyne swamps. Slow-moving and won\'t react even when approached, so it\'s an easy one — a bow with small game arrows keeps the shell intact.', trackable:true },
+  { id:192, cat:'compendium', sub:'reptiles', title:'American Bullfrog', body:'Lemoyne and Bayou Nwa, in shallow water. Prefers warm climates, so don\'t expect to find it up north.', trackable:true },
+  { id:193, cat:'compendium', sub:'reptiles', title:'Diamondback Rattlesnake', body:'Lemoyne, New Hanover, and parts of West Elizabeth. Preys on ground-dwelling birds and rodents — a bow with small game arrows is the safest way to take one without wrecking the skin.', trackable:true },
+  { id:194, cat:'compendium', sub:'reptiles', title:'Water Snakes (Cottonmouth and relatives)', body:'Found around swamps and wetlands, especially Lemoyne. Same approach as other snakes — small game arrows, watch your footing near water.', trackable:true },
+  { id:195, cat:'compendium', sub:'reptiles', title:'⚠ Full snake family — 12 subspecies', body:'RDR2 actually tracks 12 separate snake entries in the compendium: 3 rattlesnake types, 3 venomous snakes, 3 water snakes, and 3 boa constrictor varieties. I\'ve got solid data on the common ones above, but I don\'t have confirmed individual spawn spots for all 12 yet — rather than guess, flagging this as a follow-up pass if Molly wants full snake completion specifically.', trackable:false },
+  { id:196, cat:'compendium', sub:'reptiles', title:'Gila Monster', body:'A New Austin specialty — desert lizard, so this one\'s tied to the same Epilogue-access situation as the Legendary Cougar and Pronghorn if she\'s trying to get it as Arthur.', trackable:true },
+  { id:220, cat:'compendium', sub:'birds-of-prey', title:'Hawks (3 species)', body:'Ferruginous, Red-tailed, and Rough-legged Hawks. Widespread almost everywhere, but most populous around Armadillo in New Austin. Varmint Rifle is the best weapon so you don\'t shred a small bird.', trackable:true },
+  { id:221, cat:'compendium', sub:'birds-of-prey', title:'Eagles (Bald and Golden)', body:'Native to the mountain habitats of Ambarino and West Elizabeth. Best concentration is the eastern shore of Lake Owanjila; also check the Dakota River between Valentine and Strawberry, and near Annesburg.', trackable:true },
+  { id:222, cat:'compendium', sub:'birds-of-prey', title:'Owls (Great Horned and Barn)', body:'Nocturnal — check abandoned buildings, barns, and silos where they nest. Leaving small bait like a rabbit or squirrel out at night can draw one in.', trackable:true },
+  { id:223, cat:'compendium', sub:'birds-of-prey', title:'Vultures (Turkey Vulture, California Condor)', body:'Scavengers — watch the sky above a fresh kill or carcass and one will usually show up circling.', trackable:true },
+  { id:224, cat:'compendium', sub:'birds-of-prey', title:'Falcon (Prairie Falcon)', body:'Catches other birds mid-flight, so it tends to show up wherever smaller birds are common. Less location-pinned than the others — keep an eye on open sky near rivers and cliffs.', trackable:true },
+  { id:230, cat:'compendium', sub:'waterfowl', title:'Mallard Duck', body:'Common near almost any body of water — Lemoyne swamplands, the Ambarino stretch between the "R" and "I" on the map, the river southwest of Valentine, and east of Annesburg. Bow with small game arrows for a clean kill. Not found in Grizzlies West or New Austin.', trackable:true },
+  { id:231, cat:'compendium', sub:'waterfowl', title:'Canada Goose', body:'Grasslands of The Heartlands and Lemoyne. Best concentration is around Emerald Ranch, with another cluster at the mouth of the Dakota River near Bard\'s Crossing. Varmint Rifle.', trackable:true },
+  { id:232, cat:'compendium', sub:'waterfowl', title:'Herons (Great Blue, Tricolored)', body:'Wet, grassy marshlands of Lemoyne. Varmint Rifle for a clean kill.', trackable:true },
+  { id:233, cat:'compendium', sub:'waterfowl', title:'Egrets (Reddish, Little, Snowy)', body:'Swampland of Bayou Nwa is the reliable spot for all three. Varmint Rifle with .22 shots.', trackable:true },
+  { id:234, cat:'compendium', sub:'waterfowl', title:'Cormorants (Double-crested, Neotropic)', body:'Wetlands and coastal waters — the riverbank south of Rhodes is a solid spot for both types. Varmint Rifle.', trackable:true },
+  { id:235, cat:'compendium', sub:'waterfowl', title:'Pelican', body:'Eastern shorelines — Bayou Nwa, Bluewater Marsh, Lagras, around Saint Denis, Copperhead Landing, the eastern coast of the Great Plains, and Quaker\'s Cove. Varmint Rifle.', trackable:true },
+  { id:236, cat:'compendium', sub:'waterfowl', title:'⚠ Cranes and Loons — need another pass', body:'The compendium includes Whooping Crane, Sandhill Crane, and three Loon species (Common, Pacific, Yellow-billed), but I don\'t have confident, specific spawn locations for them yet. Rather than guess at marshland or northern-lake locations, flagging these for dedicated research next time we\'re in this section.', trackable:false },
+  { id:240, cat:'compendium', sub:'songbirds', title:'Cardinal', body:'Common — south of Valentine in The Heartlands, and just west of town near the river. Small game arrows or Varmint Rifle.', trackable:true },
+  { id:241, cat:'compendium', sub:'songbirds', title:'Woodpecker (Pileated, Red-Bellied)', body:'Pileated Woodpecker lives in the New Hanover woodlands. Red-Bellied Woodpecker is found in Roanoke Ridge.', trackable:true },
+  { id:242, cat:'compendium', sub:'songbirds', title:'Robin', body:'A bit rarer than most songbirds — reliable near Braithwaite Manor and just west of Annesburg.', trackable:true },
+  { id:243, cat:'compendium', sub:'songbirds', title:'Oriole', body:'Northwest of Flatneck Station in The Heartlands.', trackable:true },
+  { id:244, cat:'compendium', sub:'songbirds', title:'Songbird (generic species)', body:'One of the most common birds in the game — can spawn almost anywhere, though rare in New Austin and Grizzlies West. Highest concentration is in and around Roanoke Valley.', trackable:true },
+  { id:245, cat:'compendium', sub:'songbirds', title:'Sparrow', body:'Common across the northern half of the map — a reliable spot is west of Braithwaite Manor, south of Rhodes.', trackable:true },
+  { id:246, cat:'compendium', sub:'songbirds', title:'Cedar Waxwing', body:'South of Riggs Station.', trackable:true },
+  { id:247, cat:'compendium', sub:'songbirds', title:'Blue Jay', body:'Rarer than the others — stick close to the marked zone along the Dakota River banks between Wallace Station and Diablo Ridge. Likes to stay near water.', trackable:true },
+  { id:248, cat:'compendium', sub:'songbirds', title:'Crow', body:'One of the most common birds in the game — no special trip needed, they\'re basically everywhere.', trackable:true },
+  { id:250, cat:'compendium', sub:'herbs', title:'Yarrow', body:'Grassy fields and meadows of The Heartlands, Scarlett Meadows, and south of Rhodes in Lemoyne. Tall plant with a red flowery top. Key ingredient for Health Cures and Special Miracle Tonic.', trackable:true },
+  { id:251, cat:'compendium', sub:'herbs', title:'Wild Mint', body:'Loves water — grows along almost any river or stream, marshes and moist meadows. The Little Creek River in Big Valley and the Dakota River are especially thick with it.', trackable:true },
+  { id:252, cat:'compendium', sub:'herbs', title:'Wintergreen Berry', body:'Coldest parts of the map — northeast Ambarino and New Hanover. Easy to spot thanks to its red color. Used for Potent Predator Bait.', trackable:true },
+  { id:253, cat:'compendium', sub:'herbs', title:'Wild Carrot', body:'Extremely common, especially in The Heartlands — basically any open field. Good free horse feed.', trackable:true },
+  { id:254, cat:'compendium', sub:'herbs', title:'Creeping Thyme', body:'The Heartlands, alongside Yarrow, Wild Carrots, and American Ginseng — especially around Emerald Ranch.', trackable:true },
+  { id:255, cat:'compendium', sub:'herbs', title:'American Ginseng', body:'The Heartlands and New Hanover, abundant around Emerald Ranch.', trackable:true },
+  { id:256, cat:'compendium', sub:'herbs', title:'Alaskan Ginseng', body:'Ambarino and northwest West Elizabeth, in forests and moist areas — also a reliable patch northeast of Brandywine Drop, west of Willard\'s Rest. Spot it from a distance by its red berries.', trackable:true },
+  { id:257, cat:'compendium', sub:'herbs', title:'Indian Tobacco', body:'Scarlett Meadows, Lemoyne — fields and the edges of the woods.', trackable:true },
+  { id:258, cat:'compendium', sub:'herbs', title:'Milkweed', body:'Scarlett Meadows, Lemoyne, same general area as Indian Tobacco.', trackable:true },
+  { id:259, cat:'compendium', sub:'herbs', title:'Blackberry', body:'Scarlett Meadows, Lemoyne — fields and along the woodline.', trackable:true },
+  { id:260, cat:'compendium', sub:'herbs', title:'Red Raspberry', body:'Forested, often elevated areas. Cumberland Forest in New Hanover is the best spot — grows on small bushes, easy to spot against the green.', trackable:true },
+  { id:261, cat:'compendium', sub:'herbs', title:'Burdock Root', body:'Along the Little Creek River, just west of Wallace Station.', trackable:true },
+  { id:262, cat:'compendium', sub:'herbs', title:'Hummingbird Sage', body:'Areas with dense foliage and cover under trees — western Lemoyne, western West Elizabeth, and along the banks of the Kamassa River.', trackable:true },
+  { id:264, cat:'compendium', sub:'herbs', title:'Golden Currant', body:'Streams in West Elizabeth and the northeast of New Hanover. Common — shouldn\'t take long to find.', trackable:true },
+  { id:265, cat:'compendium', sub:'herbs', title:'Oleander Sage', body:'Near Saint Denis, Lemoyne — river banks of Bayou Nwa are the easiest spot. Spot it from afar by its pinkish flowers. Used to craft Poison weapons like the Poison Throwing Knife and Poison Arrow.', trackable:true },
+  { id:266, cat:'compendium', sub:'herbs', title:'Oregano', body:'One of the most common herbs in the game — dry grasslands almost anywhere on the map.', trackable:true },
+  { id:267, cat:'compendium', sub:'herbs', title:'Parasol Mushroom', body:'Well-drained soil and woodlands across the map. Pale colored, easy to spot once you know the shape.', trackable:true },
+  { id:268, cat:'compendium', sub:'herbs', title:'Prairie Poppy', body:'Great Plains region of West Elizabeth only, mostly near the train tracks.', trackable:true },
+  { id:269, cat:'compendium', sub:'herbs', title:'English Mace', body:'Two spots: east of O\'Creagh\'s Run and northwest of Martha\'s Swain (available after Chapter 2), or the river banks of Rio Bravo in New Austin (Epilogue only). Yellow flowers.', trackable:true },
+  { id:270, cat:'compendium', sub:'herbs', title:'Evergreen Huckleberry', body:'Along the length of the Kamassa River, through Lemoyne and New Hanover. Shrubs with sharp leaves.', trackable:true },
+  { id:271, cat:'compendium', sub:'herbs', title:'⚠ Desert Sage — New Austin only', body:'Only found in the western areas of Gaptooth Ridge, New Austin — same Epilogue-lock situation as the Cougar, Pronghorn, and Gila Monster.', trackable:true },
+  { id:272, cat:'compendium', sub:'herbs', title:'⚠ Red Sage — New Austin only', body:'Only found near Rio Bravo, New Austin — another one that\'s effectively John-only in a normal playthrough.', trackable:true },
+  { id:273, cat:'compendium', sub:'herbs', title:'⚠ Orchids — separate 11-species batch still to come', body:'The 43rd plant category is Orchids — 11 species tied to a specific collectible chain with precise single spawn points each. Everything else in the plant list is now done. Worth its own dedicated pass rather than folding in here.', trackable:false },
+  { id:274, cat:'compendium', sub:'herbs', title:'Blackcurrant', body:'Well-lit areas away from water in Gaptooth Ridge and Cholla Springs — New Austin only, so this is another Epilogue-tied one. Look for bushes carrying dark berries.', trackable:true },
+  { id:275, cat:'compendium', sub:'herbs', title:'Common Bulrush', body:'Basically everywhere near streams and lakes — no special trip needed.', trackable:true },
+  { id:276, cat:'compendium', sub:'herbs', title:'⚠ Vanilla Flower — Bluewater Marsh', body:'River banks of Bayou Nwa / Bluewater Marsh — grows on tree bark, spotted by its vanilla-colored blossoms.', trackable:true },
+  { id:277, cat:'compendium', sub:'herbs', title:'Violet Snowdrop', body:'Northern Ambarino only — look near the edges of the snowy areas rather than deep in the snow itself. Small violet ground-hugging blossoms. A reliable patch: east of Brandywine Drop, in the grassy area with a large boulder and fallen tree trunk.', trackable:true },
+  { id:278, cat:'compendium', sub:'herbs', title:'⚠ Wild Feverfew — New Austin only', body:'Only found in Cholla Springs, New Austin — another one only collectible in the Epilogue as John.', trackable:true },
+  { id:279, cat:'compendium', sub:'herbs', title:'Bay Bolete', body:'Tall Trees (West Elizabeth) and Caliban\'s Seat (New Hanover), near the river — moist, shaded ground. Orange-brown cap.', trackable:true },
+  { id:280, cat:'compendium', sub:'herbs', title:'Chanterelles', body:'Grassy areas and woodlands of Lemoyne, and the eastern part of New Hanover. Yellow dome-shaped fungi.', trackable:true },
+  { id:281, cat:'compendium', sub:'herbs', title:'Ram\'s Head', body:'Woodlands of West Elizabeth and Ambarino.', trackable:true },
+  { id:290, cat:'compendium', sub:'orchids', title:'About the orchids', body:'All 13 orchids are tied to one side-mission chain: "Duchesses and Other Animals," given by Algernon Wasp, unlocked in Chapter 4 after the main mission "The Gilded Cage." He\'s in a greenhouse north of Saint Denis. He asks for them in 5 batches alongside bird plumes and gator eggs — the game won\'t let you pick more than needed until each stage is active, so don\'t worry about "wasting" extra finds.', trackable:false },
+  { id:291, cat:'compendium', sub:'orchids', title:'Lady of the Night Orchid (need 15)', body:'Bayou Nwa, on the western side near the shoreline. Grows on trees.', trackable:true },
+  { id:292, cat:'compendium', sub:'orchids', title:'Lady Slipper Orchid (need 7)', body:'Western West Elizabeth — north of Lake Owanjila, and east of Aurora Basin (west of Blackwater). Grows on the ground.', trackable:true },
+  { id:293, cat:'compendium', sub:'orchids', title:'Moccasin Orchid (need 10)', body:'West of Van Horn Trading Post, around Butcher Creek, on the stream below Elysian Pool.', trackable:true },
+  { id:294, cat:'compendium', sub:'orchids', title:'Acuna\'s Star Orchid (need 3)', body:'East of Lakay, mostly on the islands toward the ocean, in the same general Bayou Nwa area as the exotic bird plumes. Grows on trees.', trackable:true },
+  { id:295, cat:'compendium', sub:'orchids', title:'Cigar Orchid (need 7)', body:'South of Lakay extending north near the shoreline, in the Bluewater Marsh area of Bayou Nwa. Grows on trees close to the road.', trackable:true },
+  { id:296, cat:'compendium', sub:'orchids', title:'Ghost Orchid (need 5)', body:'Marshes east of Shady Belle, especially the southern half of Crawdad Willies.', trackable:true },
+  { id:297, cat:'compendium', sub:'orchids', title:'Night Scented Orchid (need 5)', body:'South of Braithwaite Manor. Light green color. Only about 10 fixed spawn spots exist on the whole map, so don\'t expect to stumble onto these randomly.', trackable:true },
+  { id:298, cat:'compendium', sub:'orchids', title:'Rat Tail Orchid (need 10)', body:'All around Lagras lake. Yellow color, grows on trees.', trackable:true },
+  { id:299, cat:'compendium', sub:'orchids', title:'Spider Orchid (need 5)', body:'Western Bayou Nwa. Gold color, grows on trees.', trackable:true },
+  { id:300, cat:'compendium', sub:'orchids', title:'Clamshell Orchid (need 5)', body:'East of Caliga Hall — also described as running down the shoreline from Shady Belle. Grows on tree trunks in swampland.', trackable:true },
+  { id:301, cat:'compendium', sub:'orchids', title:'Dragon\'s Mouth Orchid (need 5)', body:'Grizzlies East, north of Emerald Ranch. Probably the rarest of the 13 — grows on the ground as well as trees.', trackable:true },
+  { id:302, cat:'compendium', sub:'orchids', title:'Queen\'s Orchid (need 5)', body:'Near the shores of Lagras.', trackable:true },
+  { id:303, cat:'compendium', sub:'orchids', title:'Sparrow\'s Egg Orchid (need 10)', body:'North of Roanoke Ridge, west of Annesburg. Grows on the ground at fixed spots — easy to spot once you\'re in the right area.', trackable:true },
+  { id:700, cat:'challenges', sub:'bandit', title:'Bandit 1', body:'Hold up 5 townsfolk.', trackable:true },
+  { id:701, cat:'challenges', sub:'bandit', title:'Bandit 2', body:'Rob any 2 coaches, or return 2 stolen coaches to the Fence.', trackable:true },
+  { id:702, cat:'challenges', sub:'bandit', title:'Bandit 3', body:'Rob the cash register in 4 different shops in one day.', trackable:true },
+  { id:703, cat:'challenges', sub:'bandit', title:'Bandit 4', body:'Rob 3 coaches, or return 3 stolen coaches to the Fence, in a single day.', trackable:true },
+  { id:704, cat:'challenges', sub:'bandit', title:'Bandit 5', body:'Amass a $250 bounty in one state.', trackable:true },
+  { id:705, cat:'challenges', sub:'bandit', title:'Bandit 6', body:'Steal 5 horses and sell them to the Horse Fence at Clemens Cove. Note: the Horse Fence isn\'t available until Chapter 3, so this one can\'t be finished before then.', trackable:true },
+  { id:706, cat:'challenges', sub:'bandit', title:'Bandit 7', body:'Rob $50 worth of cash and valuables from townsfolk and travelers.', trackable:true },
+  { id:707, cat:'challenges', sub:'bandit', title:'Bandit 8', body:'Steal 7 wagons and sell them to the Fence at Emerald Ranch.', trackable:true },
+  { id:708, cat:'challenges', sub:'bandit', title:'Bandit 9', body:'Hogtie someone and leave them on the railroad tracks 3 times.', trackable:true },
+  { id:709, cat:'challenges', sub:'bandit', title:'Bandit 10', body:'Complete 5 train robberies without dying or being caught. Easy trick: at a busy station like Flatneck, find an open flatbed cart with a chest on it — opening the chest counts as a "robbery" and rarely triggers a wanted level, so you can repeat it train after train.', trackable:true },
+  { id:710, cat:'challenges', sub:'explorer', title:'Explorer 1', body:'Find a Treasure Map.', trackable:true },
+  { id:711, cat:'challenges', sub:'explorer', title:'Explorer 2', body:'Find a Treasure.', trackable:true },
+  { id:712, cat:'challenges', sub:'explorer', title:'Explorer 3', body:'Find a Treasure.', trackable:true },
+  { id:713, cat:'challenges', sub:'explorer', title:'Explorer 4', body:'Find a Treasure.', trackable:true },
+  { id:714, cat:'challenges', sub:'explorer', title:'Explorer 5', body:'Find a Treasure.', trackable:true },
+  { id:715, cat:'challenges', sub:'explorer', title:'Explorer 6', body:'Find a Treasure.', trackable:true },
+  { id:716, cat:'challenges', sub:'explorer', title:'Explorer 7', body:'Find a Treasure.', trackable:true },
+  { id:717, cat:'challenges', sub:'explorer', title:'Explorer 8', body:'Find a Treasure.', trackable:true },
+  { id:718, cat:'challenges', sub:'explorer', title:'Explorer 9', body:'Find a Treasure.', trackable:true },
+  { id:719, cat:'challenges', sub:'explorer', title:'Explorer 10', body:'Find a Treasure. All 10 tiers together add up to needing 3 full treasure map chains completed, not just random landmark digging — worth pairing with dedicated treasure map research.', trackable:true },
+  { id:720, cat:'challenges', sub:'gambler', title:'Gambler 1', body:'Win 5 hands of poker.', trackable:true },
+  { id:721, cat:'challenges', sub:'gambler', title:'Gambler 2', body:'In Blackjack, double down and win the hand, 5 times. Best odds when you start with a high card or a face card.', trackable:true },
+  { id:722, cat:'challenges', sub:'gambler', title:'Gambler 3', body:'Win 3 games of Five Finger Fillet. The first-round opponent at any location is the easiest — you only have to track 2 buttons.', trackable:true },
+  { id:723, cat:'challenges', sub:'gambler', title:'Gambler 4', body:'Bust one poker opponent out (be the one who sends them home after they go all-in) at each of 3 locations: Flatneck Station, Saint Denis, and Valentine.', trackable:true },
+  { id:724, cat:'challenges', sub:'gambler', title:'Gambler 5', body:'Win 3 rounds of dominoes without drawing any tiles, against 2 or fewer opponents. Mostly luck — look for a table with only 2-3 players.', trackable:true },
+  { id:725, cat:'challenges', sub:'gambler', title:'Gambler 6', body:'Beat the Blackjack dealer at 2 locations: Rhodes and Van Horn.', trackable:true },
+  { id:726, cat:'challenges', sub:'gambler', title:'Gambler 7', body:'Beat the Five Finger Fillet player at 3 locations: Strawberry, Valentine, and Van Horn.', trackable:true },
+  { id:727, cat:'challenges', sub:'gambler', title:'Gambler 8', body:'Win 3 hands of Blackjack with 3 hits or more each. Widely considered the single worst challenge in the game — heavily luck-based (you need a strong hand built from 4+ cards that still beats the dealer). No reliable trick, just persistence.', trackable:true },
+  { id:728, cat:'challenges', sub:'gambler', title:'Gambler 9', body:'Win 3 games of dominoes in a row. Tip: if you\'re about to lose a round, you can leave the table and buy back in — this ends the game early instead of registering a loss, protecting your streak. One clean trick: rent a room in Rhodes, sleep to morning, then save and reload to reset the saloon with no one else seated, so you can play alone.', trackable:true },
+  { id:729, cat:'challenges', sub:'gambler', title:'Gambler 10', body:'Win 3 hands of Poker in a row. Going all-in early tends to make the AI fold more often than not — reload your save if it doesn\'t work and try again.', trackable:true },
+  { id:730, cat:'challenges', sub:'herbalist', title:'Herbalist 1', body:'Pick 6 Yarrow.', trackable:true },
+  { id:731, cat:'challenges', sub:'herbalist', title:'Herbalist 2', body:'Pick and eat 4 different species of berry.', trackable:true },
+  { id:732, cat:'challenges', sub:'herbalist', title:'Herbalist 3', body:'Craft 7 items using Sage as an ingredient.', trackable:true },
+  { id:733, cat:'challenges', sub:'herbalist', title:'Herbalist 4', body:'Pick 5 mushrooms and feed them to your horse.', trackable:true },
+  { id:734, cat:'challenges', sub:'herbalist', title:'Herbalist 5', body:'Craft 9 items using Indian Tobacco as an ingredient.', trackable:true },
+  { id:735, cat:'challenges', sub:'herbalist', title:'Herbalist 6', body:'Pick 15 different species of herb.', trackable:true },
+  { id:736, cat:'challenges', sub:'herbalist', title:'Herbalist 7', body:'Craft and use 5 Special Miracle Tonics.', trackable:true },
+  { id:737, cat:'challenges', sub:'herbalist', title:'Herbalist 8', body:'Use Oleander Sage to craft 6 poison weapons.', trackable:true },
+  { id:738, cat:'challenges', sub:'herbalist', title:'⚠ Herbalist 9 — can\'t be done as Arthur', body:'Pick one of each species of herb in the game. This is the tier that can\'t be finished before the Epilogue — several plants (Desert Sage, Red Sage, Wild Feverfew, Blackcurrant, all confirmed in the Compendium) only grow in New Austin, which doesn\'t open until you\'re playing as John.', trackable:true },
+  { id:739, cat:'challenges', sub:'herbalist', title:'Herbalist 10', body:'Season and cook all 11 types of meat in the game.', trackable:true },
+  { id:740, cat:'challenges', sub:'horseman', title:'Horseman 1', body:'Kill 5 rabbits from horseback. Rabbits are common south of Valentine and around Flatneck Station — ride into them.', trackable:true },
+  { id:741, cat:'challenges', sub:'horseman', title:'Horseman 2', body:'Jump over 3 obstacles in 15 seconds — any fences or small rocks work.', trackable:true },
+  { id:742, cat:'challenges', sub:'horseman', title:'Horseman 3', body:'Ride from Valentine to Rhodes in under 5 minutes. Horse stimulants (bought at Stables) refresh stamina instantly and make this easy.', trackable:true },
+  { id:743, cat:'challenges', sub:'horseman', title:'Horseman 4', body:'While mounted, drag someone with your lasso for 3,300 feet (about 1,000 meters). Any random person works, and they\'re allowed to die along the way.', trackable:true },
+  { id:744, cat:'challenges', sub:'horseman', title:'Horseman 5', body:'Trample 5 animals while on horseback. Pheasants are slow and easy targets — found especially south of Rhodes.', trackable:true },
+  { id:745, cat:'challenges', sub:'horseman', title:'Horseman 6', body:'Ride from Strawberry to Saint Denis in under 9 minutes without touching any water — including puddles. Follow the train tracks and cross the bridge southeast of Saint Denis; bring horse stimulants.', trackable:true },
+  { id:746, cat:'challenges', sub:'horseman', title:'Horseman 7', body:'Kill 7 enemies from horseback without dismounting. Riding into a town and shooting until lawmen arrive works — lawmen count, unarmed civilians don\'t.', trackable:true },
+  { id:747, cat:'challenges', sub:'horseman', title:'Horseman 8', body:'Kill 9 predators from horseback. Alligators in the swamps southeast of Rhodes (near Shady Belle) are a reliable, dense source.', trackable:true },
+  { id:748, cat:'challenges', sub:'horseman', title:'⚠ Horseman 9 — needs the Epilogue', body:'Ride from Van Horn to Blackwater in under 17 minutes without touching water. This can\'t be done before the Epilogue — Blackwater is hostile to Arthur earlier in the story, so this tier genuinely requires playing as John. Route: cross the bridge southwest of Van Horn, then the one at Flatneck Station, then the small wooden bridge at Owanjila Dam into the Blackwater region.', trackable:true },
+  { id:749, cat:'challenges', sub:'horseman', title:'Horseman 10', body:'Break one of every wild horse breed. Despite how it reads, the White Arabian is NOT required — the game shows exactly which breeds you still need if you check the challenge from the pause menu.', trackable:true },
+  { id:750, cat:'challenges', sub:'master-hunter', title:'Master Hunter 1', body:'Skin 3 deer.', trackable:true },
+  { id:751, cat:'challenges', sub:'master-hunter', title:'Master Hunter 2', body:'Collect 3 perfect-quality rabbit pelts.', trackable:true },
+  { id:752, cat:'challenges', sub:'master-hunter', title:'Master Hunter 3', body:'Track 10 different animal species using your binoculars.', trackable:true },
+  { id:753, cat:'challenges', sub:'master-hunter', title:'Master Hunter 4', body:'Call an animal in and get a clean kill, 5 times.', trackable:true },
+  { id:754, cat:'challenges', sub:'master-hunter', title:'Master Hunter 5', body:'Skin 3 Black Bears or Grizzly Bears.', trackable:true },
+  { id:755, cat:'challenges', sub:'master-hunter', title:'Master Hunter 6', body:'Kill 5 Cougars with your bow, then skin them.', trackable:true },
+  { id:756, cat:'challenges', sub:'master-hunter', title:'Master Hunter 7', body:'Use bait to lure and kill both a herbivore and a predator.', trackable:true },
+  { id:757, cat:'challenges', sub:'master-hunter', title:'Master Hunter 8', body:'Catch 3 fish without using a fishing rod — fish washed up on riverbanks or caves can simply be picked up, or chased into shallow water.', trackable:true },
+  { id:758, cat:'challenges', sub:'master-hunter', title:'Master Hunter 9', body:'Catch an opossum while it\'s playing possum. Chase it until it drops and plays dead, then shoot or grab it immediately.', trackable:true },
+  { id:759, cat:'challenges', sub:'master-hunter', title:'Master Hunter 10', body:'Find and kill the Legendary Panther, "Giaguaro." As noted in the Compendium, this animal won\'t even spawn until this tier is active in the first place — it\'s the reward tier, not a prerequisite.', trackable:true },
+  { id:760, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 1', body:'Kill 3 flying birds.', trackable:true },
+  { id:761, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 2', body:'Kill 2 different species of animal in the same Dead Eye use.', trackable:true },
+  { id:762, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 3', body:'Kill 5 flying birds while on a moving train.', trackable:true },
+  { id:763, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 4', body:'Kill someone from 80 feet away with a tomahawk.', trackable:true },
+  { id:764, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 5', body:'Kill 6 animals without switching or reloading your weapon.', trackable:true },
+  { id:765, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 6', body:'Kill someone at least 660 feet away with a long scoped rifle. Needs an actual long scope attached — the mount length matters for this one to register.', trackable:true },
+  { id:766, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 7', body:'Get 7 headshots in a row.', trackable:true },
+  { id:767, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 8', body:'Disarm 3 enemies without reloading or switching your weapon.', trackable:true },
+  { id:768, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 9', body:'Shoot 3 people\'s hats off in the same Dead Eye use.', trackable:true },
+  { id:769, cat:'challenges', sub:'sharpshooter', title:'Sharpshooter 10', body:'Kill 3 flying birds with 3 consecutive long scoped rifle shots. Same long-scope requirement as tier 6.', trackable:true },
+  { id:770, cat:'challenges', sub:'survivalist', title:'Survivalist 1', body:'Catch 3 Bluegill.', trackable:true },
+  { id:771, cat:'challenges', sub:'survivalist', title:'Survivalist 2', body:'Hand in 5 animals to camp or a trapper.', trackable:true },
+  { id:772, cat:'challenges', sub:'survivalist', title:'Survivalist 3', body:'Kill 5 animals with a Varmint Rifle.', trackable:true },
+  { id:773, cat:'challenges', sub:'survivalist', title:'Survivalist 4', body:'Craft a Dynamite Arrow, Fire Arrow, Improved Arrow, Poison Arrow, and Small Game Arrow — one of each.', trackable:true },
+  { id:774, cat:'challenges', sub:'survivalist', title:'Survivalist 5', body:'Catch a fish in the Bayou from a riverboat, and separately while standing on train tracks.', trackable:true },
+  { id:775, cat:'challenges', sub:'survivalist', title:'Survivalist 6', body:'Kill a scavenging animal while it feeds on a corpse, 5 times. Predator bait works too — the bait itself counts as "a corpse" being fed on.', trackable:true },
+  { id:776, cat:'challenges', sub:'survivalist', title:'Survivalist 7', body:'Kill 8 small game animals with consecutive shots using Small Game Arrows.', trackable:true },
+  { id:777, cat:'challenges', sub:'survivalist', title:'Survivalist 8', body:'Craft a Homing Tomahawk, Improved Tomahawk, Volatile Dynamite, and Volatile Fire Bottle.', trackable:true },
+  { id:778, cat:'challenges', sub:'survivalist', title:'Survivalist 9', body:'Catch a fish weighing at least 19 lbs. Genuinely hard to land naturally — try fishing near where the Legendary Moose spawns (large Muskies show up in that same water), or check Longnose Gar near the back of Shady Belle or the outskirts of Saint Denis.', trackable:true },
+  { id:779, cat:'challenges', sub:'survivalist', title:'Survivalist 10', body:'Catch one of every type of fish in the game — pairs directly with the Regular Fish and Legendary Fish sections of the Compendium.', trackable:true },
+  { id:780, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 1', body:'Kill 3 enemies with a knife.', trackable:true },
+  { id:781, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 2', body:'Kill 3 enemies in 10 seconds using only throwing knives. Easy spot: Valentine, throw knives at people seated around the poker table.', trackable:true },
+  { id:782, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 3', body:'Kill 3 birds of prey using only a tomahawk.', trackable:true },
+  { id:783, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 4', body:'Kill 10 enemies with a shotgun using crafted ammunition.', trackable:true },
+  { id:784, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 5', body:'Kill 5 mounted enemies, using exactly 1 throwing knife per kill.', trackable:true },
+  { id:785, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 6', body:'Kill 4 enemies at the same time with a single stick of dynamite.', trackable:true },
+  { id:786, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 7', body:'Kill 4 consecutive enemies by throwing and retrieving the same tomahawk.', trackable:true },
+  { id:787, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 8', body:'Kill 15 enemies using a long-barreled shotgun.', trackable:true },
+  { id:788, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 9', body:'Kill 9 unaware enemies from behind, using the bow.', trackable:true },
+  { id:789, cat:'challenges', sub:'weapons-expert', title:'Weapons Expert 10', body:'Kill a Grizzly Bear without taking any damage, using only throwing knives. The hardest single tier in the whole challenge list for a lot of players — bring plenty of knives and be ready to retry.', trackable:true },
+  { id:500, cat:'gold-medals', sub:'general', title:'How the medal system works', body:'There are 104 Gold Medals total across all story missions (one per mission). You do NOT need all of them — only 70 are required for the "Gold Rush" trophy/achievement, so Molly can skip whichever ones sound most annoying. Medals are Bronze (under half the optional objectives), Silver (half or more), or Gold (all of them) — and all requirements must be met in a single playthrough of that attempt, no reloading checkpoints mid-mission.', trackable:false },
+  { id:501, cat:'gold-medals', sub:'general', title:'The single best tip: replay missions', body:'Any completed story mission can be replayed anytime from Pause Menu > Progress > Story > pick the mission > Replay Mission. The smart approach: play each mission normally first to see what its gold requirements actually are, then replay it once you know what\'s needed — much easier than trying to guess blind on a first attempt. One catch: replays used to strip your tonics and limit your weapon selection, but a patch changed this so replays now give you gear appropriate to that point in the story, making it far less punishing than it used to be.', trackable:false },
+  { id:502, cat:'gold-medals', sub:'chapter-1', title:'Outlaws from the West (Mission 1)', body:'Gold requires: take no damage during the shootout at the cabin, loot 6+ items from the house, and hit at least 80% accuracy. All three are doable in one pass — clear the 6 enemies carefully from cover (there are 4 on the ground, one in a second-story window, one in the outhouse), then loot cupboards, nightstands, drawers, and the loft before leaving.', trackable:true },
+  { id:503, cat:'gold-medals', sub:'chapter-1', title:'Enter, Pursued By a Memory (Mission 2)', body:'Gold requires: kill all the wolves without taking damage, and hit at least 80% accuracy. Trade your pistol for the shotgun before the wolf fight, use it to attract and drop them, and back up onto rocks if they get too close instead of trading hits.', trackable:true },
+  { id:509, cat:'gold-medals', sub:'epilogue', title:'All 104 gold medals are now covered', body:'The entire game — all 6 chapters and both Epilogue parts — is fully covered here. 104 of 104 gold medal requirements are documented with real objectives.', trackable:false },
+  { id:600, cat:'gold-medals', sub:'epilogue', title:'The Wheel (Epilogue 1)', body:'Gold requires: reach Pronghorn Ranch without dropping any supplies, and reclaim the wagon within 1 minute.', trackable:true },
+  { id:601, cat:'gold-medals', sub:'epilogue', title:'Simple Pleasures (Epilogue 1)', body:'Gold requires: fill a bucket within 10 seconds while milking, and finish within 5:15.', trackable:true },
+  { id:602, cat:'gold-medals', sub:'epilogue', title:'Farming, for Beginners (Epilogue 1)', body:'Gold requires: fix the first section of fence in 1:30, and avoid getting hit by the bull.', trackable:true },
+  { id:603, cat:'gold-medals', sub:'epilogue', title:'Fatherhood, for Beginners (Epilogue 1)', body:'Gold requires: tire out Jeremiah within 45 seconds, feed him a treat, teach Jack to ride without getting bucked off, and win the race back to Pronghorn Ranch.', trackable:true },
+  { id:604, cat:'gold-medals', sub:'epilogue', title:'Old Habits (Epilogue 1)', body:'Gold requires: defeat the Laramie without taking a hit, and finish the fight within 25 seconds.', trackable:true },
+  { id:605, cat:'gold-medals', sub:'epilogue', title:'Jim Milton Rides, Again (Epilogue 1)', body:'Gold requires: get 10 kills while dual wielding sidearms, get 15 headshots, and use no health items.', trackable:true },
+  { id:606, cat:'gold-medals', sub:'epilogue', title:'Fatherhood, for Idiots (Epilogue 1)', body:'Gold requires: kill all 3 enemies in Dead Eye, and return to Pronghorn Ranch within 1:30 after the confrontation.', trackable:true },
+  { id:607, cat:'gold-medals', sub:'epilogue', title:'Motherhood (Epilogue 1)', body:'Gold requires: finish within 1:30.', trackable:true },
+  { id:608, cat:'gold-medals', sub:'epilogue', title:'Home of the Gentry (Epilogue 1)', body:'Gold requires: finish within 2:30.', trackable:true },
+  { id:609, cat:'gold-medals', sub:'epilogue', title:'Gainful Employment (Epilogue 1)', body:'Gold requires: locate the bounty within 30 seconds of arriving in Strawberry, then catch and hogtie them within 1:15 of mounting your horse. Epilogue Part 1 is fully covered — 10 of 10.', trackable:true },
+  { id:610, cat:'gold-medals', sub:'epilogue', title:'Bare Knuckle Friendships (Epilogue 2)', body:'Gold requires: find Charles within 1:50 of arriving in Saint Denis, and kill all of Guido Martelli\'s men within 10 seconds.', trackable:true },
+  { id:611, cat:'gold-medals', sub:'epilogue', title:'Home Improvement for Beginners (Epilogue 2)', body:'Gold requires: finish within 18 seconds — the shortest time limit in the whole game.', trackable:true },
+  { id:612, cat:'gold-medals', sub:'epilogue', title:'An Honest Day\'s Labors (Epilogue 2)', body:'Gold requires: kill all of Langton\'s men during the horseback escape, escape with Shane Finley within 5 minutes of choosing your approach, hit 70% accuracy, and use no health items.', trackable:true },
+  { id:613, cat:'gold-medals', sub:'epilogue', title:'The Tool Box (Epilogue 2)', body:'Gold requires: headshot every Skinner Brother hiding up in the trees, find Mr. Wayne within 2:15, use only sidearms, and use no health items.', trackable:true },
+  { id:614, cat:'gold-medals', sub:'epilogue', title:'A New Jerusalem (Epilogue 2)', body:'Gold requires: hammer the nails with 80% accuracy, and finish within 3:35.', trackable:true },
+  { id:615, cat:'gold-medals', sub:'epilogue', title:'A Quick Favor for an Old Friend (Epilogue 2)', body:'Gold requires: force Cortez\'s men to flee Rhodes within 30 seconds, get 5 headshots covering Sadie with a long scoped rifle, get 4 hip-fire kills, and use no health items.', trackable:true },
+  { id:616, cat:'gold-medals', sub:'epilogue', title:'Uncle\'s Bad Day (Epilogue 2)', body:'Gold requires: get 5 headshots using the bow, return to Beecher\'s Hope within 3:10 after freeing Uncle, hit 80% accuracy, and use no health items.', trackable:true },
+  { id:617, cat:'gold-medals', sub:'epilogue', title:'A Really Big Bastard (Epilogue 2)', body:'Gold requires: shoot the bear 4 times as it charges, headshot both rival bounty hunters in Dead Eye, and finish within 7:15.', trackable:true },
+  { id:618, cat:'gold-medals', sub:'epilogue', title:'Trying Again (Epilogue 2)', body:'Gold requires: catch a fish, and finish within 5:20.', trackable:true },
+  { id:619, cat:'gold-medals', sub:'epilogue', title:'A New Future Imagined (Epilogue 2)', body:'Gold requires: finish within 7:30.', trackable:true },
+  { id:620, cat:'gold-medals', sub:'epilogue', title:'American Venom (Epilogue 2)', body:'Gold requires: help Sadie catch Cleet within 35 seconds, headshot the sniper who shoots Charles, hit 85% accuracy, and use no health items. This is the very last mission in the game — Epilogue Part 2, and all 104 gold medals, are now fully covered.', trackable:true },
+  { id:580, cat:'gold-medals', sub:'chapter-6', title:'Icarus and Friends', body:'Gold requires: keep the balloon at the correct altitude for the whole trip, get 5 headshots from the balloon, hit 70% accuracy, and use no health items.', trackable:true },
+  { id:581, cat:'gold-medals', sub:'chapter-6', title:'Do Not Seek Absolution – I', body:'Gold requires: finish within 1:20.', trackable:true },
+  { id:582, cat:'gold-medals', sub:'chapter-6', title:'Visiting Hours', body:'Gold requires: headshot both prison guards while sniping from the tower, escape to the boat within 2:45, finish within 9 minutes, hit 80% accuracy, and use no health items.', trackable:true },
+  { id:583, cat:'gold-medals', sub:'chapter-6', title:'Do Not Seek Absolution – II', body:'Gold requires: find Edith Downes within 1:10.', trackable:true },
+  { id:584, cat:'gold-medals', sub:'chapter-6', title:'Just a Social Call', body:'Gold requires: headshot 3 mounted enemies, reach the horses within 2:45 after killing Cornwall, and use no health items.', trackable:true },
+  { id:585, cat:'gold-medals', sub:'chapter-6', title:'A Rage Unleashed', body:'Gold requires: knock out 2 soldiers on the boat, then round up the horses and reach shore within 1:30.', trackable:true },
+  { id:586, cat:'gold-medals', sub:'chapter-6', title:'The Delights of Van Horn', body:'Gold requires: headshot 5 soldiers with a long scoped rifle, and hit 85% accuracy.', trackable:true },
+  { id:587, cat:'gold-medals', sub:'chapter-6', title:'Goodbye, Dear Friend', body:'Gold requires: find Colm\'s backup within 45 seconds, get 5 headshots with a long scoped rifle, and finish within 6:30.', trackable:true },
+  { id:588, cat:'gold-medals', sub:'chapter-6', title:'The Course of True Love – V', body:'Gold requires: headshot 5 of the Braithwaites as they pursue the train, and finish within 7:30.', trackable:true },
+  { id:589, cat:'gold-medals', sub:'chapter-6', title:'The Bridge to Nowhere', body:'Gold requires: plant the dynamite within 1:35, and escape the oncoming train within 19 seconds.', trackable:true },
+  { id:590, cat:'gold-medals', sub:'chapter-6', title:'Archeology for Beginners', body:'Gold requires: recover the relics without being detected, and do it within 1:30.', trackable:true },
+  { id:591, cat:'gold-medals', sub:'chapter-6', title:'Honor, Amongst Thieves', body:'Gold requires: recover the vaccine without being detected, and finish within 5 minutes.', trackable:true },
+  { id:592, cat:'gold-medals', sub:'chapter-6', title:'Favored Sons', body:'Gold requires: kill the soldier on the cannon within 45 seconds, get 35 headshots, and use no health items.', trackable:true },
+  { id:593, cat:'gold-medals', sub:'chapter-6', title:'Mrs. Sadie Adler, Widow – II', body:'Gold requires: headshot the sniper in the barn, secure the barn without taking any damage, and finish within 5:30.', trackable:true },
+  { id:594, cat:'gold-medals', sub:'chapter-6', title:'The Fine Art of Conversation', body:'Gold requires: kill a pursuer\'s horse during the escape, finish within 9:30, hit 75% accuracy, and use no health items.', trackable:true },
+  { id:595, cat:'gold-medals', sub:'chapter-6', title:'The King\'s Son', body:'Gold requires: while infiltrating Fort Wallace, headshot every soldier blocking your path to Eagle Flies, kill 15 enemies during the canoe escape, and hit 80% accuracy.', trackable:true },
+  { id:596, cat:'gold-medals', sub:'chapter-6', title:'My Last Boy', body:'Gold requires: save Paytah, get 30 headshots, hit 80% accuracy, and use no health items.', trackable:true },
+  { id:597, cat:'gold-medals', sub:'chapter-6', title:'Our Best Selves', body:'Gold requires: get a headshot in Dead Eye right after jumping off Dutch\'s horse, finish within 11 minutes, fight through the train at 80% accuracy, and use no health items.', trackable:true },
+  { id:598, cat:'gold-medals', sub:'chapter-6', title:'Red Dead Redemption', body:'Gold requires: get 7 headshots while covering Sadie from the lighthouse, reach Abigail and Sadie within 1 minute after Sadie is captured, hit 70% accuracy, and use no health items. Chapter 6 — and the whole main story — is now fully covered, 19 of 19.', trackable:true },
+  { id:505, cat:'gold-medals', sub:'chapter-1', title:'The Aftermath of Genesis (Mission 3)', body:'Gold requires: kill each deer with one arrow, don\'t spook either deer, and get a clean kill on the second deer. Only go for a deer that\'s alone — a quick, quiet bow shot is the key. Eagle Eye afterward reveals two more tracks (one crossing the river to the left, one to the right) leading to a pair of deer.', trackable:true },
+  { id:506, cat:'gold-medals', sub:'chapter-1', title:'Old Friends (Mission 4)', body:'Gold requires: catch and hogtie Kieran within 45 seconds, kill 3 O\'Driscolls in the same Dead Eye use, finish within 15 minutes 30 seconds, get 15 headshots, and complete without using any health items. A demanding one — don\'t be afraid to come back to it once you\'re more comfortable with Dead Eye and gunplay rather than trying it blind.', trackable:true },
+  { id:507, cat:'gold-medals', sub:'chapter-1', title:'Who the Hell is Leviticus Cornwall? (Mission 5)', body:'Gold requires: save Lenny when he\'s hanging from the train, clear the guards within 1 minute 30 seconds of stopping the train, take no damage during the shootout, get 10 headshots, and use no health items. When Lenny\'s in trouble, get to him fast and mash the pull button to haul him up — that part alone can end the run if you\'re slow.', trackable:true },
+  { id:508, cat:'gold-medals', sub:'chapter-1', title:'Eastward Bound (Mission 6)', body:'Gold requires: pick up Javier when you enter Horseshoe Overlook, and finish within 6 minutes. The easiest of the six — mainly a matter of not dawdling.', trackable:true },
+  { id:510, cat:'gold-medals', sub:'chapter-2', title:'Polite Society, Valentine Style', body:'Gold requires: return the lost wagon horse to its owner, and find Karen within 45 seconds.', trackable:true },
+  { id:511, cat:'gold-medals', sub:'chapter-2', title:'Americans at Rest', body:'Gold requires: save Javier within 15 seconds, and beat Tommy within 1 minute 30 seconds.', trackable:true },
+  { id:512, cat:'gold-medals', sub:'chapter-2', title:'Good, Honest, Snake Oil', body:'Gold requires: stop Benedict Allbright from falling off the cliff, hogtie him within 1:15, and get him back to the sheriff within 1:30.', trackable:true },
+  { id:513, cat:'gold-medals', sub:'chapter-2', title:'Who is Not Without Sin', body:'Gold requires: win 2 hands of poker, and return the Reverend to camp within 2 minutes 5 seconds.', trackable:true },
+  { id:514, cat:'gold-medals', sub:'chapter-2', title:'Exit Pursued by a Bruised Ego', body:'Gold requires: track the bear within 1:30, hit it at least 6 times, and finish within 12 minutes.', trackable:true },
+  { id:515, cat:'gold-medals', sub:'chapter-2', title:'Paying a Social Call', body:'Gold requires: silently kill 4 O\'Driscolls, get 12 headshots, hit 80% accuracy, and use no health items.', trackable:true },
+  { id:516, cat:'gold-medals', sub:'chapter-2', title:'The First Shall Be Last', body:'Gold requires: silently kill the bounty hunters by the river with Javier, shoot the rope to free Sean, get 10 headshots, and use no health items.', trackable:true },
+  { id:517, cat:'gold-medals', sub:'chapter-2', title:'A Quiet Time', body:'Gold requires: try to make amends with an old rival, catch Lenny in the act, and avoid getting arrested.', trackable:true },
+  { id:518, cat:'gold-medals', sub:'chapter-2', title:'The Spines of America', body:'Gold requires: loot everything at Carmody Dell, don\'t get spotted, and deliver the wagon to Emerald Ranch within 1:10. The timing is the hard part here.', trackable:true },
+  { id:519, cat:'gold-medals', sub:'chapter-2', title:'Blessed are the Meek?', body:'Gold requires: kill all the mounted lawmen while escaping within 55 seconds, get 15 headshots, hit 70% accuracy, and use no health items.', trackable:true },
+  { id:520, cat:'gold-medals', sub:'chapter-2', title:'Money Lending and Other Sins – III', body:'Gold requires: finish within 2 minutes 10 seconds.', trackable:true },
+  { id:521, cat:'gold-medals', sub:'chapter-2', title:'We Loved Once and True – III', body:'Gold requires: peacefully convince the Chelonians to let you take Jamie, and get Jamie back to Mary within 2 minutes.', trackable:true },
+  { id:522, cat:'gold-medals', sub:'chapter-2', title:'Pouring Forth Oil – II', body:'Gold requires: deliver the wagon to the drop-off within 1:45.', trackable:true },
+  { id:523, cat:'gold-medals', sub:'chapter-2', title:'A Fisher of Men', body:'Gold requires: once you reach the river, catch a fish within 1:30, and finish the whole mission within 7:20.', trackable:true },
+  { id:524, cat:'gold-medals', sub:'chapter-2', title:'Pouring Forth Oil – IV', body:'Gold requires: kill all the train guards before Sean fires a shot, clear the baggage car of loot, escape the law within 1:30, land 10 Dead Eye kills, and use no health items.', trackable:true },
+  { id:525, cat:'gold-medals', sub:'chapter-2', title:'An American Pastoral Scene', body:'Gold requires: headshot every mounted guard protecting the wagon, land 10 Dead Eye kills, finish within 6 minutes, and use no health items.', trackable:true },
+  { id:526, cat:'gold-medals', sub:'chapter-2', title:'The Sheep and the Goats', body:'Gold requires: herd all the sheep into the pen in Valentine, get 25 headshots, hit 70% accuracy, and use no health items.', trackable:true },
+  { id:527, cat:'gold-medals', sub:'chapter-2', title:'A Strange Kindness', body:'Gold requires: return the captive to his family within 1:40, get 5 headshots, hit 80% accuracy, and use no health items. Chapter 2 is now fully covered — 18 of 18.', trackable:true },
+  { id:530, cat:'gold-medals', sub:'chapter-3', title:'The New South', body:'Gold requires: knock out Anders Anderson without taking a hit, catch and return him to jail within 5:30, and catch a fish along with Dutch and Hosea.', trackable:true },
+  { id:531, cat:'gold-medals', sub:'chapter-3', title:'Further Questions of Female Suffrage', body:'Gold requires: fend off the Lemoyne Raiders in under 1 minute, get 5 headshots, hit 85% accuracy, and use no health items.', trackable:true },
+  { id:532, cat:'gold-medals', sub:'chapter-3', title:'American Distillation', body:'Gold requires: win the race back to camp, take no damage, get 5 headshots, and hit 70% accuracy.', trackable:true },
+  { id:533, cat:'gold-medals', sub:'chapter-3', title:'An Honest Mistake', body:'Gold requires: save Uncle when he\'s overpowered, get 20 headshots, hit 80% accuracy, and use no health items.', trackable:true },
+  { id:534, cat:'gold-medals', sub:'chapter-3', title:'The Course of True Love – II', body:'Gold requires: reach Penelope without getting spotted, and finish within 3 minutes.', trackable:true },
+  { id:535, cat:'gold-medals', sub:'chapter-3', title:'Preaching Forgiveness As He Went', body:'Gold requires: kill 10 Lemoyne Raiders using a long scoped rifle, finish within 11:30, hit 70% accuracy, and use no health items.', trackable:true },
+  { id:536, cat:'gold-medals', sub:'chapter-3', title:'Sodom? Back to Gomorrah', body:'Gold requires: loot every safe, headshot 5 mounted lawmen during the horseback escape, reach Downes Ranch within 1:55, hit 70% accuracy, and use no health items.', trackable:true },
+  { id:537, cat:'gold-medals', sub:'chapter-3', title:'The Course of True Love – III', body:'Gold requires: finish within 4:15.', trackable:true },
+  { id:538, cat:'gold-medals', sub:'chapter-3', title:'Advertising, the New American Art – II', body:'Gold requires: headshot 5 Lemoyne Raiders in the saloon, hit 90% accuracy, and use no health items — a tight one, aim carefully.', trackable:true },
+  { id:539, cat:'gold-medals', sub:'chapter-3', title:'Magicians for Sport', body:'Gold requires: inspect every clue in Trelawny\'s caravan, stay within 30 feet of Trelawny\'s trail while tracking, kill 2 bounty hunters in the cornfields within 1 minute, and use no health items.', trackable:true },
+  { id:540, cat:'gold-medals', sub:'chapter-3', title:'Horse Flesh for Dinner', body:'Gold requires: kill the stable hand showing you the horses, catch the stallion within 10 seconds, and get 5 headshots.', trackable:true },
+  { id:541, cat:'gold-medals', sub:'chapter-3', title:'Friends in Very Low Places', body:'Gold requires: complete without being spotted, and finish within 8:10.', trackable:true },
+  { id:542, cat:'gold-medals', sub:'chapter-3', title:'The Fine Joys of Tobacco', body:'Gold requires: silently kill the man Sean distracts in the wagon store, douse the fields within 2:20, kill 5 more during the escape, and use no health items.', trackable:true },
+  { id:543, cat:'gold-medals', sub:'chapter-3', title:'Blessed are the Peacemakers', body:'Gold requires: free yourself and self-surgery within 1 minute, recover your weapons from the O\'Driscoll camp, kill the O\'Driscolls who beat and shot you, and escape the camp without being spotted.', trackable:true },
+  { id:544, cat:'gold-medals', sub:'chapter-3', title:'A Short Walk in a Pretty Town', body:'Gold requires: kill 3 lawmen in Dead Eye while saving Bill, use only sidearms, finish within 4:30, get 20 headshots, and use no health items.', trackable:true },
+  { id:545, cat:'gold-medals', sub:'chapter-3', title:'Blood Feuds, Ancient and Modern', body:'Gold requires: headshot both Gareth and Gerald Braithwaite, get 20 headshots total, hit 85% accuracy, and use no health items.', trackable:true },
+  { id:546, cat:'gold-medals', sub:'chapter-3', title:'The Battle of Shady Belle', body:'Gold requires: kill all the Lemoyne Raiders at Shady Belle, clear two bodies within 1:40, and finish within 11 minutes. Chapter 3 is now fully covered — 17 of 17.', trackable:true },
+  { id:550, cat:'gold-medals', sub:'chapter-4', title:'The Joys of Civilization', body:'Gold requires: catch the street urchin before he reaches the market, and finish within 5:30.', trackable:true },
+  { id:551, cat:'gold-medals', sub:'chapter-4', title:'Angelo Bronte, a Man of Honor', body:'Gold requires: witness the dog and the drunk encounter, avoid being spotted by the law, finish within 10:40, and get 4 headshots.', trackable:true },
+  { id:552, cat:'gold-medals', sub:'chapter-4', title:'No, No and Thrice, No', body:'Gold requires: kill both Foreman boys yourself during the chase, and hit 90% accuracy.', trackable:true },
+  { id:553, cat:'gold-medals', sub:'chapter-4', title:'The Gilded Cage', body:'Gold requires: at the party, pour drinks, compliment a guest\'s attire, accept a gift, and save a life — then follow the servant without being detected.', trackable:true },
+  { id:554, cat:'gold-medals', sub:'chapter-4', title:'A Fine Night of Debauchery', body:'Gold requires: win the poker game without Strauss\'s help, escape the boat in under 35 seconds once your cover is blown, get 5 headshots, and use no health items.', trackable:true },
+  { id:555, cat:'gold-medals', sub:'chapter-4', title:'Fatherhood and Other Dreams – II', body:'Gold requires: catch the wagon and get it to the secluded spot within 1:45, and take Mary to the theater.', trackable:true },
+  { id:556, cat:'gold-medals', sub:'chapter-4', title:'American Fathers – II', body:'Gold requires: infiltrate the factory by hiding in the wagon, reach Danbury\'s office undetected, kill all the horseback pursuers during the escape, and hit 80% accuracy.', trackable:true },
+  { id:557, cat:'gold-medals', sub:'chapter-4', title:'Horsemen, Apocalypses', body:'Gold requires: shoot the O\'Driscolls in the boat before they disembark, use only sidearms, hit 70% accuracy, get 15 headshots, and use no health items.', trackable:true },
+  { id:558, cat:'gold-medals', sub:'chapter-4', title:'Urban Pleasures', body:'Gold requires: rob all the customers in the trolley station, kill 10 lawmen while on the trolley, stop any lawmen from jumping on the wagon, shoot the dynamite Lenny throws, and use no health items.', trackable:true },
+  { id:559, cat:'gold-medals', sub:'chapter-4', title:'Country Pursuits', body:'Gold requires: get Jules back to the skiff within 1:40, and shoot the Bullgator 5 times.', trackable:true },
+  { id:560, cat:'gold-medals', sub:'chapter-4', title:'Revenge is a Dish Best Eaten', body:'Gold requires: search every room in Bronte\'s mansion, carry Bronte to the skiff within 1:30, get 20 headshots, and use no health items.', trackable:true },
+  { id:561, cat:'gold-medals', sub:'chapter-4', title:'Help a Brother Out', body:'Gold requires: find the captives without threatening the store owner, and finish within 2:45.', trackable:true },
+  { id:562, cat:'gold-medals', sub:'chapter-4', title:'Brothers and Sisters, One and All', body:'Gold requires: find the kid within 19 seconds — a fast one.', trackable:true },
+  { id:563, cat:'gold-medals', sub:'chapter-4', title:'Banking, the Old American Art', body:'Gold requires: crack the safe without any mistakes, use only sidearms, get 25 headshots, and use no health items. Chapter 4 is now fully covered — 14 of 14.', trackable:true },
+  { id:570, cat:'gold-medals', sub:'chapter-5', title:'Welcome to the New World', body:'Gold requires: don\'t fall behind while walking with the chain gang, and get 10 headshots.', trackable:true },
+  { id:571, cat:'gold-medals', sub:'chapter-5', title:'Savagery Unleashed', body:'Gold requires: release all the workers within 4 seconds, finish within 5:40, and get 8 headshots.', trackable:true },
+  { id:572, cat:'gold-medals', sub:'chapter-5', title:'A Kind and Benevolent Despot', body:'Gold requires: get Javier to safety in under 2 minutes, and get 10 headshots.', trackable:true },
+  { id:573, cat:'gold-medals', sub:'chapter-5', title:'Hell Hath No Fury', body:'Gold requires: prevent 4 boats from reaching shore, destroy the naval ship without missing a shot, and hit 70% accuracy.', trackable:true },
+  { id:574, cat:'gold-medals', sub:'chapter-5', title:'Paradise Mercifully Departed', body:'Gold requires: kill the first 2 sentries without being spotted, escort the captain to the boat within 1:45, finish within 6:45, and get 25 headshots.', trackable:true },
+  { id:575, cat:'gold-medals', sub:'chapter-5', title:'Dear Uncle Tacitus', body:'Gold requires: leave Shady Belle without being detected by the Pinkertons, and finish within 8 minutes.', trackable:true },
+  { id:576, cat:'gold-medals', sub:'chapter-5', title:'Fleeting Joy', body:'Gold requires: kill 2 Pinkertons during the Dead Eye ambush, get 5 headshots with the Gatling Gun, hit at least 70% accuracy with it, and use no health items.', trackable:true },
+  { id:577, cat:'gold-medals', sub:'chapter-5', title:'That\'s Murfree Country', body:'Gold requires: deliver Meredith to her mother within 2 minutes, get 15 headshots, hit 85% accuracy, and use no health items.', trackable:true },
+  { id:578, cat:'gold-medals', sub:'chapter-5', title:'A Fork in the Road', body:'Gold requires: finish within 3:05. Chapter 5 is now fully covered — 9 of 9.', trackable:true },
+  { id:900, cat:'arthur-only', title:'Why this list exists', body:'The common thread behind everything here is New Austin. That whole region — the far southwest of the map — isn\'t just locked behind an invisible wall; Arthur gets attacked automatically the moment he enters it, and some enemies will actively chase him out. Wait for the Epilogue and it opens up freely. This list pulls together everything found so far across the Compendium, Challenges, Mission Tips, and Treasure sections, plus a dedicated pass on outfits, points of interest, and side content.', trackable:false },
+  { id:901, cat:'arthur-only', title:'Legendary Cougar', body:'Found in Gaptooth Ridge, New Austin (see Compendium > Legendary Animals). Can\'t be hunted as Arthur.', trackable:false },
+  { id:902, cat:'arthur-only', title:'Legendary Pronghorn', body:'Found near Rio Bravo, New Austin (see Compendium > Legendary Animals). Can\'t be hunted as Arthur — note the regular (non-legendary) Pronghorn is fine, it\'s only the legendary one that\'s locked.', trackable:false },
+  { id:903, cat:'arthur-only', title:'Legendary Channel Catfish', body:'Also found at Rio Bravo, New Austin, and additionally gated behind a Stranger mission trip with Jeremy Gill that only becomes available in the Epilogue (see Compendium > Legendary Fish). Double-locked, effectively.', trackable:false },
+  { id:904, cat:'arthur-only', title:'Gila Monster', body:'A New Austin desert lizard (see Compendium > Reptiles & Amphibians). Can\'t be caught as Arthur.', trackable:false },
+  { id:905, cat:'arthur-only', title:'Desert Sage', body:'Only grows in Gaptooth Ridge, New Austin (see Compendium > Common Herbs). Can\'t be picked as Arthur.', trackable:false },
+  { id:906, cat:'arthur-only', title:'Red Sage', body:'Only grows near Rio Bravo, New Austin (see Compendium > Common Herbs). Can\'t be picked as Arthur.', trackable:false },
+  { id:907, cat:'arthur-only', title:'Wild Feverfew', body:'Only grows in Cholla Springs, New Austin (see Compendium > Common Herbs). Can\'t be picked as Arthur.', trackable:false },
+  { id:908, cat:'arthur-only', title:'Blackcurrant', body:'Only grows in Gaptooth Ridge and Cholla Springs, New Austin (see Compendium > Common Herbs). Can\'t be picked as Arthur.', trackable:false },
+  { id:909, cat:'arthur-only', title:'Herbalist Challenge 9', body:'Requires picking one of every herb species in the game — which means it needs Desert Sage, Red Sage, Wild Feverfew, and Blackcurrant. Since all four are New Austin-locked, this is the one full Challenge tier that can\'t be finished as Arthur (see Challenges > Herbalist).', trackable:false },
+  { id:910, cat:'arthur-only', title:'Horseman Challenge 9', body:'Requires riding from Van Horn to Blackwater in under 17 minutes without touching water. Blackwater itself is hostile to Arthur earlier in the story — you\'d be shot on sight — so this ride genuinely can\'t be attempted until the Epilogue (see Challenges > Horseman).', trackable:false },
+  { id:911, cat:'arthur-only', title:'The Torn/Mended Treasure Map', body:'Both halves of the map can be picked up as Arthur, but the actual dig site is west of Twin Rocks in New Austin, so the treasure itself — Otis Miller\'s Revolver — can only be collected in the Epilogue (see Treasure Maps > Other Hunts).', trackable:false },
+  { id:912, cat:'arthur-only', title:'Some Dinosaur Bones', body:'A number of the collectible dinosaur bones are scattered around New Austin. Which specific ones I haven\'t pinned down individually yet — worth its own pass if Molly is chasing full bone completion.', trackable:false },
+  { id:913, cat:'arthur-only', title:'New Austin Points of Interest / sketches', body:'Arthur has his own unique sketch for each Point of Interest he draws in his journal — but since he can never physically reach New Austin\'s POIs, he can never draw those specific ones. John draws his own separate versions later, and that\'s the only way those particular POIs get recorded — Arthur\'s version of them simply doesn\'t exist. Doesn\'t block 100% completion, just means Molly won\'t see Arthur\'s take on those specific spots.', trackable:false },
+  { id:914, cat:'arthur-only', title:'⚠ New Austin outfits — workaround exists', body:'Clothing sold in the Blackwater, Armadillo, and Tumbleweed stores can\'t be bought in-game as Arthur since he can\'t enter those towns. However, there\'s a real workaround: those same outfits are sold on the Wheeler, Rawson & Co. online store via the Rockstar Social Club website. Purchases there use Arthur\'s in-game money and get added to his wardrobe next time the game loads — no story-progression requirement involved. Worth knowing if Molly wants a specific New Austin look on Arthur specifically.', trackable:false },
+  { id:915, cat:'arthur-only', title:'Tumbleweed side missions & bounties', body:'Tumbleweed is the only place in New Austin with its own side content — a couple of bounty-hunting targets (Joaquin Arroyo, Esteban Cortez) plus general side activity tied to the town. All Epilogue-only, all tied to New Austin being closed off earlier.', trackable:false },
+  { id:916, cat:'arthur-only', title:'New Austin hidden loot & easter eggs', body:'Scattered unique finds across New Austin — for example a Ram Skull Mask at Rathskeller Fork, and various burned-out homesteads and ruined farms with unique valuables. None of it is reachable as Arthur.', trackable:false },
+  { id:917, cat:'arthur-only', title:'The Del Lobos gang hideouts', body:'This gang and their hideouts are based in New Austin — another pocket of content that only opens up once Arthur is gone and John can move through the region freely.', trackable:false },
+  { id:918, cat:'arthur-only', title:'⚠ This list may still not be fully exhaustive', body:'This now covers a genuinely wide sweep — animals, plants, challenges, treasure, outfits, points of interest, side missions, and hidden loot — but RDR2\'s New Austin content is deep, and something small could still be missing (a specific stranger interaction, a particular collectible variant). If Molly hits something in-game that isn\'t on this list, it\'s almost certainly another New Austin item worth adding.', trackable:false },
+  { id:1000, cat:'hunting', title:'Only 3-star animals can give a perfect pelt', body:'Study the animal first (hold the study button up close, or use binoculars from range) — it shows a star rating for physical condition. Anything less than pristine (3 stars) simply can\'t yield a perfect pelt no matter how clean the kill is, so it\'s worth checking before you commit to a shot.', trackable:false },
+  { id:1001, cat:'hunting', title:'Studying tells you the exact weapon to use', body:'Once you\'ve studied a 3-star animal, the game tells you directly which weapon and ammo type gets a perfect result on that specific animal — no guessing required. This is the single most reliable way to stop wasting pelts.', trackable:false },
+  { id:1002, cat:'hunting', title:'Size group determines weapon — rough chart', body:'Tiny animals (small birds, rats, squirrels): Small Game Arrows. Small animals (rabbits, foxes, badgers): Varmint Rifle. Medium animals: regular Arrows or Varmint Rifle depending on the animal. Large animals: Improved Arrows or a Rifle/Repeater. Massive animals (bears, bison, moose, elk, alligators): a scoped Rifle or Improved Arrows. Always check the study prompt to confirm — a few animals don\'t follow the general pattern.', trackable:false },
+  { id:1003, cat:'hunting', title:'Aim for the brain, not the heart', body:'A headshot to the brain is the cleanest, most consistent way to get a fatal hit without damaging the pelt. Heart shots can still degrade certain animals\' hides even when they\'re instantly fatal, so brain shots are the safer default across the board.', trackable:false },
+  { id:1004, cat:'hunting', title:'Skip the shotgun and explosive ammo almost always', body:'Shotguns and explosive rounds are reliable pelt-ruiners on regular animals — they\'re too much damage for a clean kill. The one exception is Legendary Animals, whose pelts can\'t be damaged no matter what you use them down with.', trackable:false },
+  { id:1005, cat:'hunting', title:'One shot only', body:'A perfect pelt needs the animal to go down from a single hit — it doesn\'t have to be instantly fatal (a critical hit that the animal staggers away from and then collapses from still counts), but a second finishing shot will downgrade the pelt.', trackable:false },
+  { id:1006, cat:'hunting', title:'Watch for a mismatch between carry size and weapon size', body:'A few animals are one size group for weapon choice but a different size for carrying — a beaver, for example, needs a Varmint Rifle (like a "small" animal) but its pelt has to ride on the back of the horse rather than in the satchel (like a "large" one). If a kill isn\'t stowing where you expect, that\'s usually why — not a bug.', trackable:false },
+  { id:1007, cat:'hunting', title:'⚠ The Buck Antler Trinket can save a bad shot', body:'Community-reported (not officially documented): the Buck Antler Trinket appears to give a real chance — roughly 1 in 3 to 1 in 2 by player testing — of upgrading a merely good pelt to perfect during the skinning animation itself. Worth having equipped as a safety net, though don\'t rely on it as a guaranteed fix for a bad shot.', trackable:false },
+  { id:919, cat:'arthur-only', title:'Tiger-Striped Mustang', body:'A unique horse, same tier as the Arabian, found at Rio del Lobo Rock in the south of New Austin (see Horses & Bonding > Wild Breeds). Can\'t be tamed as Arthur — Epilogue only.', trackable:false },
+  { id:920, cat:'arthur-only', title:'Micah\'s Revolver', body:'Found on Mount Hagen at the end of "American Venom" — but only accessible after Epilogue Part 2 is complete (see Guns & Gear). Not New Austin, but still off-limits to Arthur since it requires the story to have moved past him entirely.', trackable:false },
+  { id:921, cat:'arthur-only', title:'Explosive shotgun ammo pamphlet', body:'The crafting recipe for explosive shotgun ammo is found in New Austin (see Guns & Gear). Can\'t be picked up as Arthur.', trackable:false },
+  { id:1500, cat:'crafting', sub:'general', title:'Crafting needs a campfire', body:'Crafting and cooking both happen at a campfire — your own, the gang camp\'s, or any other found out in the world. It can\'t be done inside towns. Hold the weapon wheel button and select Camp to set one up anywhere safe on the road.', trackable:false },
+  { id:1501, cat:'crafting', sub:'general', title:'Pamphlets unlock recipes', body:'Having the right ingredients isn\'t always enough — plenty of recipes need a Pamphlet learned first before they show up in the crafting menu at all. Pamphlets are found scattered around the world (often in a chest) or bought from a Fence after specific story missions unlock them for sale. Once learned, a recipe stays unlocked permanently.', trackable:false },
+  { id:1502, cat:'crafting', sub:'general', title:'Some recipes are free from the start of Chapter 2', body:'A handful of useful recipes — including Improved, Fire, and Small Game Arrows, Improved Tomahawk and Throwing Knife, Split Point and Explosive Cartridges, Fire Bottle, Cover Scent Lotion, and Horse Ointment — are simply handed to Arthur at the start of Chapter 2, no pamphlet hunting required.', trackable:false },
+  { id:1503, cat:'crafting', sub:'general', title:'The premium herb cooking trick', body:'When cooking meat at a campfire, you can add an herb for a bonus. Always use one of the three "premium" herbs if you have them: Creeping Thyme boosts the Dead Eye core, Oregano boosts Stamina, and Wild Mint boosts Health. Cooking Big Game meat with one of these creates one of the strongest restorative meals in the game — worth always keeping a stock of all three.', trackable:false },
+  { id:1504, cat:'crafting', sub:'general', title:'Tiers stack: Potent → Special', body:'Most tonics and horse items come in two crafted tiers — a cheaper "Potent" version with fewer ingredients, and a stronger "Special" version that needs a pamphlet and more materials. The Special tier is always worth the extra herbs when you have them.', trackable:false },
+  { id:1510, cat:'crafting', sub:'tonics', title:'Potent Health Cure', body:'1x Ginseng, 1x Yarrow. Available from the start, no pamphlet needed.', trackable:false },
+  { id:1511, cat:'crafting', sub:'tonics', title:'Special Health Cure', body:'2x Ginseng, 2x Yarrow, 2x English Mace or Milkweed. Pamphlet sold by Fences after completing "American Distillation."', trackable:false },
+  { id:1512, cat:'crafting', sub:'tonics', title:'Potent Bitters (Stamina)', body:'1x Sage, 1x Burdock Root. Available from the start, no pamphlet needed.', trackable:false },
+  { id:1513, cat:'crafting', sub:'tonics', title:'Special Bitters (Stamina)', body:'2x Sage, 2x Burdock Root, 2x Violet Snowdrop or Wild Feverfew. Pamphlet sold by Fences after Chapter 2.', trackable:false },
+  { id:1514, cat:'crafting', sub:'tonics', title:'Potent Snake Oil (Dead Eye)', body:'1x Indian Tobacco. Automatically available as soon as camp is set up — no pamphlet needed.', trackable:false },
+  { id:1515, cat:'crafting', sub:'tonics', title:'Special Snake Oil (Dead Eye)', body:'2x Indian Tobacco, 2x Currant or Prairie Poppy. Pamphlet sold by Fences after completing "American Distillation."', trackable:false },
+  { id:1516, cat:'crafting', sub:'tonics', title:'Potent Miracle Tonic (all 3 cores)', body:'4x Indian Tobacco, 4x Ginseng, 4x Sage. A resource-heavy recipe, but restores Health, Stamina, and Dead Eye all at once — worth the ingredients when things get rough.', trackable:false },
+  { id:1517, cat:'crafting', sub:'tonics', title:'⚠ Special Miracle Tonic — the best tonic in the game', body:'6x Currant, 6x Yarrow, 4x Burdock Root. Fully restores AND fortifies Health, Stamina, and Dead Eye simultaneously — widely considered the single most effective tonic available. Pamphlet found in a chest beside a bloody tent southeast of Vetter\'s Echo, or sold by Fences after completing "A Short Walk in a Pretty Town."', trackable:false },
+  { id:1518, cat:'crafting', sub:'tonics', title:'Cover Scent Lotion', body:'1x Scent Gland (from a predator). Disguises Arthur\'s scent, making it harder for dangerous animals to detect him. Given automatically at the start of Chapter 2.', trackable:false },
+  { id:1520, cat:'crafting', sub:'horse-care', title:'Horse Ointment', body:'1x Sage, 1x Common Bulrush, 1x Yarrow. Cleans and cares for your horse. Pamphlet given automatically at the start of Chapter 2.', trackable:false },
+  { id:1521, cat:'crafting', sub:'horse-care', title:'Potent Horse Medicine', body:'1x Ginseng, 1x Common Bulrush. Available from the start, no pamphlet needed.', trackable:false },
+  { id:1522, cat:'crafting', sub:'horse-care', title:'Special Horse Medicine', body:'2x Ginseng, 2x Common Bulrush, 2x Wild Carrot. Pamphlet sold by Fences after completing "Pouring Forth Oil."', trackable:false },
+  { id:1523, cat:'crafting', sub:'horse-care', title:'Potent Horse Stimulant', body:'1x Sage, 1x Common Bulrush. Instantly refreshes horse stamina — available from the start, no pamphlet needed.', trackable:false },
+  { id:1524, cat:'crafting', sub:'horse-care', title:'Special Horse Stimulant', body:'2x Sage, 2x Common Bulrush, 2x Wild Carrot. Pamphlet sold by Fences after completing "Pouring Forth Oil."', trackable:false },
+  { id:1525, cat:'crafting', sub:'horse-care', title:'Special Horse Reviver', body:'2x Ginseng, 2x Wild Carrot, 2x Parasol Mushroom. Pamphlet sold by Fences after completing "American Distillation" — worth crafting a couple to keep in the satchel for emergencies.', trackable:false },
+  { id:1526, cat:'crafting', sub:'horse-care', title:'Horse Meal', body:'3x Currant, 3x Beets, 3x Hay. Pamphlet sold by Fences after completing "Pouring Forth Oil."', trackable:false },
+  { id:1530, cat:'crafting', sub:'arrows', title:'Improved Arrow', body:'1x Arrow, 1x Flight Feather. Given at the start of Chapter 2.', trackable:false },
+  { id:1531, cat:'crafting', sub:'arrows', title:'Fire Arrow', body:'1x Arrow, 1x Animal Fat, 1x Flight Feather. Given at the start of Chapter 2.', trackable:false },
+  { id:1532, cat:'crafting', sub:'arrows', title:'Small Game Arrow', body:'1x Arrow, 1x Regular Shotgun Shell, 1x Flight Feather. Given at the start of Chapter 2.', trackable:false },
+  { id:1533, cat:'crafting', sub:'arrows', title:'Dynamite Arrow', body:'1x Arrow, 1x Dynamite, 1x Flight Feather. Pamphlet found in a chest at the south end of Wapiti Indian Reservation, at the base of a wooden bridge — also sold by Fences after "A Short Walk in a Pretty Town."', trackable:false },
+  { id:1534, cat:'crafting', sub:'arrows', title:'Poison Arrow', body:'1x Arrow, 1x Oleander Sage, 1x Flight Feather. Pamphlet found in a chest northeast of Bacchus Station, right outside the Mysterious Hill Home — also sold by Fences after Chapter 2.', trackable:false },
+  { id:1535, cat:'crafting', sub:'arrows', title:'Split Point Cartridge', body:'1x Hunting Knife, 1x Regular Cartridge. Given at the start of Chapter 2.', trackable:false },
+  { id:1536, cat:'crafting', sub:'arrows', title:'Explosive Cartridge', body:'1x Express Cartridge, 1x Animal Fat. Given at the start of Chapter 2.', trackable:false },
+  { id:1537, cat:'crafting', sub:'arrows', title:'Incendiary Buckshot', body:'1x Regular Shotgun Shell, 1x Moonshine. Pamphlet hidden beneath a floorboard in a cabin at Copperhead Landing — also sold by Fences after "Pouring Forth Oil."', trackable:false },
+  { id:1538, cat:'crafting', sub:'arrows', title:'Explosive Slug', body:'1x Regular Shotgun Shell, 1x Animal Fat. Pamphlet found in a chest outside a burned-down alchemist house between Gaptooth Ridge and Cholla Springs — also sold by Fences after "A Short Walk in a Pretty Town."', trackable:false },
+  { id:1540, cat:'crafting', sub:'tools', title:'Improved Tomahawk', body:'1x Tomahawk, 1x Eagle Feather or Hawk Feather. Given at the start of Chapter 2.', trackable:false },
+  { id:1541, cat:'crafting', sub:'tools', title:'Homing Tomahawk', body:'1x Tomahawk, 1x Owl Feather. Pamphlet found in a chest inside a flattened cabin south of Moonstone Pond — also sold by Fences after Chapter 2.', trackable:false },
+  { id:1542, cat:'crafting', sub:'tools', title:'Improved Throwing Knife', body:'1x Throwing Knife, 1x Eagle Feather or Hawk Feather. Given at the start of Chapter 2.', trackable:false },
+  { id:1543, cat:'crafting', sub:'tools', title:'Poison Throwing Knife', body:'1x Throwing Knife, 1x Oleander Sage. Pamphlet hidden beneath a floorboard in a shack northeast of Saint Denis — also sold by Fences after "Pouring Forth Oil."', trackable:false },
+  { id:1544, cat:'crafting', sub:'tools', title:'Fire Bottle', body:'1x Animal Fat, 1x Gin, Guarma Rum, Fine Brandy, or Kentucky Bourbon. Given at the start of Chapter 2.', trackable:false },
+  { id:1545, cat:'crafting', sub:'tools', title:'Volatile Fire Bottle', body:'1x Animal Fat, 1x Moonshine. Pamphlet found in a chest in an abandoned camp inside a burned forest northwest of Horseshoe Overlook — also sold by Fences after "Pouring Forth Oil."', trackable:false },
+  { id:1546, cat:'crafting', sub:'tools', title:'Volatile Dynamite', body:'1x Animal Fat, 1x Dynamite, 1x High Velocity Cartridge. Pamphlet found in a chest beneath a broken-down wagon at Hani\'s Bethel, just north of the small pond — also sold by Fences after "American Distillation."', trackable:false },
+  { id:1547, cat:'crafting', sub:'tools', title:'Predator Bait', body:'1x Stringy Meat, 1x Wintergreen Berry, Evergreen Huckleberry, Raspberry, or Blackberry.', trackable:false },
+  { id:1548, cat:'crafting', sub:'tools', title:'Potent Predator Bait', body:'1x Gritty Fish Meat, 1x Blackberry, Wintergreen Berry, Raspberry, or Evergreen Berry. Given at the start of Chapter 2.', trackable:false },
+  { id:1549, cat:'crafting', sub:'tools', title:'Potent Herbivore Bait', body:'1x Vanilla Flower, 1x Violet Snowdrop, 1x Bay Bolete, Ram\'s Head, Parasol Mushroom, or Chanterelle. Given at the start of Chapter 2.', trackable:false },
+  { id:1600, cat:'clothing', title:'How Trapper garment sets work', body:'The Trapper sells 16 full garment sets in story mode — 8 built around Legendary Animal pelts (rarer, tied to a specific hunt) and 8 built entirely from Perfect-quality regular pelts (no legendary hunting required, just clean kills). Every Legendary Animal drops enough pelts for everything tied to it in one kill — no need to hunt the same one twice. Pieces with a legendary link below show a clickable animal chip that jumps straight to that animal\'s Compendium entry.', trackable:false },
+  { id:1601, cat:'clothing', sub:'bear-hunter', title:'Legendary Bear Head Hat', body:'1x Legendary Bear pelt. $40.', trackable:true, linkAnimals:['Bear'] },
+  { id:1602, cat:'clothing', sub:'bear-hunter', title:'Legendary Bear Coat', body:'1x Legendary Bear pelt, 1x Perfect Bison pelt. $28.', trackable:true, linkAnimals:['Bear'] },
+  { id:1603, cat:'clothing', sub:'bear-hunter', title:'Legendary Bear Ropers', body:'1x Legendary Bear pelt, 1x Perfect Bull hide. $34.', trackable:true, linkAnimals:['Bear'] },
+  { id:1604, cat:'clothing', sub:'bear-hunter', title:'Boar Riding Gloves', body:'1x Perfect Boar pelt, 2x Perfect Rabbit pelt. $15. No legendary pelt needed for this one.', trackable:true },
+  { id:1610, cat:'clothing', sub:'trophy-buck', title:'Legendary Buck Vest', body:'1x Legendary Buck pelt, 1x Perfect Ram hide. $26.', trackable:true, linkAnimals:['Buck'] },
+  { id:1611, cat:'clothing', sub:'trophy-buck', title:'Legendary Fox Moccasins', body:'1x Legendary Fox pelt, 1x Perfect Elk pelt. $40.', trackable:true, linkAnimals:['Fox'] },
+  { id:1612, cat:'clothing', sub:'trophy-buck', title:'Legendary Buck and Fox Range Gloves', body:'1x Legendary Buck pelt, 1x Legendary Fox pelt. $28. Needs both animals.', trackable:true, linkAnimals:['Buck','Fox'] },
+  { id:1613, cat:'clothing', sub:'trophy-buck', title:'Raccoon Mountain Hat', body:'1x Perfect Raccoon pelt, 1x Perfect Beaver pelt, 2x Hawk Feather. $21. No legendary pelt needed for this one.', trackable:true },
+  { id:1620, cat:'clothing', sub:'dreamcatcher', title:'Legendary Beaver Flop Hat', body:'1x Legendary Beaver pelt, 1x Legendary Boar pelt, 1x Cardinal Feather. $22. Needs both animals.', trackable:true, linkAnimals:['Beaver','Boar'] },
+  { id:1621, cat:'clothing', sub:'dreamcatcher', title:'Legendary Bison Vest', body:'1x Legendary Tatanka Bison pelt. $30.', trackable:true, linkAnimals:['Tatanka Bison'] },
+  { id:1622, cat:'clothing', sub:'dreamcatcher', title:'Legendary Bison Batwing Chaps', body:'1x Legendary Tatanka Bison pelt. $32.', trackable:true, linkAnimals:['Tatanka Bison'] },
+  { id:1623, cat:'clothing', sub:'dreamcatcher', title:'Legendary Boar and Bison Fowlers', body:'1x Legendary Boar pelt, 1x Legendary Tatanka Bison pelt. $37. Needs both animals.', trackable:true, linkAnimals:['Boar','Tatanka Bison'] },
+  { id:1624, cat:'clothing', sub:'dreamcatcher', title:'Legendary Beaver Cavalry Gloves', body:'1x Legendary Beaver pelt. $18.', trackable:true, linkAnimals:['Beaver'] },
+  { id:1630, cat:'clothing', sub:'beast-of-prey', title:'Legendary Cougar Flop Hat', body:'1x Legendary Cougar pelt, 2x Turkey Feather. $19.', trackable:true, linkAnimals:['Cougar'] },
+  { id:1631, cat:'clothing', sub:'beast-of-prey', title:'⚠ Legendary Cougar and Wolf Vest', body:'1x Legendary Cougar pelt, 1x Legendary Wolf pelt. $42. Needs both animals — and the Cougar is New Austin/Epilogue-only, so this piece can\'t be finished as Arthur.', trackable:true, linkAnimals:['Cougar','Wolf'] },
+  { id:1632, cat:'clothing', sub:'beast-of-prey', title:'Legendary Wolf Batwing Chaps', body:'1x Legendary Wolf pelt, 1x Perfect Goat hide. $34.', trackable:true, linkAnimals:['Wolf'] },
+  { id:1633, cat:'clothing', sub:'beast-of-prey', title:'⚠ Legendary Cougar Riding Gloves', body:'1x Legendary Cougar pelt, 1x Perfect Boar pelt. $20. Same Cougar-only limitation applies.', trackable:true, linkAnimals:['Cougar'] },
+  { id:1634, cat:'clothing', sub:'beast-of-prey', title:'Bull Fowler Boots', body:'1x Perfect Boar pelt, 1x Perfect Bull hide. $29. No legendary pelt needed for this one.', trackable:true },
+  { id:1640, cat:'clothing', sub:'huntsman', title:'Legendary Coyote Mountain Hat', body:'1x Legendary Coyote pelt, 2x Eagle Feather. $23.', trackable:true, linkAnimals:['Coyote'] },
+  { id:1641, cat:'clothing', sub:'huntsman', title:'⚠ Legendary Pronghorn Coat', body:'1x Legendary Pronghorn hide, 1x Perfect Moose pelt. $35. The Legendary Pronghorn is New Austin/Epilogue-only, so this piece can\'t be finished as Arthur.', trackable:true, linkAnimals:['Pronghorn'] },
+  { id:1642, cat:'clothing', sub:'huntsman', title:'Legendary Coyote Half Chaps', body:'1x Legendary Coyote pelt, 2x Perfect Fox pelt. $20.', trackable:true, linkAnimals:['Coyote'] },
+  { id:1643, cat:'clothing', sub:'huntsman', title:'⚠ Legendary Pronghorn Range Gloves', body:'1x Legendary Pronghorn hide, 1x Perfect Muskrat pelt. $17. Same Pronghorn-only limitation applies.', trackable:true, linkAnimals:['Pronghorn'] },
+  { id:1650, cat:'clothing', sub:'death-roll', title:'Legendary Alligator Gambler\'s Hat', body:'1x Legendary Alligator skin, 2x Perfect Snake skin. $22.', trackable:true, linkAnimals:['Alligator'] },
+  { id:1651, cat:'clothing', sub:'death-roll', title:'Legendary Panther Cloak', body:'1x Legendary Panther pelt. $45. Remember the Panther won\'t even spawn until Master Hunter rank 9 is active.', trackable:true, linkAnimals:['Panther'] },
+  { id:1652, cat:'clothing', sub:'death-roll', title:'Legendary Alligator Vest', body:'1x Legendary Alligator skin. $35.', trackable:true, linkAnimals:['Alligator'] },
+  { id:1653, cat:'clothing', sub:'death-roll', title:'Legendary Alligator Fowlers', body:'1x Legendary Alligator skin. $35.', trackable:true, linkAnimals:['Alligator'] },
+  { id:1654, cat:'clothing', sub:'death-roll', title:'Legendary Panther Range Gloves', body:'1x Legendary Panther pelt, 1x Perfect Gila Monster skin. $30. The Gila Monster is New Austin-only too.', trackable:true, linkAnimals:['Panther'] },
+  { id:1660, cat:'clothing', sub:'stalker', title:'Legendary Ram Hat', body:'1x Legendary Big Horn Ram hide. $17.', trackable:true, linkAnimals:['Big Horn Ram'] },
+  { id:1661, cat:'clothing', sub:'stalker', title:'Legendary Moose Hunting Jacket', body:'1x Legendary Moose pelt, 1x Perfect Wolf pelt. $24.', trackable:true, linkAnimals:['Moose'] },
+  { id:1662, cat:'clothing', sub:'stalker', title:'Legendary Ram Batwing Chaps', body:'1x Legendary Big Horn Ram hide. $33.', trackable:true, linkAnimals:['Big Horn Ram'] },
+  { id:1663, cat:'clothing', sub:'stalker', title:'Legendary Moose Moccasins', body:'1x Legendary Moose pelt, 1x Perfect Cow hide. $22.', trackable:true, linkAnimals:['Moose'] },
+  { id:1664, cat:'clothing', sub:'stalker', title:'Legendary Ram Rifleman Gloves', body:'1x Legendary Big Horn Ram hide, 1x Perfect Boar pelt. $12.', trackable:true, linkAnimals:['Big Horn Ram'] },
+  { id:1670, cat:'clothing', sub:'ghost-bison', title:'Legendary White Bison Hat', body:'1x Legendary White Bison pelt. $45.', trackable:true, linkAnimals:['White Bison'] },
+  { id:1671, cat:'clothing', sub:'ghost-bison', title:'Legendary White Bison Coat', body:'1x Legendary White Bison pelt. $29.', trackable:true, linkAnimals:['White Bison'] },
+  { id:1672, cat:'clothing', sub:'ghost-bison', title:'Legendary Elk Half Chaps', body:'1x Legendary Elk pelt, 1x Perfect Sheep hide. $16.', trackable:true, linkAnimals:['Elk'] },
+  { id:1673, cat:'clothing', sub:'ghost-bison', title:'Legendary Elk Moccasins', body:'1x Legendary Elk pelt, 1x Perfect Goat hide. $30.', trackable:true, linkAnimals:['Elk'] },
+  { id:1674, cat:'clothing', sub:'ghost-bison', title:'Legendary Elk Range Gloves', body:'1x Legendary Elk pelt. $13.', trackable:true, linkAnimals:['Elk'] },
+  { id:1680, cat:'clothing', sub:'rattler', title:'Ram Sombrero', body:'1x Perfect Ram hide. $10.', trackable:true },
+  { id:1681, cat:'clothing', sub:'rattler', title:'Outdoorsmen Vest', body:'1x Perfect Pronghorn hide. $22.', trackable:true },
+  { id:1682, cat:'clothing', sub:'rattler', title:'Javelina Half Chaps', body:'1x Perfect Collared Peccary pig pelt, 1x Perfect Snake skin. $18.', trackable:true },
+  { id:1683, cat:'clothing', sub:'rattler', title:'Iguana Range Gloves', body:'1x Perfect Collared Peccary pig pelt, 1x Perfect Iguana skin. $27.', trackable:true },
+  { id:1690, cat:'clothing', sub:'wrangler', title:'Goat Flop Hat', body:'1x Perfect Pronghorn hide, 1x Perfect Goat hide. $12.', trackable:true },
+  { id:1691, cat:'clothing', sub:'wrangler', title:'Trapper\'s Cloak', body:'1x Perfect Sheep hide. $32.', trackable:true },
+  { id:1692, cat:'clothing', sub:'wrangler', title:'No-Man\'s Vest', body:'1x Perfect Panther hide, 1x Perfect Goat hide. $27.', trackable:true },
+  { id:1693, cat:'clothing', sub:'wrangler', title:'Two Toned Moccasins', body:'1x Perfect Buck pelt. $15.', trackable:true },
+  { id:1694, cat:'clothing', sub:'wrangler', title:'Moose Range Gloves', body:'1x Perfect Moose pelt. $22.', trackable:true },
+  { id:1700, cat:'clothing', sub:'bronco-buster', title:'Elk Flop Hat', body:'1x Perfect Elk pelt. $12.', trackable:true },
+  { id:1701, cat:'clothing', sub:'bronco-buster', title:'Coyote Scout Jacket', body:'1x Perfect Ox hide, 1x Perfect Coyote pelt. $20.', trackable:true },
+  { id:1702, cat:'clothing', sub:'bronco-buster', title:'Huntsman Vest', body:'1x Perfect Sheep hide, 1x Perfect Deer pelt. $25.', trackable:true },
+  { id:1703, cat:'clothing', sub:'bronco-buster', title:'Boar Fringed Shotgun Chaps', body:'2x Perfect Boar pelt. $25.', trackable:true },
+  { id:1704, cat:'clothing', sub:'bronco-buster', title:'Pigskin Rifleman Gloves', body:'1x Perfect Pig hide. $8.', trackable:true },
+  { id:1710, cat:'clothing', sub:'marauder', title:'Muskrat Cavalry Hat', body:'4x Perfect Rabbit pelt, 1x Perfect Muskrat pelt. $15.', trackable:true },
+  { id:1711, cat:'clothing', sub:'marauder', title:'Principal Vest', body:'1x Perfect Cow hide, 1x Perfect Deer pelt. $18.', trackable:true },
+  { id:1712, cat:'clothing', sub:'marauder', title:'Bull Fringed Shotgun Chaps', body:'1x Perfect Bull hide. $18.', trackable:true },
+  { id:1713, cat:'clothing', sub:'marauder', title:'Snakeskin Cavalry Gloves', body:'1x Perfect Boar pelt, 1x Perfect Snake skin. $26.', trackable:true },
+  { id:1720, cat:'clothing', sub:'bounty-hunter', title:'Plantation Slouch Hat', body:'1x Perfect Bison pelt. $15.', trackable:true },
+  { id:1721, cat:'clothing', sub:'bounty-hunter', title:'Beaver Hunting Jacket', body:'1x Perfect Cow hide, 2x Perfect Beaver pelt. $21.', trackable:true },
+  { id:1722, cat:'clothing', sub:'bounty-hunter', title:'Sheepskin Vest', body:'2x Perfect Sheep hide. $20.', trackable:true },
+  { id:1723, cat:'clothing', sub:'bounty-hunter', title:'Pronghorn Half Chaps', body:'1x Perfect Pronghorn hide. $7.', trackable:true },
+  { id:1724, cat:'clothing', sub:'bounty-hunter', title:'Buck Riding Gloves', body:'1x Perfect Buck pelt. $5.', trackable:true },
+  { id:1730, cat:'clothing', sub:'desperado', title:'Beaver Drifter Hat', body:'2x Perfect Beaver pelt. $20.', trackable:true },
+  { id:1731, cat:'clothing', sub:'desperado', title:'Wolf Coat', body:'1x Perfect Ram hide, 1x Perfect Wolf pelt. $25.', trackable:true },
+  { id:1732, cat:'clothing', sub:'desperado', title:'Billy Vest', body:'1x Perfect Armadillo skin, 1x Perfect Goat hide. $32.', trackable:true },
+  { id:1733, cat:'clothing', sub:'desperado', title:'Boar and Bull Fowler Boots', body:'1x Perfect Ox hide, 1x Perfect Boar pelt. $31.', trackable:true },
+  { id:1734, cat:'clothing', sub:'desperado', title:'Winter Cavalry Gloves', body:'1x Perfect Rabbit pelt, 2x Perfect Muskrat pelt. $25.', trackable:true },
+  { id:1740, cat:'clothing', sub:'night-wrangler', title:'Coyote Gambler\'s Hat', body:'2x Perfect Coyote pelt. $16.', trackable:true },
+  { id:1741, cat:'clothing', sub:'night-wrangler', title:'Cougar Cutaway Coat', body:'2x Perfect Cougar pelt, 1x Perfect Black Bear pelt. $39.', trackable:true },
+  { id:1742, cat:'clothing', sub:'night-wrangler', title:'Wilderness Vest', body:'1x Perfect Wolf pelt, 1x Perfect Panther pelt. $28.', trackable:true },
+  { id:1743, cat:'clothing', sub:'night-wrangler', title:'Moose Half Chaps', body:'1x Perfect Moose pelt. $10.', trackable:true },
+  { id:1744, cat:'clothing', sub:'night-wrangler', title:'Badger Rifleman Gloves', body:'1x Perfect Badger pelt. $10.', trackable:true },
+  { id:1750, cat:'clothing', sub:'mountain-man', title:'Grenadier Hat', body:'1x Perfect Muskrat pelt, 1x Perfect Beaver pelt. $24.', trackable:true },
+  { id:1751, cat:'clothing', sub:'mountain-man', title:'Ram Shotgun Coat', body:'2x Perfect Ram hide. $45.', trackable:true },
+  { id:1752, cat:'clothing', sub:'mountain-man', title:'Country Vest', body:'1x Perfect Buck pelt, 1x Perfect Beaver pelt. $25.', trackable:true },
+  { id:1753, cat:'clothing', sub:'mountain-man', title:'Elk Riding Gloves', body:'1x Perfect Elk pelt. $12.', trackable:true },
+  { id:1, cat:'hunting', title:'Match your weapon to the kill', body:'A perfect pelt needs a clean, quick kill — the wrong weapon on small game (or a body shot instead of a vital-zone hit) wrecks the hide even if the animal dies instantly.', trackable:false },
+  { id:2, cat:'hunting', title:'Watch the reticle indicator', body:'Aiming shows a small quality readout for the animal in your sights, so you know before you fire whether this shot keeps the pelt pristine.', trackable:false },
+  { id:3, cat:'hunting', title:'Legendary animals take patience', body:'They usually need a study/tracking step first — Eagle Eye picks up scent trails once you\'ve got a lead, so don\'t just wander hoping to spot one.', trackable:true },
+  { id:4, cat:'hunting', title:'Carry hides on your horse', body:'Pelts and carcasses eat into your personal carry weight fast — stow them on the horse and sell to a trapper for noticeably better prices than a general store.', trackable:false },
+  { id:800, cat:'treasure', sub:'jack-hall', title:'Jack Hall Gang — how to start', body:'Available from the start of Chapter 2, tied to the Stranger mission "All That Glitters." Find Maximo Cristobal Valdespino west of Flatneck Station in The Heartlands — he sells the first map for $10 (or $5 if you haggle, or you can just rob him). Total reward for the full chain: 2 Gold Bars (~$1000).', trackable:false },
+  { id:801, cat:'treasure', sub:'jack-hall', title:'Jack Hall Gang Map 2 — Caliban\'s Seat', body:'Head up the mountain south of Valentine called Caliban\'s Seat. Take the path down the right side, jump ledge to ledge, and find the map tucked in a crevice in the rock wall.', trackable:true },
+  { id:802, cat:'treasure', sub:'jack-hall', title:'Jack Hall Gang Map 3 — Cotorra Springs', body:'North of Fort Wallace. Look for stone piles arranged in a rough circle near the geysers — the middle pile holds the map.', trackable:true },
+  { id:803, cat:'treasure', sub:'jack-hall', title:'Jack Hall Gang Treasure — O\'Creagh\'s Run', body:'Swim or ride to the small island in the middle of O\'Creagh\'s Run, Grizzlies East. The 2 Gold Bars are under a small rock on the north side of the island.', trackable:true },
+  { id:810, cat:'treasure', sub:'poisonous', title:'Poisonous Trail — how to start', body:'Available from the start of Chapter 2. The first map is in a lockbox under the bed at Cairn Lodge, Cairn Lake, the snowy northwest part of the map. Total reward for the full chain: 4 Gold Bars (~$2000) — the richest of the three main hunts.', trackable:false },
+  { id:811, cat:'treasure', sub:'poisonous', title:'Poisonous Trail Map 2', body:'Halfway up a hill you\'ll find a broken tree lying on the ground next to another dead tree still standing — the map is tucked inside the standing one.', trackable:true },
+  { id:812, cat:'treasure', sub:'poisonous', title:'Poisonous Trail Map 3', body:'Near the top of a hill, look for a stone formation with a hole in the middle — the map is placed inside it.', trackable:true },
+  { id:813, cat:'treasure', sub:'poisonous', title:'⚠ Poisonous Trail Treasure — Elysian Pool cave', body:'The final treasure is behind the waterfall at Elysian Pool, New Hanover. Switch to your lantern before entering (it\'s pitch black) — after passing through the waterfall, stick to the right side going down, find the small tunnel at the bottom, and follow it through a maze of hidden tunnels to the treasure at the end. Genuinely disorienting — worth going slow and sticking to the right-hand wall the whole way if Molly loses her bearings.', trackable:true },
+  { id:820, cat:'treasure', sub:'high-stakes', title:'High Stakes — how to start', body:'Unlocks in Chapter 3, after the story mission "The New South." The first map is carried by a random wandering "Chance Encounter" treasure hunter — lasso and hogtie him (or just rob/greet him) to get it. He spawns in a few possible zones, so you may need to check more than one. Total reward for the full chain: 3 Gold Bars (~$1500).', trackable:false },
+  { id:821, cat:'treasure', sub:'high-stakes', title:'High Stakes Map 2 — Cumberland Falls', body:'Behind the waterfall at Cumberland Falls — walk up the wooden log on the right side of the falls to get behind it.', trackable:true },
+  { id:822, cat:'treasure', sub:'high-stakes', title:'High Stakes Map 3 — Barrow Lagoon', body:'Walk up the small hill at Barrow Lagoon — the map is tucked into a broken tree stump wedged between two rocks.', trackable:true },
+  { id:823, cat:'treasure', sub:'high-stakes', title:'High Stakes Treasure — Bacchus Station', body:'Drop down the cliffs above the river near Bacchus Station, platform by platform, starting from the top of the mountain facing the river. After a few drops, the 3 Gold Bars are wedged into a crevice in the rock.', trackable:true },
+  { id:830, cat:'treasure', sub:'other', title:'Sketched Map — Elysian Pool area', body:'Found inside Reed Cottage, north of Annesburg. Leads to a tree with a carved X near the falls — from that tree, walk 20 paces north then 5 paces east to find the dig spot. Reward: 1 Gold Ingot (~$300).', trackable:true },
+  { id:831, cat:'treasure', sub:'other', title:'Chick\'s Treasure Map', body:'Comes from the Chapter 2 story mission "Money Lending and Other Sins" — tracking down debtor Chick Matthews gives you the map. Worth getting to the marked tree quickly, since Chick can beat you there and take it if you dawdle. Reward: $35.', trackable:true },
+  { id:832, cat:'treasure', sub:'other', title:'⚠ Torn/Mended Treasure Map — Epilogue only', body:'Two map halves are found from Chapter 2 onward (one at a wooden hut on the far west side near the start of Little Creek River, the other at a house called Manito Glade). Combined into the Mended Map, but the actual dig site — west of Twin Rocks in New Austin — can only be reached in the Epilogue. Reward: Otis Miller\'s Revolver, not gold.', trackable:true },
+  { id:833, cat:'treasure', sub:'other', title:'⚠ Le Trésor des Morts — special edition only', body:'This one requires having pre-ordered the digital edition or owning the special/ultimate edition of RDR2 — it\'s not available on the standard edition at all. If Molly has access, it starts in a burned-out settlement (one building left standing, a former prison cell) and ends up worth 5 Gold Bars (~$2500), the richest single hunt in the game. Worth confirming her edition before chasing this one.', trackable:false },
+  { id:834, cat:'treasure', sub:'other', title:'Landmarks of Riches', body:'Starts at an obelisk near Lake Owanjila. A community-reported hunt (less centrally documented than the big three) that leads to 6 Gold Bars — worth a dedicated look if Molly wants every last hunt, but flagging that I have less confidence in this one\'s exact step-by-step than Jack Hall Gang, Poisonous Trail, or High Stakes.', trackable:true },
+  { id:1100, cat:'horses', sub:'breeds', title:'Wild American Standardbred', body:'Northern West Elizabeth, at Little Creek River. A racehorse with good speed and acceleration. Wild Morgan also spawns here.', dualTrack:true, trackable:true },
+  { id:1101, cat:'horses', sub:'breeds', title:'Wild Morgan', body:'Same spot as the American Standardbred, northern West Elizabeth at Little Creek River.', dualTrack:true, trackable:true },
+  { id:1102, cat:'horses', sub:'breeds', title:'Wild Mustang', body:'New Hanover, in The Heartlands. Wild Tennessee Walker can spawn nearby too.', dualTrack:true, trackable:true },
+  { id:1103, cat:'horses', sub:'breeds', title:'Wild Tennessee Walker', body:'New Hanover, in The Heartlands — same general area as the Mustang.', dualTrack:true, trackable:true },
+  { id:1104, cat:'horses', sub:'breeds', title:'Wild Appaloosa', body:'Ambarino, just south of Wapiti Indian Reservation near Donner Falls. A genuinely strong racing breed — worth bonding with once caught.', dualTrack:true, trackable:true },
+  { id:1105, cat:'horses', sub:'breeds', title:'Wild Hungarian Halfbred', body:'Around Blackwater — one of the rarer breeds on this list.', dualTrack:true, trackable:true },
+  { id:1106, cat:'horses', sub:'breeds', title:'Wild Kentucky Saddler', body:'Southwest of Blackwater.', dualTrack:true, trackable:true },
+  { id:1107, cat:'horses', sub:'breeds', title:'Wild Nokota', body:'New Austin, south of Armadillo — the Morgan breed has a good chance of spawning in this same area too.', dualTrack:true, trackable:true },
+  { id:1108, cat:'horses', sub:'breeds', title:'Wild American Paint', body:'New Austin, south of Tumbleweed. The last of the 9 breeds needed for Horseman Challenge 10.', dualTrack:true, trackable:true },
+  { id:1109, cat:'horses', sub:'breeds', title:'⚠ Bonus: Arabian (not required for the challenge)', body:'Widely considered the best wild horse in the game — top-tier stats across the board. Not needed for Horseman 10, but worth catching regardless. Also occasionally available to buy from the Blackwater stable.', dualTrack:true, trackable:true },
+  { id:1110, cat:'horses', sub:'breeds', title:'⚠ Bonus: Tiger-Striped Mustang — Epilogue only', body:'A unique one-of-a-kind horse, same tier as the Arabian, but it can only be tamed after reaching the Epilogue — it lives in the south of New Austin at Rio del Lobo Rock. Worth adding to the "Can\'t Do as Arthur" list too.', dualTrack:true, trackable:true },
+  { id:1120, cat:'horses', sub:'bonding', title:'Best: alternate patting with movement', body:'Hold the pat/calm button (L3) while pressing the speed-up button (X/A) in a repeating rhythm. Each pat while the horse is calm gives XP with no cooldown, so this stacks with travel you\'re already doing — you can max out bonding just by riding around normally and doing this the whole way. Widely considered the single most efficient method in the game.', trackable:false },
+  { id:1121, cat:'horses', sub:'bonding', title:'Great, but situational: calm/clean/feed on need', body:'Calming an agitated horse, cleaning it with ointment when dirty, and feeding it when its cores are low each give a solid chunk of XP — but only when the horse actually needs it, so you can\'t just spam these back to back.', trackable:false },
+  { id:1122, cat:'horses', sub:'bonding', title:'Good: leading by the reins', body:'Walking the horse by hand is slow in real time but completely passive and safe — no risk of it bolting or getting hurt. A good option to do while just wandering, though it\'ll take close to an hour of real walking to reach max bond this way alone.', trackable:false },
+  { id:1123, cat:'horses', sub:'bonding', title:'Okay: normal riding', body:'Just riding the horse gives passive XP over time — more when trotting unburdened, less when galloping or carrying a heavy load. Fine as a baseline, but slow on its own without combining it with patting.', trackable:false },
+  { id:1124, cat:'horses', sub:'bonding', title:'Weakest as a repeatable method: hitching in new areas', body:'Hitching or unloading the horse somewhere new gives a decent XP chunk, but it\'s capped by an in-game-hour cooldown — spamming it back to back only gives 1 XP once the cooldown kicks in, so it\'s not a grinding method.', trackable:false },
+  { id:1125, cat:'horses', sub:'bonding', title:'Instant boosts when you first get a horse', body:'Taming a wild horse gives an instant +25 XP. Equipping a saddle on a fresh horse instantly caps it at 50 XP, which is enough to hit Bond Level 1 immediately — neither is repeatable, but they\'re a nice head start.', trackable:false },
+  { id:1126, cat:'horses', sub:'bonding', title:'Worth having: the Shark Tooth Trinket', body:'A permanent +10% to all horse bonding XP gained, found in a shipwreck lockbox on the shore east of Annesburg. Doesn\'t change the ranking above, but stacks with everything on it.', trackable:false },
+  { id:5, cat:'treasure', title:'Zoom in before you ride out', body:'Treasure maps show real landmarks, but they\'re easy to misread at a glance — zoom the map and compare it to the terrain before committing to a direction.', trackable:false },
+  { id:6, cat:'treasure', title:'Some maps come in multiple pieces', body:'A few treasure chains only reveal the dig site once every fragment of that particular map has been found and combined.', trackable:true },
+  { id:7, cat:'treasure', title:'Listen as much as you look', body:'Dig sites give a faint audio and visual cue once you\'re standing close — a shimmer in the ground plus a soft chime.', trackable:false },
+  { id:8, cat:'horses', title:'Bond level changes behavior, not just looks', body:'A higher-bonded horse stays calmer under gunfire, recovers stamina quicker, and follows whistle commands more reliably — it\'s worth investing time even on a horse you didn\'t buy.', trackable:false },
+  { id:9, cat:'horses', title:'Breed sets the ceiling, not the coat', body:'Two horses can look totally different and share the same core stats — pick by breed category (stamina/speed/health archetype) rather than color alone.', trackable:false },
+  { id:1200, cat:'gear', sub:'pistols', title:'⚠ The Legendary Gunslingers chain has 4 missable weapons', body:'The Stranger mission chain "The Noblest of Men, and a Woman" (found via Landon Ricketts) has Arthur duel four gunslingers — Flaco Hernandez, Billy Midnight, Emmet Granger, and Jim Calloway. Each one drops a unique weapon on their body after the duel: Flaco\'s Revolver, Midnight\'s Pistol, Granger\'s Revolver, and Calloway\'s Revolver. You MUST pick each one up right after winning the duel — if you walk away without grabbing it, it\'s gone forever with no way to get it back.', trackable:false },
+  { id:1201, cat:'gear', sub:'pistols', title:'⚠ Otis Miller\'s Revolver — Epilogue only', body:'A gold-and-ivory Schofield Revolver hidden in a chest inside a cave at Rattlesnake Hollow, Cholla Springs — New Austin, so like everything else there it\'s only reachable in the Epilogue (see Can\'t Do as Arthur). It\'s also the reward for the Torn/Mended Treasure Map hunt.', trackable:false },
+  { id:1202, cat:'gear', sub:'pistols', title:'⚠ Micah\'s Revolver — after the credits roll', body:'Found on Micah\'s body on Mount Hagen, right where "American Venom" ends — but only accessible after Epilogue Part 2 is complete. If you don\'t grab it right away, it\'s still there waiting on the mountain any time after.', trackable:false },
+  { id:1203, cat:'gear', sub:'rifles', title:'⚠ Rare Rolling Block Rifle — grab it mid-mission', body:'Dropped by the sniper pinning you down during the story mission "Magicians for Sport." You have to pick it up during the mission itself — miss the window and it\'s gone.', trackable:false },
+  { id:1204, cat:'gear', sub:'shotguns', title:'⚠ Rare Shotgun — from the Hermit', body:'Obtained from the character known as the Hermit, found in a hut north of Annesburg. If he kills you first, or you don\'t loot him, the weapon is lost for good.', trackable:false },
+  { id:1205, cat:'gear', sub:'pistols', title:'Schofield Revolver — a Valentine side business', body:'Found by uncovering the doctor\'s side business behind a locked door in Valentine — knock or peek through the window to trigger it, then force the door. A locked box inside holds the revolver. Unlike the gunslinger weapons, this one is a normal (if rare) find, not a missable moment.', trackable:false },
+  { id:1206, cat:'gear', sub:'pistols', title:'Pistol & Revolver ammo tiers', body:'Regular is the cheap baseline. Split Point is the best everyday upgrade — cheap, a small XP bonus per kill, and it drains Dead Eye more slowly than other types. High Velocity hits harder and can pierce through multiple lined-up targets. Express is the strongest non-explosive option, at the highest price. Explosive rounds are reserved for Legendary Animals (their pelts can\'t be damaged by anything) or cracking safes — never use them on a normal animal, it always ruins the pelt.', trackable:false },
+  { id:1220, cat:'gear', sub:'rifles', title:'Rifle & Repeater ammo tiers', body:'Same five tiers as handguns — Regular, Split Point, High Velocity, Express, Explosive — but rifles and repeaters track their own separate ammo pool from pistols and revolvers, so stocking up on one doesn\'t cover the other. Split Point is still the best everyday pick; save Explosive for Legendary Animals only.', trackable:false },
+  { id:1221, cat:'gear', sub:'rifles', title:'The Varmint Rifle only takes Regular ammo', body:'Unlike the full-size rifles, the Varmint Rifle doesn\'t have Split Point, High Velocity, or Express variants — it\'s built specifically for small game and uses standard ammo only. Don\'t go looking for an upgraded version of it.', trackable:false },
+  { id:1222, cat:'gear', sub:'bows', title:'Regular Arrow', body:'The baseline arrow — fine for most animals and light combat use, no special effect.', trackable:false },
+  { id:1223, cat:'gear', sub:'bows', title:'Small Game Arrow', body:'Built for tiny and small animals (birds, rabbits, squirrels) — won\'t damage the pelt the way a heavier arrow would. The go-to for anything delicate.', trackable:false },
+  { id:1224, cat:'gear', sub:'bows', title:'Improved Arrow', body:'Hits noticeably harder than a Regular Arrow — better for larger game or when you need more stopping power in a fight.', trackable:false },
+  { id:1225, cat:'gear', sub:'bows', title:'Fire Arrow', body:'Sets the target (or the surroundings) alight. More of a combat and utility tool than a hunting one.', trackable:false },
+  { id:1226, cat:'gear', sub:'bows', title:'Dynamite Arrow', body:'Explosive area damage — the bow\'s answer to a stick of dynamite. Overkill for anything you want to keep the pelt of.', trackable:false },
+  { id:1227, cat:'gear', sub:'bows', title:'Poison Arrow', body:'Doesn\'t kill outright — the target staggers off and dies from the poison shortly after. Genuinely useful for a quiet takedown of a predator like a Cougar without alerting anything nearby, since there\'s no gunshot to give you away.', trackable:false },
+  { id:1228, cat:'gear', sub:'shotguns', title:'Shotgun shell types', body:'Regular shells are the everyday baseline. Slug rounds fire a single heavy projectile instead of a spread — better accuracy at range than normal shot, closer to a rifle in behavior. Incendiary shells set the target alight. Explosive shells are the most powerful shotgun ammo in the game, but need the crafting pamphlet first.', trackable:false },
+  { id:1211, cat:'gear', sub:'shotguns', title:'⚠ Explosive shotgun ammo pamphlet — New Austin only', body:'The crafting recipe (pamphlet) for explosive shotgun ammo is found in New Austin, meaning it\'s effectively a post-story unlock — another item for the Can\'t Do as Arthur list.', trackable:false },
+  { id:1212, cat:'gear', sub:'general', title:'Gunsmiths handle cleaning for you', body:'Only a clean weapon can be customized, but you don\'t need to do this yourself with Gun Oil — any Gunsmith will clean a weapon cheaply as part of a visit. Worth letting them do it rather than carrying Gun Oil everywhere.', trackable:false },
+  { id:1213, cat:'gear', sub:'general', title:'Customize weapons even when they\'re on your horse', body:'You don\'t need to be carrying a weapon to customize it at a Gunsmith — anything stored on your horse is available in the customization menu too.', trackable:false },
+  { id:1214, cat:'gear', sub:'general', title:'Components vs. Styles — know the difference', body:'Gunsmith customization splits into two categories: Components change actual performance (accuracy, damage, reload speed, and so on) and are worth prioritizing early when cash is tight. Styles are purely cosmetic (metal finishes, engravings, wood grain) — fun, but don\'t affect how the gun performs.', trackable:false },
+  { id:1215, cat:'gear', sub:'general', title:'The Legend of the East Satchel is worth the detour', body:'Pearson can craft satchel upgrades at camp, working toward the "Legend of the East Satchel" — the best in the game, giving close to 99 carrying slots for most item types. It\'s unlocked through a chain of donating perfect pelts to Pearson rather than bought outright, so it pairs naturally with hunting for the Compendium.', trackable:false },
+  { id:10, cat:'gear', sub:'general', title:'Clean your guns after mud or water', body:'A dirty weapon is noticeably less reliable — wipe it down regularly, especially after swimming, storms, or dusty rides, to avoid misfires.', trackable:false },
+  { id:11, cat:'gear', sub:'general', title:'Ammo type changes what you can do', body:'Different tiers of ammo aren\'t just damage boosts — some hunts and encounters expect a specific type to avoid ruining the kill. Check the Pistols, Rifles, Bows, and Shotguns tabs above for the full breakdown by weapon type.', trackable:false },
+  { id:12, cat:'money', sub:'medium', title:'Bounty hunting is steady early cash', body:'Low risk, repeatable, and it restocks — wanted posters at any sheriff\'s office give typical rewards in this range, with no need for story progress.', trackable:false },
+  { id:13, cat:'money', sub:'medium', title:'Fences buy what stores won\'t', body:'Stolen or unusual valuables often can\'t be sold at a general store — you\'ll need a fence, and they\'re not in every town. Most individual stolen items (jewelry, watches, small stolen goods) land in this range per sale.', trackable:false },
+  { id:1300, cat:'money', sub:'small', title:'Loot every body', body:'A few cents to a couple of dollars per corpse, but it costs nothing and adds up fast across a shootout or a bandit camp. Always worth the ten seconds.', trackable:false },
+  { id:1301, cat:'money', sub:'small', title:'Small game pelts and carcasses', body:'Rabbits, squirrels, and small birds sell for pocket change each — not worth a dedicated trip, but free money if you\'re already hunting them for the Compendium.', trackable:false },
+  { id:1302, cat:'money', sub:'small', title:'Loot cabins and houses along the road', body:'Drawers, cupboards, and nightstands in random buildings usually hold a few dollars at most, but it costs nothing to check on the way somewhere else.', trackable:false },
+  { id:1310, cat:'money', sub:'medium', title:'A perfect large-game carcass', body:'A clean, pristine deer or elk kill sold whole to a butcher — carcass, pelt, and antlers together — lands solidly in this range. Study the animal first to confirm it\'s 3-star before committing the shot.', trackable:false },
+  { id:1311, cat:'money', sub:'medium', title:'Rob a store\'s cash register', body:'Quick and repeatable, one register at a time — raises your bounty a little each time, so don\'t do it in the same town back to back.', trackable:false },
+  { id:1312, cat:'money', sub:'medium', title:'Sell stolen wagons to the fence', body:'Seamus, the wagon fence at Emerald Ranch, buys stolen wagons specifically — a solid, repeatable amount per wagon delivered.', trackable:false },
+  { id:1313, cat:'money', sub:'medium', title:'Rob a stagecoach', body:'Passengers plus whatever cargo is aboard — a decent one-off haul, though it\'ll add to your bounty in that state.', trackable:false },
+  { id:1314, cat:'money', sub:'medium', title:'Crack a single train safe', body:'The first couple of cars on most trains usually hold $25–75 in a safe — dynamite it open quickly rather than risking a shootout with the whole train alerted.', trackable:false },
+  { id:1320, cat:'money', sub:'big', title:'Gold Bars — the best payout in the game', body:'Each Gold Bar sells to a Fence for roughly $500 — by far the single best per-item payout available. Several caches exist early and don\'t require a treasure map at all: the burned ruins of Limpany (south of the first camp at Horseshoe Overlook), a wrecked train, and a cave with the Strange Statues. Also the reward for the Jack Hall Gang, Poisonous Trail, and High Stakes treasure hunts (see Treasure Maps).', trackable:false },
+  { id:1321, cat:'money', sub:'big', title:'A full train robbery', body:'Rather than one safe, working through multiple cars — passengers, baggage car, and every safe on board — before escaping can add up to several hundred dollars in one hit. Higher risk, higher reward.', trackable:false },
+  { id:1322, cat:'money', sub:'big', title:'Bandit camp strongboxes', body:'Spot a bandit camp by its campfire smoke, clear it out, and loot both the dead bandits and the strongbox that\'s almost always somewhere in camp — a solid one-off haul for relatively low risk since bandits aren\'t law.', trackable:false },
+  { id:1323, cat:'money', sub:'big', title:'Bank robberies', body:'Tied to specific story and stranger content rather than something you can do anytime, but when they come up, they\'re some of the biggest single payouts in the game.', trackable:false },
+  { id:14, cat:'secrets', sub:'ghosts', title:'The ghost of Agnes Dowd', body:'Western Bluewater Marsh, Lemoyne, roughly between 9 PM and 3 AM (most reports center on 2 AM). You\'ll hear hysterical wailing before you see her — a glowing figure in a white gown, reliving her final moments. Get close and she vanishes. She can be encountered multiple times, and her story gets progressively darker each time as more of how she died is revealed. Might take a few in-game days of visiting before she shows up.', trackable:true },
+  { id:15, cat:'secrets', sub:'strange', title:'Random encounters can reference other stories', body:'A handful of wandering NPCs and hidden scenes are nods to other Rockstar games — easy to miss if you\'re fast-traveling everywhere.', trackable:false },
+  { id:1400, cat:'secrets', sub:'ghosts', title:'The ghost train', body:'Tracks northwest of Scarlett Meadows, around 3 AM. A phantom train passes through briefly and then vanishes — it doesn\'t stick around long, so have your camera or attention ready. Also known to spook horses if you get too close.', trackable:true },
+  { id:1401, cat:'secrets', sub:'ghosts', title:'The voices of Bolger Glade', body:'No visible ghost here — just haunting voices and echoes of an old battle carrying across the fields at Bolger Glade, Lemoyne. Subtle, but unsettling once you notice it.', trackable:true },
+  { id:1402, cat:'secrets', sub:'cryptids', title:'Meeting Bigfoot', body:'You need to have studied at least 30 different animal species first. Then head to Calumet Ravine in Ambarino — look for birds near the water on the western side, and follow them as they fly off toward a remote cave to the east. A voice calls out from inside. You never actually see him, but you can have a full conversation, and return later to continue it.', trackable:true },
+  { id:1403, cat:'secrets', sub:'cryptids', title:'Bigfoot\'s bones', body:'While climbing Mount Shann for the UFO rock circle (see UFOs & Aliens), watch for a perched eagle at the summit — once it flies off, take the path to the left and check behind the foliage for a cave holding a huge, sasquatch-shaped skeleton.', trackable:true },
+  { id:1404, cat:'secrets', sub:'cryptids', title:'The Manbearpig', body:'A shack near Van Horn Trading Post holds a creature chained to the wall that looks like a disturbing splice of man, bear, and pig — a direct nod to the South Park character of the same name.', trackable:true },
+  { id:1405, cat:'secrets', sub:'cryptids', title:'Giant mammoth remains', body:'Somewhere in the snowy northern regions. Same trigger as Bigfoot: study 30 different animal species, then follow a flock of birds — this time all the way to a set of massive mammoth bones.', trackable:true },
+  { id:1406, cat:'secrets', sub:'ufos', title:'First UFO sighting', body:'A cabin north of Emerald Ranch — visit around 2 AM to witness it.', trackable:true },
+  { id:1407, cat:'secrets', sub:'ufos', title:'Second UFO — Mount Shann', body:'After the first sighting, climb to the rock circle at the summit of Mount Shann and visit at night for a second, stranger encounter — some say this one has a cult feel to it.', trackable:true },
+  { id:1408, cat:'secrets', sub:'ufos', title:'Alien symbols and cave drawings', body:'Scattered strange drawings across the map depicting aliens, UFOs, and unfamiliar symbols — community theory (unconfirmed) is that they connect to a hidden map or clue trail tied to the Mount Shann encounter.', trackable:true },
+  { id:1409, cat:'secrets', sub:'strange', title:'The meteor house', body:'Northeast of Roanoke Valley and Annesburg — an isolated home with smoke rising from a hole punched clean through its roof. Inside, several corpses surround a small crater; you can pick up the meteorite that caused it. A second, deeper meteor impact site exists further into the forest nearby.', trackable:true },
+  { id:1410, cat:'secrets', sub:'strange', title:'⚠ The crying woman in the swamp', body:'A random night encounter in the Lemoyne swamps — a woman\'s screaming or crying lures you in, but it\'s a trap. Approach with caution rather than rushing to help.', trackable:true },
+  { id:1411, cat:'secrets', sub:'strange', title:'The vampire of Saint Denis', body:'One of the more involved easter eggs — a trail of graffiti clues scattered around Saint Denis (5 in total) eventually leads to a back-alley encounter with a vampire feeding on a corpse.', trackable:true },
+  { id:1412, cat:'secrets', sub:'strange', title:'⚠ A dark random encounter', body:'A rare, deliberately unsettling night encounter exists where Arthur can interrupt a hate-group initiation ceremony. Content warning for anyone sensitive to that kind of material — it\'s played with the game\'s usual dark, critical tone rather than for shock value, but worth knowing before stumbling into it.', trackable:false },
+  { id:1413, cat:'secrets', sub:'strange', title:'The cave "devil"', body:'A hidden cave in Big Valley, West Elizabeth, contains a mysterious figure that delivers cryptic dialogue. Completely optional, not tied to any quest — just there to be found.', trackable:true },
+  { id:1414, cat:'secrets', sub:'strange', title:'The Strange Man in the mirror', body:'A nod to the original Red Dead Redemption\'s mysterious "Strange Man" character. In the same wooden cabin as the first UFO sighting, look at the mirror from the right angle and you\'ll briefly see him standing behind you — turn around, and there\'s no one there.', trackable:true },
+  { id:1415, cat:'secrets', sub:'strange', title:'A crashed airship', body:'A wrecked airship tucked away in the swamps — a reference back to an event from the original Red Dead Redemption.', trackable:true },
+];
+
+let activeCat = 'dashboard';
+let activeSub = 'all';
+let favOnly = false;
+let query = '';
+let favorites = new Set();
+let tracked = new Set();
+let foundSet = new Set();
+let horseName = '';
+let storageReady = false;
+
+async function loadProgress(){
+  try {
+    const result = await window.storage.get('rdr2-progress', false);
+    if (result && result.value) {
+      const parsed = JSON.parse(result.value);
+      favorites = new Set(parsed.favorites || []);
+      tracked = new Set(parsed.tracked || []);
+      foundSet = new Set(parsed.found || []);
+      horseName = parsed.horseName || '';
+    }
+  } catch (e) {
+    // no saved progress yet, or storage unavailable — start fresh
+  }
+  storageReady = true;
+  const nameInput = document.getElementById('horse-name-input');
+  if (nameInput) nameInput.value = horseName;
+  renderEntries();
+}
+
+async function saveProgress(){
+  try {
+    await window.storage.set('rdr2-progress', JSON.stringify({
+      favorites: Array.from(favorites),
+      tracked: Array.from(tracked),
+      found: Array.from(foundSet),
+      horseName: horseName
+    }), false);
+  } catch (e) {
+    console.error('Could not save progress', e);
+  }
+}
+
+function countFor(catId){ return TIPS.filter(t => t.cat === catId).length; }
+
+function renderTabs(){
+  const dashBtn = `
+    <button class="tab-btn ${activeCat==='dashboard'?'active':''}" data-cat="dashboard">
+      <span class="icon">🏠</span> Overview
+    </button>`;
+  const allBtn = (active) => `
+    <button class="tab-btn ${activeCat==='all'?'active':''}" data-cat="all">
+      <span class="icon">📖</span> All <span class="count">${TIPS.length}</span>
+    </button>`;
+  const catBtns = CATEGORIES.map(c => `
+    <button class="tab-btn ${activeCat===c.id?'active':''}" data-cat="${c.id}">
+      <span class="icon">${c.icon}</span> ${c.label} <span class="count">${countFor(c.id)}</span>
+    </button>`).join('');
+  const html = dashBtn + allBtn() + catBtns;
+  document.getElementById('tabs-desktop').innerHTML = html;
+  document.getElementById('tabs-mobile').innerHTML = html;
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCat = btn.dataset.cat;
+      activeSub = 'all';
+      renderTabs();
+      renderSubTabs();
+      renderEntries();
+    });
+  });
+}
+
+function statFor(cat, sub){
+  const scoped = sub
+    ? TIPS.filter(t => t.cat === cat && t.sub === sub && t.trackable)
+    : TIPS.filter(t => t.cat === cat && t.trackable);
+  const done = scoped.filter(t => tracked.has(t.id)).length;
+  return { done, total: scoped.length };
+}
+
+function renderDashboard(){
+  const container = document.getElementById('entries');
+  const compendium = statFor('compendium');
+  const challenges = statFor('challenges');
+  const goldMedals = statFor('gold-medals');
+  const treasure = statFor('treasure');
+  const clothing = statFor('clothing');
+  const horseBreeds = TIPS.filter(t => t.cat === 'horses' && t.sub === 'breeds' && t.trackable);
+  const horsesFound = horseBreeds.filter(t => foundSet.has(t.id)).length;
+  const horsesAcquired = horseBreeds.filter(t => tracked.has(t.id)).length;
+  const favCount = favorites.size;
+
+  const cards = [
+    { label: 'Compendium', icon: '📚', done: compendium.done, total: compendium.total, cat: 'compendium', sub: 'all' },
+    { label: 'Challenges', icon: '🏆', done: challenges.done, total: challenges.total, cat: 'challenges', sub: 'all' },
+    { label: '100% Mission Tips', icon: '🏅', done: goldMedals.done, total: goldMedals.total, cat: 'gold-medals', sub: 'all' },
+    { label: 'Treasure Maps', icon: '🗺️', done: treasure.done, total: treasure.total, cat: 'treasure', sub: 'all' },
+    { label: 'Clothing', icon: '👔', done: clothing.done, total: clothing.total, cat: 'clothing', sub: 'all' },
+  ];
+
+  const cardHtml = cards.map(c => {
+    const pct = c.total ? Math.round((c.done / c.total) * 100) : 0;
+    return `
+    <div class="dash-card" data-nav-cat="${c.cat}" data-nav-sub="${c.sub}">
+      <div class="dash-card-top">
+        <span class="dash-icon">${c.icon}</span>
+        <span class="dash-label">${c.label}</span>
+      </div>
+      <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="dash-count">${c.done} of ${c.total} — ${pct}%</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="dash-grid">${cardHtml}</div>
+    <div class="dash-card" data-nav-cat="horses" data-nav-sub="breeds" style="margin-top:14px;">
+      <div class="dash-card-top">
+        <span class="dash-icon">🐴</span>
+        <span class="dash-label">Wild Horse Breeds</span>
+      </div>
+      <div class="dash-count">${horsesFound} found, ${horsesAcquired} acquired (of ${horseBreeds.length})</div>
+    </div>
+    <div class="dash-card" data-nav-cat="all" data-nav-sub="all" data-nav-fav="true" style="margin-top:14px;">
+      <div class="dash-card-top">
+        <span class="dash-icon">★</span>
+        <span class="dash-label">Favorites Saved</span>
+      </div>
+      <div class="dash-count">${favCount} ${favCount === 1 ? 'entry' : 'entries'} starred across the whole journal</div>
+    </div>
+
+    <div class="reset-zone">
+      <button id="reset-progress-btn" class="reset-btn">Reset All Progress</button>
+      <span class="reset-hint">Clears every checkmark and favorite — can't be undone.</span>
+    </div>
+  `;
+
+  let resetArmed = false;
+  let resetTimer = null;
+  const resetBtn = document.getElementById('reset-progress-btn');
+  resetBtn.addEventListener('click', () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      resetBtn.textContent = 'Are you sure? Click to confirm';
+      resetBtn.classList.add('armed');
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => {
+        resetArmed = false;
+        resetBtn.textContent = 'Reset All Progress';
+        resetBtn.classList.remove('armed');
+      }, 4000);
+    } else {
+      clearTimeout(resetTimer);
+      favorites = new Set();
+      tracked = new Set();
+      foundSet = new Set();
+      saveProgress();
+      renderTabs();
+      renderDashboard();
+    }
+  });
+
+  container.querySelectorAll('.dash-card[data-nav-cat]').forEach(card => {
+    card.addEventListener('click', () => {
+      activeCat = card.dataset.navCat;
+      activeSub = card.dataset.navSub || 'all';
+      favOnly = card.dataset.navFav === 'true';
+      renderTabs();
+      renderSubTabs();
+      renderEntries();
+      document.querySelectorAll('.filter-pill[data-fav]').forEach(p => {
+        p.classList.toggle('active', p.dataset.fav === (favOnly ? 'favorites' : 'all'));
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function renderSubTabs(){
+  const nameBar = document.getElementById('horse-name-bar');
+  if (nameBar) nameBar.style.display = (activeCat === 'horses') ? 'flex' : 'none';
+  const subRow = document.getElementById('sub-row');
+  const subs = SUBCATS[activeCat];
+  if (!subs) {
+    subRow.style.display = 'none';
+    subRow.innerHTML = '';
+    return;
+  }
+  subRow.style.display = 'flex';
+  const allCount = TIPS.filter(t => t.cat === activeCat).length;
+  let pills = [`<span class="filter-pill ${activeSub==='all'?'active':''}" data-sub="all">All (${allCount})</span>`];
+  if (activeCat === 'clothing') {
+    const legCount = TIPS.filter(t => t.cat === 'clothing' && LEGENDARY_CLOTHING_SUBS.includes(t.sub)).length;
+    pills.push(`<span class="filter-pill ${activeSub==='legendary-group'?'active':''}" data-sub="legendary-group">🏆 Legendary Clothing (${legCount})</span>`);
+  }
+  pills = pills.concat(subs.map(s => {
+      const count = TIPS.filter(t => t.cat === activeCat && t.sub === s.id).length;
+      return `<span class="filter-pill ${activeSub===s.id?'active':''}" data-sub="${s.id}">${s.icon} ${s.label} (${count})</span>`;
+    }));
+  subRow.innerHTML = pills.join('');
+  subRow.querySelectorAll('[data-sub]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      activeSub = pill.dataset.sub;
+      renderSubTabs();
+      renderEntries();
+    });
+  });
+}
+
+function renderEntries(){
+  const container = document.getElementById('entries');
+  container.classList.toggle('dashboard-mode', activeCat === 'dashboard');
+  const searchRowEls = document.querySelectorAll('.search-row');
+  if (activeCat === 'dashboard') {
+    searchRowEls.forEach(el => el.style.display = 'none');
+    const nameBar = document.getElementById('horse-name-bar');
+    if (nameBar) nameBar.style.display = 'none';
+    renderDashboard();
+    return;
+  } else {
+    if (searchRowEls[0]) searchRowEls[0].style.display = 'flex';
+  }
+  let list = TIPS.filter(t => activeCat === 'all' || t.cat === activeCat);
+  if (activeCat === 'clothing' && activeSub === 'legendary-group') {
+    list = list.filter(t => LEGENDARY_CLOTHING_SUBS.includes(t.sub));
+  } else if (SUBCATS[activeCat] && activeSub !== 'all') {
+    list = list.filter(t => t.sub === activeSub);
+  }
+  if (favOnly) list = list.filter(t => favorites.has(t.id));
+  if (query.trim()){
+    const q = query.toLowerCase();
+    list = list.filter(t => t.title.toLowerCase().includes(q) || t.body.toLowerCase().includes(q));
+  }
+
+  const progressEl = document.getElementById('progress-tally');
+  if (activeCat === 'horses' && activeSub === 'breeds') {
+    const scoped = TIPS.filter(t => t.cat === 'horses' && t.sub === 'breeds' && t.trackable);
+    const foundCount = scoped.filter(t => foundSet.has(t.id)).length;
+    const acquiredCount = scoped.filter(t => tracked.has(t.id)).length;
+    progressEl.textContent = `${foundCount} found, ${acquiredCount} acquired (of ${scoped.length})`;
+    progressEl.style.display = 'inline';
+  } else if (activeCat === 'clothing') {
+    const scoped = activeSub === 'all'
+      ? TIPS.filter(t => t.cat === 'clothing' && t.trackable)
+      : activeSub === 'legendary-group'
+        ? TIPS.filter(t => t.cat === 'clothing' && t.trackable && LEGENDARY_CLOTHING_SUBS.includes(t.sub))
+        : TIPS.filter(t => t.cat === 'clothing' && t.sub === activeSub && t.trackable);
+    const gotCount = scoped.filter(t => tracked.has(t.id)).length;
+    progressEl.textContent = `${gotCount} of ${scoped.length} crafted`;
+    progressEl.style.display = 'inline';
+  } else if (activeCat === 'compendium' || activeCat === 'gold-medals' || activeCat === 'treasure') {
+    const scoped = activeSub === 'all'
+      ? TIPS.filter(t => t.cat === activeCat && t.trackable)
+      : TIPS.filter(t => t.cat === activeCat && t.sub === activeSub && t.trackable);
+    const gotCount = scoped.filter(t => tracked.has(t.id)).length;
+    const label = activeCat === 'compendium' ? 'found' : activeCat === 'gold-medals' ? 'gold' : 'found';
+    progressEl.textContent = `${gotCount} of ${scoped.length} ${label}`;
+    progressEl.style.display = 'inline';
+  } else {
+    progressEl.style.display = 'none';
+  }
+
+  if (list.length === 0){
+    container.innerHTML = `<div class="empty-state">Nothing here yet, partner. Try another tab or clear the search.</div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(t => {
+    const cat = CATEGORIES.find(c => c.id === t.cat);
+    const sub = t.sub && SUBCATS[t.cat] ? SUBCATS[t.cat].find(s => s.id === t.sub) : null;
+    const footLabel = sub ? `${sub.icon} ${sub.label}` : `${cat.icon} ${cat.label}`;
+    const isFav = favorites.has(t.id);
+    const isTracked = tracked.has(t.id);
+    const isFound = foundSet.has(t.id);
+    const isCollectible = t.cat === 'compendium' || t.cat === 'treasure';
+    const isGoldMedal = t.cat === 'gold-medals';
+    const trackLabel = isCollectible ? (isTracked ? 'Got it' : 'Need it')
+      : isGoldMedal ? (isTracked ? 'Got gold' : 'Mark gold')
+      : (isTracked ? 'Done' : 'Mark done');
+    const trackButtons = t.dualTrack
+      ? `<button class="track-btn ${isFound ? 'is-on' : ''}" data-found="${t.id}"><span class="box"></span> ${isFound ? 'Found' : 'Mark found'}</button>
+         <button class="track-btn ${isTracked ? 'is-on' : ''}" data-track="${t.id}"><span class="box"></span> ${isTracked ? 'Acquired' : 'Mark acquired'}</button>`
+      : (t.trackable ? `<button class="track-btn" data-track="${t.id}"><span class="box"></span> ${trackLabel}</button>` : '');
+    let displayBody = t.body;
+    let displayTitle = t.title;
+    if (t.cat === 'horses' && t.sub === 'bonding' && horseName.trim()) {
+      const name = horseName.trim();
+      displayBody = displayBody.replace(/\bthe horse\b/gi, name).replace(/\byour horse\b/gi, name);
+      displayTitle = displayTitle.replace(/\bthe horse\b/gi, name).replace(/\byour horse\b/gi, name);
+    }
+    const animalLinks = (t.linkAnimals || []).map(name =>
+      `<button class="animal-link-btn" data-link-animal="${name}">🔗 ${name}</button>`
+    ).join('');
+    return `
+    <article class="entry ${isTracked ? 'tracked' : ''}" data-id="${t.id}">
+      <div class="entry-top">
+        <h3>${displayTitle}</h3>
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${t.id}" aria-label="Favorite">★</button>
+      </div>
+      <p>${displayBody}</p>
+      ${animalLinks ? `<div class="animal-links">${animalLinks}</div>` : ''}
+      <div class="entry-foot">
+        <span>${footLabel}</span>
+        <span style="display:flex; gap:6px;">${trackButtons}</span>
+      </div>
+    </article>`;
+  }).join('');
+
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderEntries();
+      saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderEntries();
+      saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-found]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.found);
+      foundSet.has(id) ? foundSet.delete(id) : foundSet.add(id);
+      renderEntries();
+      saveProgress();
+    });
+  });
+
+  container.querySelectorAll('[data-link-animal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const animalName = btn.dataset.linkAnimal;
+      const targetId = LEGENDARY_ANIMAL_IDS[animalName];
+      if (!targetId) return;
+      activeCat = 'compendium';
+      activeSub = 'legendary-animals';
+      favOnly = false;
+      query = '';
+      const searchInput = document.getElementById('search');
+      if (searchInput) searchInput.value = '';
+      renderTabs();
+      renderSubTabs();
+      renderEntries();
+      document.querySelectorAll('.filter-pill[data-fav]').forEach(p => {
+        p.classList.toggle('active', p.dataset.fav === 'all');
+      });
+      const targetCard = document.querySelector(`.entry[data-id="${targetId}"]`);
+      if (targetCard) {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetCard.classList.add('flash-highlight');
+        setTimeout(() => targetCard.classList.remove('flash-highlight'), 2200);
+      }
+    });
+  });
+}
+
+document.getElementById('search').addEventListener('input', e => {
+  query = e.target.value;
+  renderEntries();
+});
+
+let horseNameSaveTimer = null;
+document.getElementById('horse-name-input').addEventListener('input', e => {
+  horseName = e.target.value;
+  renderEntries();
+  clearTimeout(horseNameSaveTimer);
+  horseNameSaveTimer = setTimeout(saveProgress, 500);
+});
+
+document.querySelectorAll('.filter-pill[data-fav]').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill[data-fav]').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    favOnly = pill.dataset.fav === 'favorites';
+    renderEntries();
+  });
+});
+
+renderTabs();
+renderSubTabs();
+loadProgress();
+</script>
+
+</body>
+</html>

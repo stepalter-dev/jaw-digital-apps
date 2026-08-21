@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Champion's Codex — Oblivion Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral+SC:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* canvas — aged umber-leather journal cover, warm Imperial dusk instead of Skyrim's cold slate */
+    --void: #150F0A;
+    --stone-1: #1C130D;
+    --stone-2: #241A11;
+    --stone-3: #2D2116;
+    --stone-4: #37291A;
+    --stone-5: #453420;
+    /* card/panel surface + aged bronze borders + inner highlight */
+    --panel: rgba(37, 27, 18, 0.78);
+    --panel-hi: rgba(255, 224, 170, 0.06);
+    --iron: #4E3A22;
+    --iron-light: #A3803F;
+    /* verdigris — patina on Imperial bronze; the secondary interactive accent */
+    --frost: #6FA394;
+    --frost-dim: #466E62;
+    /* Imperial gold — key highlights */
+    --gold: #C9A227;
+    --gold-bright: #E8C766;
+    --gold-dim: #8F7318;
+    /* text & headings — aged parchment cream; meta — faded ink-brown */
+    --heading: #F0E4C8;
+    --ink: #E8DBC0;
+    --ink-soft: #B0A181;
+    --ink-dim: #786B4E;
+    --blood: #A23B2E;
+    /* "done"/success accent — laurel-green, the Imperial victory wreath */
+    --sage-ok: #8FA65C;
+    /* muted warm bronze — used for a middle rarity tier between gold (rare) and stone-grey (common) */
+    --moss: #B08B4F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(201,162,39,0.05), transparent 40%),
+      radial-gradient(ellipse at 12% 0%, rgba(111,163,148,0.05), transparent 50%),
+      radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.6) 100%);
+    font-family: 'Spectral', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .tome {
+    width: min(95vw, 1520px);
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(78,58,34,0.7);
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  /* ---------- SIDE NAV (desktop) ---------- */
+  .nav {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
+    padding: 28px 0 20px;
+    min-width: 210px;
+    flex-shrink: 0;
+    position: relative;
+    border-right: 1px solid var(--iron);
+  }
+  .nav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
+    pointer-events: none;
+  }
+  .nav-brand {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 15px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 0.1em;
+    padding: 0 16px 20px;
+    border-bottom: 1px solid var(--iron);
+    margin-bottom: 10px;
+  }
+
+  .nav-btn {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 18px;
+    margin: 1px 8px;
+    color: var(--ink-soft);
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 0;
+    transition: background .15s ease, color .15s ease;
+    border-left: 2px solid transparent;
+  }
+  .nav-btn .icon { font-size: 15px; filter: saturate(0.7); flex-shrink: 0; width: 18px; text-align: center; }
+  .nav-btn:hover { background: rgba(111,163,148,0.06); color: var(--heading); }
+  .nav-btn.active {
+    background: rgba(201,162,39,0.09);
+    color: var(--gold-bright);
+    border-left-color: var(--gold);
+    text-shadow: 0 0 10px rgba(201,162,39,0.25);
+  }
+
+  .nav-mobile { display: none; }
+
+  /* ---------- PAGE ---------- */
+  .page {
+    flex: 1;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(201,162,39,0.03), transparent 45%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.45), transparent 55%),
+      linear-gradient(165deg, var(--stone-3), var(--stone-2) 65%, var(--stone-1));
+    background-color: var(--stone-2);
+    padding: 34px clamp(24px, 3.4vw, 54px) 50px;
+    position: relative;
+    min-height: 680px;
+    min-width: 0;
+  }
+  .page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+  }
+
+  header.title-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(20px, 3vw, 30px);
+    color: var(--heading);
+    margin: 0;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+  .subtitle {
+    font-family: 'Spectral SC', serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+    margin-top: 5px;
+  }
+  .seal {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: var(--gold-dim);
+    background: rgba(0,0,0,0.3);
+    border: 2px solid var(--gold-dim);
+    border-radius: 50%;
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.15;
+    letter-spacing: 0.04em;
+    transform: rotate(-6deg);
+    opacity: 0.9;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .rune-divider {
+    position: relative;
+    height: 15px;
+    margin: 6px 0 20px;
+  }
+  .rune-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--iron) 12%, var(--iron) 88%, transparent 100%);
+  }
+  .rune-divider::after {
+    content: "❖";
+    position: absolute;
+    left: 50%; top: 52%;
+    transform: translate(-50%,-50%);
+    color: var(--gold-dim);
+    font-size: 9px;
+    background: var(--stone-2);
+    padding: 0 10px;
+    line-height: 1;
+  }
+
+  /* search */
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .search-plate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(11,13,14,0.55);
+    color: var(--ink);
+    padding: 9px 14px;
+    border-radius: 0;
+    border: 1px solid var(--iron);
+    box-shadow: inset 0 1px 0 var(--panel-hi);
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-plate input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--ink);
+    font-family: 'Spectral', serif;
+    font-size: 13px;
+    width: 100%;
+    letter-spacing: 0.02em;
+  }
+  .search-plate input::placeholder { color: var(--ink-dim); }
+
+  .filter-pill {
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 7px 10px 6px;
+    border-radius: 0;
+    cursor: pointer;
+    user-select: none;
+    text-transform: uppercase;
+    transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-pill:hover { color: var(--heading); border-bottom-color: rgba(111,163,148,0.5); text-shadow: 0 0 10px rgba(111,163,148,0.3); }
+  .filter-pill:focus { outline: none; }
+  .filter-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(111,163,148,0.5); text-shadow: 0 0 10px rgba(111,163,148,0.3); }
+  .filter-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(201,162,39,0.25); }
+
+  /* sub nav (questlines / tabs) */
+  .sub-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+  }
+  .sub-pill {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 7px 12px 6px;
+    border-radius: 0;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sub-pill:hover { color: var(--heading); border-bottom-color: rgba(111,163,148,0.5); text-shadow: 0 0 10px rgba(111,163,148,0.3); }
+  .sub-pill:focus { outline: none; }
+  .sub-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(111,163,148,0.5); text-shadow: 0 0 10px rgba(111,163,148,0.3); }
+  .sub-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(201,162,39,0.25); }
+  .sub-pill .n { opacity:0.65; font-size:9px; margin-left:2px; }
+  .sub-pill .n::before { content: '[ '; }
+  .sub-pill .n::after { content: ' ]'; }
+
+  .branch-banner {
+    background: rgba(162,59,46,0.08);
+    border: 1px solid var(--blood);
+    border-radius: 0;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+  .branch-banner b { color: var(--blood); font-family:'Cinzel', serif; font-size: 11px; letter-spacing:0.06em; text-transform: uppercase; }
+
+  /* dashboard */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .dash-card {
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 0;
+    padding: 16px;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 var(--panel-hi);
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .dash-card:hover { transform: translateY(-2px); border-color: var(--frost-dim); box-shadow: 2px 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 var(--panel-hi), 0 0 12px rgba(111,163,148,0.12); }
+  .dash-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .dash-icon { font-size: 18px; }
+  .dash-label { font-family: 'Cinzel', serif; font-size: 12px; color: var(--heading); letter-spacing: 0.08em; text-transform: uppercase; }
+  .dash-bar-track { background: rgba(0,0,0,0.4); border: 1px solid var(--iron); border-radius: 0; height: 7px; overflow: hidden; margin-bottom: 8px; }
+  .dash-bar-fill { background: var(--gold); height: 100%; border-radius: 0; transition: width .3s ease; }
+  .dash-count { font-family: 'Spectral', serif; font-size: 11px; color: var(--ink-soft); }
+
+  .overview-hero {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    box-shadow: inset 0 1px 0 var(--panel-hi);
+    padding: 22px 26px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .completion-ring-wrap { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
+  .completion-ring { width: 104px; height: 104px; transform: rotate(-90deg); }
+  .completion-ring-track { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 9; }
+  .completion-ring-fill { fill: none; stroke: var(--gold); stroke-width: 9; stroke-linecap: butt; transition: stroke-dashoffset .6s ease; }
+  .completion-ring-pct {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 21px; font-weight: 600; color: var(--heading);
+  }
+  .overview-hero-info { flex: 1; min-width: 220px; }
+  .overview-hero-title { font-family: 'Cinzel', serif; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 4px; }
+  .overview-hero-count { font-family: 'Spectral', serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
+  .points-total-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'Spectral SC', serif; font-size: 12.5px; letter-spacing: 0.02em; color: var(--gold-bright);
+    background: rgba(201,162,39,0.1); border: 1px solid rgba(201,162,39,0.35);
+    padding: 6px 13px;
+  }
+
+  .io-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--frost);
+    border: 1px solid var(--frost-dim);
+    border-radius: 0;
+    padding: 8px 14px;
+    text-transform: uppercase;
+  }
+  .io-btn:hover { background: rgba(111,163,148,0.1); }
+  .io-status { font-family: 'Spectral', serif; font-size: 11.5px; opacity: 0.9; }
+  .io-status.ok { color: var(--sage-ok); }
+  .io-status.err { color: var(--blood); }
+
+  .reset-zone {
+    margin-top: 8px;
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .reset-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--blood);
+    border: 1px solid var(--blood);
+    border-radius: 0;
+    padding: 8px 14px;
+    text-transform: uppercase;
+  }
+  .reset-btn:hover { background: rgba(162,59,46,0.12); }
+  .reset-btn.armed { background: var(--blood); color: var(--stone-1); }
+  .reset-hint { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
+
+  /* quest / entry cards */
+  .entries { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
+  .entries.grid-mode { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); align-items: start; }
+  .ach-group-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 4px; }
+
+  .quest {
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 0;
+    padding: 16px 18px 14px;
+    position: relative;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.4), inset 0 1px 0 var(--panel-hi);
+  }
+  .quest.done { border-left-color: var(--sage-ok); }
+  .quest.alt { border-left-color: var(--blood); border-left-style: dashed; }
+  .quest.optional { border-left-color: var(--frost-dim); }
+
+  .quest-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+  .quest-title-wrap { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .quest-order { font-family:'Spectral SC', serif; font-size: 11px; color: var(--gold-dim); }
+  .quest h3 { font-family: 'Cinzel', serif; font-weight: 600; font-size: 14.5px; margin: 0; color: var(--heading); letter-spacing: 0.02em; line-height: 1.35; }
+  .tag-chip {
+    font-family: 'Spectral SC', serif;
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+    padding: 2px 7px;
+    border-radius: 0;
+    text-transform: uppercase;
+  }
+  .tag-optional { background: rgba(111,163,148,0.14); color: var(--frost); }
+  .tag-alt { background: rgba(162,59,46,0.16); color: var(--blood); }
+  .tag-rare { background: rgba(111,163,148,0.14); color: var(--frost); }
+  .tag-uncommon { background: rgba(176,139,79,0.18); color: var(--moss); }
+  .tag-common { background: rgba(142,148,153,0.14); color: var(--ink-soft); }
+
+  .fav-btn, .track-btn { all: unset; cursor: pointer; }
+  .fav-btn { font-size: 16px; line-height: 1; flex-shrink: 0; color: var(--ink-dim); opacity: 0.7; transition: color .15s ease, opacity .15s ease, transform .15s ease; }
+  .fav-btn:hover { color: var(--gold-dim); opacity: 1; }
+  .fav-btn.active { color: var(--gold-bright); opacity: 1; transform: scale(1.12); text-shadow: 0 0 8px rgba(232,199,102,0.45); }
+
+  .quest-meta { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
+  .quest-meta span { margin-right: 12px; }
+  .quest-meta b { color: var(--heading); font-weight: 600; }
+
+  .quest-steps { margin: 0 0 10px; padding-left: 20px; font-size: 12.8px; line-height: 1.55; color: var(--ink); }
+  .quest-steps li { margin-bottom: 4px; }
+
+  .choice-box {
+    background: rgba(201,162,39,0.07);
+    border: 1px solid var(--gold-dim);
+    border-radius: 0;
+    padding: 9px 12px;
+    margin: 0 0 10px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .choice-box b { font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.06em; color: var(--gold-bright); text-transform: uppercase; display:block; margin-bottom:4px; }
+
+  .rewards-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .reward-chip {
+    font-family: 'Spectral', serif;
+    font-size: 11px;
+    color: var(--gold-bright);
+    background: rgba(201,162,39,0.1);
+    border: 1px solid rgba(201,162,39,0.35);
+    padding: 3px 9px;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .quest-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .track-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--ink-soft);
+    font-family: 'Cinzel', serif;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .track-btn .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); border-radius: 0; display: inline-block; }
+  .quest.done .track-btn .box { background: var(--sage-ok); border-color: var(--sage-ok); }
+  .quest.done .track-btn { color: var(--sage-ok); opacity: 1; }
+
+  .empty-state {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 46px 10px;
+    text-align: center;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+  }
+
+  .placeholder-card {
+    background: var(--panel);
+    border: 1px dashed var(--iron-light);
+    border-radius: 0;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .placeholder-card .p-icon { font-size: 34px; margin-bottom: 12px; opacity: 0.75; }
+  .placeholder-card h2 { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--heading); margin: 0 0 8px; }
+  .placeholder-card p { font-family: 'Spectral', serif; font-size: 13px; color: var(--ink-soft); max-width: 440px; margin: 0 auto; line-height: 1.6; }
+
+  /* achievement cards */
+  .points-badge {
+    font-family: 'Spectral SC', serif;
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 0;
+    text-transform: uppercase;
+    background: rgba(201,162,39,0.14);
+    color: var(--gold-bright);
+    border: 1px solid rgba(201,162,39,0.35);
+  }
+  .points-badge.gold { background: rgba(201,162,39,0.22); color: var(--gold-bright); border-color: var(--gold); }
+  .points-badge.silver { background: rgba(111,163,148,0.14); color: var(--frost); border-color: rgba(111,163,148,0.4); }
+  .ach-desc { font-size: 12.8px; line-height: 1.55; color: var(--ink); margin: 0 0 10px; }
+  .ach-link-btn {
+    all: unset;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--frost);
+    border: 1px solid rgba(111,163,148,0.4);
+    border-radius: 0;
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+  .ach-link-btn:hover { background: rgba(111,163,148,0.12); }
+
+  .ach-categories { grid-column: 1 / -1; width: 100%; }
+  .ach-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 4px; }
+  @media (min-width: 700px) { .ach-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1180px) { .ach-grid { grid-template-columns: repeat(3, 1fr); } }
+  .ach-grid .ach-card { display: flex; flex-direction: column; height: 100%; margin: 0; }
+  .ach-grid .ach-card .quest-title-wrap { flex-direction: column; align-items: flex-start; gap: 5px; }
+  .ach-grid .ach-card .ach-desc { flex-grow: 1; }
+  .ach-grid .ach-card .quest-foot { margin-top: auto; padding-top: 6px; }
+
+  .search-result-card { cursor: pointer; transition: border-left-color .15s ease, background .15s ease; }
+  .search-result-card:hover { border-left-color: var(--frost); background: rgba(111,163,148,0.05); }
+  .search-result-card .quest-title-wrap { flex-direction: row; align-items: baseline; }
+  .search-result-card .result-icon { margin-right: 7px; opacity: 0.85; }
+  .search-result-card .ach-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .search-section-note { font-size: 12px; color: var(--ink-soft); margin: 0 0 14px; }
+
+  @keyframes flashHighlight {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(111,163,148,0); }
+    20% { box-shadow: 0 0 0 4px rgba(111,163,148,0.55); }
+  }
+  .quest.flash-highlight { animation: flashHighlight 2.2s ease-out; }
+
+  footer.note {
+    margin-top: 32px;
+    text-align: center;
+    font-family: 'Spectral SC', serif;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    opacity: 0.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 1180px) {
+    .entries:not(.grid-mode), .ach-group-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+    .dash-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  }
+  @media (min-width: 1680px) {
+    .entries:not(.grid-mode), .ach-group-list { grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); }
+  }
+
+  @media (max-width: 780px) {
+    .tome { flex-direction: column; width: 100%; }
+    .nav { display: none; }
+    .nav-mobile {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding: 12px;
+      background: var(--stone-1);
+    }
+    .nav-mobile .nav-btn { margin: 0; border-radius: 0; flex-shrink: 0; }
+    .page { padding: 24px 18px 40px; }
+    .entries.grid-mode { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tome">
+  <nav class="nav" id="nav-desktop"></nav>
+
+  <main class="page">
+    <nav class="nav-mobile" id="nav-mobile"></nav>
+
+    <header class="title-block">
+      <div>
+        <h1 id="page-title">The Champion's Codex</h1>
+        <div class="subtitle" id="page-subtitle">— a record of the Empire, Cyrodiil —</div>
+      </div>
+      <div class="seal">CYRODIIL<br/>CODEX</div>
+    </header>
+    <div class="rune-divider"></div>
+
+    <div class="search-row" id="search-row">
+      <div class="search-plate">
+        <span>🔎</span>
+        <input id="search" type="text" placeholder="Search the codex…" />
+      </div>
+      <span class="filter-pill active" data-fav="all">All entries</span>
+      <span class="filter-pill" data-fav="favorites">★ Favorites only</span>
+      <span class="filter-pill" data-hide-done="true">✓ Hide completed</span>
+      <span id="progress-tally" style="display:none; font-family:'Spectral SC', serif; font-size:11px; color: var(--sage-ok);"></span>
+    </div>
+
+    <div class="sub-row" id="sub-row" style="display:none;"></div>
+    <div class="branch-banner" id="branch-banner" style="display:none;"></div>
+
+    <section class="entries" id="entries"></section>
+
+    <footer class="note">A record kept for one Champion of Cyrodiil by JAW Digital</footer>
+  </main>
+</div>
+
+<script>
+/* ============================= DATA ============================= */
+
+const SECTIONS = [
+  { id: 'overview',   label: 'Overview',              icon: '🏛️', built: true },
+  { id: 'builds',     label: 'Character Builds',       icon: '⚔️', built: true },
+  { id: 'quests',     label: 'Quests & Factions',      icon: '📜', built: true },
+  { id: 'achievements', label: 'Achievements',         icon: '🏆', built: true },
+  { id: 'bestiary',   label: 'Bestiary / Compendium',  icon: '👹', built: true },
+  { id: 'crafting',   label: 'Alchemy & Enchanting',   icon: '⚗️', built: true },
+  { id: 'locations',  label: 'Locations',              icon: '🗺️', built: true },
+];
+
+const QUESTLINES = [
+  { id: 'main',        label: 'Main Quest',              icon: '👑' },
+  { id: 'fighters',     label: 'Fighters Guild',          icon: '⚔️' },
+  { id: 'mages',        label: 'Mages Guild',             icon: '📘' },
+  { id: 'thieves',      label: 'Thieves Guild',           icon: '🗝️' },
+  { id: 'brotherhood',  label: 'Dark Brotherhood',        icon: '🗡️' },
+  { id: 'daedric',      label: 'Daedric Shrine Quests',   icon: '👹' },
+  { id: 'misc',         label: 'Side Quests & Miscellaneous', icon: '📋' },
+];
+
+const QUESTS = [
+
+/* ======================= MAIN QUEST ======================= */
+{ id:100, line:'main', order:1, title:'Tutorial: The Prisoner', giver:'Automatic (character creation)', location:'Imperial City Prison, the Sewers',
+  steps:[
+    'Create and name your character, a prisoner in a cell beneath the Imperial City.',
+    'Emperor Uriel Septim VII and his Blades bodyguards burst in through a secret passage, fleeing an assassination plot, and free you to guide them onward.',
+    'The Emperor recognizes you from a recurring dream and asks you to stay close as you fight through the sewers.',
+    'Mythic Dawn assassins ambush the party before you reach the exit; the Emperor is mortally wounded.'
+  ],
+  rewards:['The Amulet of Kings, pressed into your hands by the dying Emperor', 'Access to Cyrodiil'], trackable:true },
+
+{ id:101, line:'main', order:2, title:'Deliver the Amulet', giver:"Baurus (Blades)", location:'Weynon Priory, near Chorrol',
+  steps:[
+    "Baurus, the surviving Blade, tells you to find Jauffre, Grandmaster of the Blades, at Weynon Priory near Chorrol.",
+    'Travel to Weynon Priory and hand over the Amulet of Kings.',
+    'Jauffre is stunned — Uriel Septim was believed to have no living heir.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:102, line:'main', order:3, title:'Find the Heir', giver:'Jauffre', location:'Kvatch',
+  steps:[
+    'Jauffre reveals the Emperor had one illegitimate son, Martin, unknowingly living as a priest in Kvatch.',
+    'Travel to Kvatch to find him before the Mythic Dawn does.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:103, line:'main', order:4, title:'Breaking the Siege of Kvatch', giver:'Automatic', location:'Kvatch',
+  steps:[
+    'Arrive to find Kvatch besieged, an Oblivion Gate open just outside its walls and Daedra pouring into the burning city.',
+    'Step through the Gate into Oblivion itself and close it from the other side by destroying its Sigil Stone.',
+    'Help Captain Savlian Matius and the survivors retake the city gate and chapel.',
+    'Fight through the chapel, thick with Daedra, to find Martin sheltering the last of the townsfolk.'
+  ],
+  rewards:['Martin Septim joins you'], trackable:true },
+
+{ id:104, line:'main', order:5, title:'The Path of Dawn', giver:'Martin Septim', location:'Cyrodiil (various)',
+  steps:[
+    'Martin explains that closing Gates for good, not just one at a time, will require understanding the Mythic Dawn\'s own doctrine.',
+    'Track down a copy of the cult\'s forbidden text, the Mysterium Xarxes commentaries, held by someone with ties to the Mythic Dawn.',
+    'Bring the book back to Martin at Weynon Priory or Cloud Ruler Temple.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:105, line:'main', order:6, title:'Weynon Priory', giver:'Automatic', location:'Weynon Priory',
+  steps:[
+    'Return to find Weynon Priory has been attacked by Mythic Dawn agents while you were away.',
+    'If the Amulet of Kings was left behind, it has been stolen.',
+    'Jauffre survives the attack and decides Martin can no longer be safely hidden in the open — he must be moved to the Blades\' stronghold, Cloud Ruler Temple, near Bruma.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:106, line:'main', order:7, title:'Spies', giver:'Jauffre', location:'Cloud Ruler Temple, various cities',
+  steps:[
+    'At Cloud Ruler Temple, Jauffre asks you to find a lead on where the Mythic Dawn is operating from.',
+    'Follow rumors and contacts through the Imperial City and beyond to locate one of the cult\'s hidden safehouses.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:107, line:'main', order:8, title:'Ambush / The Mythic Dawn', giver:'Automatic', location:'A Mythic Dawn safehouse',
+  steps:[
+    'Raid the safehouse for documents and clues pointing toward the cult\'s inner sanctum.',
+    'Use what you recover to track down a hidden Daedric shrine where Mythic Dawn agents gather.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:108, line:'main', order:9, title:'Dagon Shrine', giver:'Automatic', location:"A hidden shrine to Mehrunes Dagon",
+  steps:[
+    'Infiltrate the shrine disguised as a cultist.',
+    'Learn that the cult\'s leader, Mankar Camoran, has fled to his own Daedric realm, Paradise, carrying the true Amulet of Kings.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:109, line:'main', order:10, title:'Miscarcand', giver:'Automatic / Mages Guild contact', location:'The Ayleid ruin of Miscarcand',
+  steps:[
+    'Learn that a Great Welkynd Stone, buried in the ancient Ayleid ruin of Miscarcand, holds enough power to fuel the wards Cyrodiil will need against the coming Gates.',
+    'Fight through Miscarcand\'s undead-haunted halls to claim the stone.'
+  ],
+  rewards:['A Great Welkynd Stone'], trackable:true },
+
+{ id:110, line:'main', order:11, title:'Blood of the Daedra', giver:'Automatic', location:'Cyrodiil (various)',
+  steps:[
+    'Gather Daedra blood, a key reagent for the wards and rituals Martin and the Blades are preparing against Mehrunes Dagon\'s forces.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:111, line:'main', order:12, title:'Bruma Gate', giver:'Automatic', location:'Bruma',
+  steps:[
+    'A massive Oblivion Gate tears open just outside Bruma\'s walls — the largest yet, and clearly a prelude to full invasion.',
+    'Help the city\'s defenders hold the line and close the Gate.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:112, line:'main', order:13, title:'Allies for Bruma', giver:'Countess Narina Carvain', location:'Anvil, Bravil, Cheydinhal, Chorrol, Leyawiin, Skingrad',
+  steps:[
+    'Countess Carvain of Bruma fears the next assault will be far worse and asks you to petition Cyrodiil\'s other Counts and Countesses for soldiers.',
+    'Travel between the county capitals, making the case (or completing a favor) for each ruler\'s support.',
+    'Return to Bruma with word of every county\'s answer.'
+  ],
+  rewards:['Reinforcements for Bruma\'s defense'], trackable:true },
+
+{ id:113, line:'main', order:14, title:'Defense of Bruma', giver:'Automatic', location:'Bruma',
+  steps:[
+    'A full Daedric invasion force converges on Bruma.',
+    'Lead the allied troops you rallied in repelling the assault before it can breach the city.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:114, line:'main', order:15, title:'Sancre Tor', giver:'Jauffre or Martin Septim', location:'Sancre Tor',
+  steps:[
+    'With Bruma held, the Blades turn to the ruined ancient capital of Sancre Tor, tied to the legendary Reman Dynasty and the Order\'s own founding.',
+    'Explore its depths and call on the spirits of legendary Blades Grandmasters for guidance and aid against the Mythic Dawn.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:115, line:'main', order:16, title:'Paradise', giver:'Martin Septim', location:"Mankar Camoran's Paradise",
+  steps:[
+    'Find a way into Mankar Camoran\'s private Daedric realm, Paradise, said to be reachable through one of his own paintings.',
+    'Fight through Paradise to confront Camoran and recover the true Amulet of Kings.'
+  ],
+  rewards:['The true Amulet of Kings'], trackable:true },
+
+{ id:116, line:'main', order:17, title:'Light the Dragonfires', giver:'Martin Septim', location:'Temple of the One, Imperial City',
+  steps:[
+    'Bring the recovered Amulet of Kings to Martin at the Temple of the One in the Imperial City.',
+    'Mehrunes Dagon manifests over the city in full, unstoppable by mortal arms alone.',
+    'Martin makes the ultimate sacrifice, using the Amulet to become an avatar of Akatosh and drive Dagon back, ending the Oblivion Crisis.'
+  ],
+  rewards:['Ends the Main Quest', 'Title: Champion of Cyrodiil', 'Free lodging offered at inns across every grateful county'], trackable:true },
+
+/* ======================= FIGHTERS GUILD ======================= */
+{ id:200, line:'fighters', order:1, title:'Joining the Fighters Guild', giver:'Any Fighters Guild member', location:'Any Fighters Guild Hall',
+  steps:[
+    'Speak to a member at any Fighters Guild hall (the main hall is in Chorrol) to sign up.',
+    'Unlike the other guilds, membership is open to anyone — no test or recommendation required.'
+  ],
+  rewards:['Fighters Guild membership'], trackable:true },
+
+{ id:201, line:'fighters', order:2, title:'Trolls of Cyrodiil', giver:'A Guild Steward', location:'Cyrodiil (radiant)',
+  steps:['Take an early extermination contract clearing dangerous trolls threatening a settlement.'],
+  rewards:[], trackable:true },
+
+{ id:202, line:'fighters', order:3, title:'A Rat Problem', giver:'A Guild Steward', location:'A townhouse cellar',
+  steps:['Clear vermin — rats and worse — infesting a client\'s cellar.'],
+  rewards:[], trackable:true },
+
+{ id:203, line:'fighters', order:4, title:'The Wandering Scholar', giver:'A Guild Steward', location:'Cyrodiil (radiant)',
+  steps:['Escort or protect a scholar whose research has made them a target for bandits.'],
+  rewards:[], trackable:true },
+
+{ id:204, line:'fighters', order:5, title:'Kvatch Reconstruction', giver:'A Guild Steward', location:'Kvatch',
+  steps:['Take a contract clearing the ruins around Kvatch of monsters as the city slowly rebuilds after the Gate attack.'],
+  rewards:[], trackable:true },
+
+{ id:205, line:'fighters', order:6, title:'The Blackwood Company', giver:'Guild leadership', location:'Any Guild Hall',
+  steps:[
+    'Learn that a flashy mercenary outfit, the Blackwood Company, led by the Argonian Ajum-Kajin, is undercutting Fighters Guild contracts across every county.',
+    'The Blackwood Company\'s fighters seem unnaturally strong and never lose — guild morale and membership are suffering.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:206, line:'fighters', order:7, title:'Bad Medicine', giver:'A worried guild member', location:'Bravil or Leyawiin',
+  steps:['Investigate reports of Blackwood Company recruits falling violently ill or dying shortly after taking a mysterious tonic.'],
+  rewards:[], trackable:true },
+
+{ id:207, line:'fighters', order:8, title:"The Hist", giver:'Automatic', location:'Cyrodiil',
+  steps:[
+    'Discover the Blackwood Company\'s secret: its fighters are dosed with sap from the Hist, the sacred trees of Black Marsh, granting unnatural strength and ferocity in violation of every law and guild oath.',
+    'Gather proof of the scheme.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:208, line:'fighters', order:9, title:'Vernaccus and Bourlor', giver:'A Guild elder', location:'A Guild Hall',
+  steps:[
+    'Uncover an old account of an earlier schism in the Guild\'s history, its lesson now startlingly relevant again.',
+    'Use what you\'ve learned to rally the Guild\'s remaining loyal members against the corruption at its head.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:209, line:'fighters', order:10, title:'A Guild Divided', giver:'Automatic', location:'Chorrol',
+  steps:[
+    'Confront the Blackwood Company\'s fraud openly, exposing the Hist-sap scheme to the wider Guild and the public.',
+    'Deal with the Guild\'s current leadership, compromised by the scandal.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:210, line:'fighters', order:11, title:'Guildmaster', giver:'Automatic', location:'Chorrol',
+  steps:['With the Blackwood Company\'s corruption exposed and the old leadership gone, the Fighters Guild names you its new Guildmaster.'],
+  rewards:['Title: Guildmaster of the Fighters Guild', 'Guild-wide respect, contracts, and repair discounts'], trackable:true },
+
+/* ======================= MAGES GUILD ======================= */
+{ id:300, line:'mages', order:1, title:'Joining the Mages Guild', giver:'Any regional Guild Hall recruiter', location:'Any of the seven regional Guild Halls',
+  steps:[
+    'Full membership at the Arcane University in the Imperial City requires a recommendation from at least one regional Guild Hall.',
+    'Visit a regional hall (Anvil, Bravil, Bruma, Cheydinhal, Chorrol, Leyawiin, or Skingrad) and complete a task or test for its recruiter.'
+  ],
+  rewards:['Mages Guild membership'], trackable:true },
+
+{ id:301, line:'mages', order:2, title:'A Recommendation from Chorrol', giver:'Teekeeus', location:'Chorrol Mages Guild',
+  steps:['Prove yourself to Chorrol\'s recruiter to earn a formal recommendation.'],
+  rewards:['Recommendation: Chorrol'], trackable:true },
+
+{ id:302, line:'mages', order:3, title:'A Recommendation from Bruma', giver:'Jeanne Frasoric', location:'Bruma Mages Guild',
+  steps:['Prove yourself to Bruma\'s recruiter to earn a formal recommendation.'],
+  rewards:['Recommendation: Bruma'], trackable:true },
+
+{ id:303, line:'mages', order:4, title:'A Recommendation from Cheydinhal', giver:'Falcar', location:'Cheydinhal Mages Guild',
+  steps:['Prove yourself to Cheydinhal\'s recruiter to earn a formal recommendation — this hall\'s troubles run deeper than they first appear.'],
+  rewards:['Recommendation: Cheydinhal'], trackable:true },
+
+{ id:304, line:'mages', order:5, title:'A Recommendation from Anvil, Bravil, Leyawiin & Skingrad', giver:'Regional recruiters', location:'Anvil, Bravil, Leyawiin, Skingrad',
+  steps:['Complete the remaining regional halls\' tasks to round out your recommendations.'],
+  rewards:['Recommendations: Anvil, Bravil, Leyawiin, Skingrad'], trackable:true },
+
+{ id:305, line:'mages', order:6, title:'Necessary Measures', giver:'Arch-Mage Hannibal Traven', location:'Cheydinhal',
+  steps:[
+    'With enough recommendations in hand, gain full membership at the Arcane University and meet Arch-Mage Hannibal Traven.',
+    'Investigate irregularities traced back to the Cheydinhal Guild Hall — something is deeply wrong beneath the surface there.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:306, line:'mages', order:7, title:"Vahtacen's Secret", giver:'A Guild researcher', location:'The Ayleid ruin of Vahtacen',
+  steps:['Retrieve an ancient artifact from the Ayleid ruin of Vahtacen for the Guild\'s research into the growing threat.'],
+  rewards:[], trackable:true },
+
+{ id:307, line:'mages', order:8, title:"The King of Worms", giver:'Hannibal Traven', location:'Arcane University, Imperial City',
+  steps:[
+    'Traven reveals the true danger: Mannimarco, the exiled necromancer known as the King of Worms, is manipulating the Council of Mages from the shadows.',
+    'Help Traven root out Mannimarco\'s influence before it\'s too late.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:308, line:'mages', order:9, title:"Necromancer's Moon", giver:'Automatic', location:'Arcane University, Imperial City',
+  steps:[
+    'Confront Mannimarco\'s plot directly as it comes to a head at the Arcane University itself.',
+    'The battle costs Hannibal Traven his life.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:309, line:'mages', order:10, title:'Arch-Mage', giver:'Automatic', location:'Arcane University, Imperial City',
+  steps:['With Mannimarco defeated and Traven gone, the Council of Mages names you the new Arch-Mage of the Mages Guild.'],
+  rewards:['Title: Arch-Mage', 'Free use of every Spellmaking and Enchanting altar in the Guild'], trackable:true },
+
+/* ======================= THIEVES GUILD ======================= */
+{ id:400, line:'thieves', order:1, title:'Joining the Thieves Guild', giver:'A fellow thief', location:'Imperial City, Waterfront District',
+  steps:[
+    'The Guild finds you rather than the other way around — get caught pickpocketing, or seek out a contact in the Waterfront District.',
+    'Meet Armand Christophe, who runs the Guild\'s fence network, and Methredhel, who vouches for new recruits.'
+  ],
+  rewards:['Thieves Guild membership'], trackable:true },
+
+{ id:401, line:'thieves', order:2, title:'Taking Care of Business', giver:'Armand Christophe', location:'Imperial City',
+  steps:['Begin working small jobs through the Guild\'s fence network to prove your reliability.'],
+  rewards:[], trackable:true },
+
+{ id:402, line:'thieves', order:3, title:'Independent Thievery', giver:'A Guild contact', location:'Cyrodiil (radiant)',
+  steps:['Pull off a heist on your own initiative to build your standing in the Guild.'],
+  rewards:[], trackable:true },
+
+{ id:403, line:'thieves', order:4, title:'Turning a Blind Eye', giver:'A Guild contact', location:'A county capital',
+  steps:['Arrange for an inside contact to look the other way during a job.'],
+  rewards:[], trackable:true },
+
+{ id:404, line:'thieves', order:5, title:"The Elven Maiden", giver:'A Guild contact', location:'Anvil',
+  steps:['Steal a prized figurehead — the Elven Maiden — off a ship anchored at Anvil for a demanding client.'],
+  rewards:[], trackable:true },
+
+{ id:405, line:'thieves', order:6, title:"Ahdarji's Heirloom", giver:'Ahdarji', location:'Leyawiin',
+  steps:['Recover a stolen family heirloom for a fellow Guild thief, Ahdarji.'],
+  rewards:[], trackable:true },
+
+{ id:406, line:'thieves', order:7, title:'A Guild-Defining Heist', giver:'Armand Christophe', location:'A high-security estate',
+  steps:['Take on the Guild\'s biggest job yet, requiring every skill you\'ve built up so far.'],
+  rewards:[], trackable:true },
+
+{ id:407, line:'thieves', order:8, title:'The Gray Fox', giver:'A hooded stranger', location:'Imperial City',
+  steps:[
+    'Learn of the Gray Fox, the legendary masked master thief who has led the Guild from the shadows for years — and that he needs a successor.',
+    'Prove yourself worthy of the mantle through one final test.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:408, line:'thieves', order:9, title:'Symbols of Office', giver:'Automatic', location:'Imperial City',
+  steps:['Don the Gray Cowl of Nocturnal, becoming the new Gray Fox and taking up leadership of the Thieves Guild.'],
+  rewards:['Title: The Gray Fox', 'Leadership of the Thieves Guild'], trackable:true },
+
+/* ======================= DARK BROTHERHOOD ======================= */
+{ id:500, line:'brotherhood', order:1, title:'Bad Blood', giver:'Automatic', location:'Anywhere',
+  steps:['Murder someone — traditionally an innocent sleeping in their bed — to draw the Dark Brotherhood\'s attention.'],
+  rewards:[], trackable:true },
+
+{ id:501, line:'brotherhood', order:2, title:'Welcome to the Family', giver:'Lucien Lachance', location:'A cave, then Cheydinhal Sanctuary',
+  steps:[
+    'Lucien Lachance, a Brotherhood Speaker, appears and formally inducts you into the Dark Brotherhood.',
+    'Report to the Cheydinhal Sanctuary and receive your first Family contract.'
+  ],
+  rewards:['Dark Brotherhood membership'], trackable:true },
+
+{ id:502, line:'brotherhood', order:3, title:'Victim of a Con', giver:'Lucien Lachance', location:'Cyrodiil (radiant)',
+  steps:['Complete a standard assassination contract from the Black Hand.'],
+  rewards:[], trackable:true },
+
+{ id:503, line:'brotherhood', order:4, title:'The Assassinated Man', giver:'Lucien Lachance', location:'Cyrodiil',
+  steps:['Stage a killing so it passes as an accident or natural death — a contract that rewards subtlety over brute force.'],
+  rewards:[], trackable:true },
+
+{ id:504, line:'brotherhood', order:5, title:'Whodunit?', giver:'Lucien Lachance', location:'A private dinner party',
+  steps:['Eliminate every guest at a dinner party in one night without anyone ever learning who was responsible.'],
+  rewards:[], trackable:true },
+
+{ id:505, line:'brotherhood', order:6, title:'A Kiss Before Dying', giver:'Lucien Lachance', location:'A wedding celebration',
+  steps:['Eliminate three specific targets at a wedding party while operating undercover among the guests.'],
+  rewards:[], trackable:true },
+
+{ id:506, line:'brotherhood', order:7, title:'Permanent Retirement', giver:'Lucien Lachance', location:'Cyrodiil',
+  steps:['Track down and silence a retired assassin who knows too much.'],
+  rewards:[], trackable:true },
+
+{ id:507, line:'brotherhood', order:8, title:'Accession', giver:'Lucien Lachance', location:'Cheydinhal Sanctuary',
+  steps:['Having proven yourself many times over, Lucien elevates you to Silencer — answering directly to the Black Hand itself.'],
+  rewards:['Rank: Silencer'], trackable:true },
+
+{ id:508, line:'brotherhood', order:9, title:'Purification', giver:'The Black Hand', location:'Various Sanctuaries',
+  steps:[
+    'A series of murders breaking the Brotherhood\'s own sacred Tenets rock the Family from within.',
+    'Investigate which of the Black Hand\'s own members has betrayed the Night Mother\'s Five Tenets, leaving a trail of Sanctuaries in ruin.'
+  ],
+  rewards:[], trackable:true },
+
+{ id:509, line:'brotherhood', order:10, title:'Master of Whispers', giver:'Automatic', location:'A Dark Brotherhood Sanctuary',
+  steps:[
+    'Unmask and eliminate the corrupted killer responsible for the Purification murders, restoring order to the Black Hand.',
+    'Rise to become the Brotherhood\'s new Listener, the sole voice permitted to hear the Night Mother directly.'
+  ],
+  rewards:['Title: Listener of the Dark Brotherhood'], trackable:true },
+
+/* ======================= DAEDRIC SHRINE QUESTS ======================= */
+{ id:700, line:'daedric', order:1, prince:'Azura', title:'Azura', giver:'A priestess', location:'Shrine of Azura',
+  steps:[
+    'Visit the Shrine of Azura and learn her worship there has been corrupted.',
+    'Confront the one responsible and restore proper reverence at the shrine.'
+  ],
+  rewards:["Azura's Star (reusable soul gem)"], trackable:true },
+
+{ id:701, line:'daedric', order:2, prince:'Boethiah', title:"Boethiah's Glory", giver:'A cultist or book', location:'Sacellum of Boethiah',
+  steps:[
+    'Find the Sacellum of Boethiah and speak with her priestess, who demands proof of cunning.',
+    'Lead a band of would-be worshippers into a lethal arena trial, betraying and defeating them as Boethiah demands to become her Champion.'
+  ],
+  rewards:['Ebony Mail (unique armor)'], trackable:true },
+
+{ id:702, line:'daedric', order:3, prince:'Clavicus Vile', title:'Clavicus Vile', giver:'Barbas (a talking dog)', location:"Clavicus Vile's shrine",
+  steps:[
+    'Meet Barbas, a stray dog who reveals himself as the loyal hound of Clavicus Vile, estranged from his master.',
+    'Escort Barbas back to Vile\'s shrine to reconcile them.',
+    'Vile sets a task: retrieve the legendary Rueful Axe.'
+  ],
+  choice:{ flag:'Choice Point — the Axe or the Masque', text:'Give the Rueful Axe to Clavicus Vile in exchange for the Masque of Clavicus Vile — or keep the Axe for yourself and kill Barbas instead, angering Vile. Only the Masque counts as a true Daedric artifact.' },
+  rewards:['The Rueful Axe OR The Masque of Clavicus Vile'], trackable:true },
+
+{ id:703, line:'daedric', order:4, prince:'Hermaeus Mora', title:'Hermaeus Mora', giver:'Automatic', location:"Hermaeus Mora's shrine",
+  steps:[
+    'Seek out the shrine of Hermaeus Mora, Prince of Forbidden Knowledge.',
+    'Prove your worth by recovering a piece of lost or hidden knowledge he desires.'
+  ],
+  rewards:['Oghma Infinium (a tome that permanently boosts your abilities once read)'], trackable:true },
+
+{ id:704, line:'daedric', order:5, prince:'Hircine', title:'Hircine', giver:'Automatic', location:"Hircine's shrine",
+  steps:[
+    'Answer Hircine\'s call to the Great Hunt at his shrine.',
+    'Track down and best a legendary prey across the wilds of Cyrodiil to prove yourself the greatest hunter present.'
+  ],
+  rewards:["Savior's Hide (unique light armor)"], trackable:true },
+
+{ id:705, line:'daedric', order:6, prince:'Malacath', title:'Malacath', giver:'An Orc shaman', location:'An Orc stronghold',
+  steps:[
+    'Arrive at an Orc stronghold in crisis and learn Malacath, patron of the outcast and the spurned, demands a trial of strength and honor be settled.',
+    'See the ritual through to its violent end.'
+  ],
+  rewards:['Volendrung (unique warhammer)'], trackable:true },
+
+{ id:706, line:'daedric', order:7, prince:'Mehrunes Dagon', title:'Pieces of Rebellion', giver:'A collector of Mythic Dawn relics', location:"Mehrunes Dagon's shrine",
+  steps:[
+    'Track down the three broken pieces of the legendary Mehrunes\' Razor, scattered across old ruins.',
+    'Bring them to Dagon\'s shrine to be reforged.'
+  ],
+  choice:{ flag:'Choice point', text:'The ritual\'s final step demands a killing blow to claim the completed blade.' },
+  rewards:["Mehrunes' Razor (unique dagger, chance of instant kill)"], trackable:true },
+
+{ id:707, line:'daedric', order:8, prince:'Mephala', title:'Whispers of Death', giver:'Automatic', location:"Mephala's shrine",
+  steps:[
+    'Heed Mephala\'s whispers and orchestrate a chain of secret murders and manipulations across Cyrodiil, sowing chaos without ever being caught.'
+  ],
+  rewards:['Ebony Blade (unique sword, grows stronger the more it kills those who trust the wielder)'], trackable:true },
+
+{ id:708, line:'daedric', order:9, prince:'Molag Bal', title:'Molag Bal', giver:'A witch-hunter', location:"Molag Bal's shrine",
+  steps:[
+    'Investigate a suspected site of Daedric corruption alongside a zealous witch-hunter.',
+    'Learn too late that Molag Bal has manipulated you both, and complete the dark ritual he demands to claim his favor.'
+  ],
+  rewards:['The Mace of Molag Bal (unique enchanted mace)'], trackable:true },
+
+{ id:709, line:'daedric', order:10, prince:'Namira', title:'The Taste of Death', giver:'A cult contact', location:"Namira's shrine",
+  steps:[
+    'Uncover a secret cult of Namira, Prince of Decay and Ugliness, practicing a forbidden rite.',
+    'Prove your devotion by joining the rite at her shrine.'
+  ],
+  rewards:['Ring of Namira'], trackable:true },
+
+{ id:710, line:'daedric', order:11, prince:'Nocturnal', title:'Whom Gods Annoy', giver:'A priest of Nocturnal', location:"Nocturnal's shrine",
+  steps:[
+    'Learn that the Gray Cowl of Nocturnal, an artifact carrying its own curse, has passed to someone unfit to bear it.',
+    'Retrieve the cowl and confront its curse — the same cowl worn by the Thieves Guild\'s legendary Gray Fox.'
+  ],
+  rewards:['Gray Cowl of Nocturnal'], trackable:true },
+
+{ id:711, line:'daedric', order:12, prince:'Peryite', title:'The Path of the Righteous', giver:'A plague survivor', location:"Peryite's shrine",
+  steps:[
+    'Meet a survivor of a terrible plague who credits Peryite, Prince of Pestilence and Order, with sparing them.',
+    'Carry out Peryite\'s demand at his shrine — the death of a heretic who has broken his order.'
+  ],
+  rewards:['Spellbreaker (unique enchanted shield)'], trackable:true },
+
+{ id:712, line:'daedric', order:13, prince:'Sanguine', title:'Sanguine', giver:'A stranger in a tavern', location:'Any tavern; Sanguine\'s shrine',
+  steps:[
+    'Meet a mysterious stranger who challenges you to a drinking contest, then black out.',
+    'Piece together the chaos of the night before across several towns, tracking down what you did and who you apparently offended, wed, or robbed.',
+    'Confront the stranger, who reveals himself as Sanguine, Prince of Hedonism and Excess.'
+  ],
+  rewards:['Sanguine Rose (summons a Dremora ally)'], trackable:true },
+
+{ id:713, line:'daedric', order:14, prince:'Sheogorath', title:'Where Madness Dwells', giver:'A raving beggar', location:"Sheogorath's shrine",
+  steps:[
+    'Meet a beggar driven mad by a task left unfinished for a "master" of his.',
+    'Follow the thread into a surreal trial staged by Sheogorath, Prince of Madness, for his own amusement.'
+  ],
+  rewards:['Wabbajack (unique staff with unpredictable effects)'], trackable:true },
+
+{ id:714, line:'daedric', order:15, prince:'Vaermina', title:'Waking Dreams', giver:'A sleepless townsfolk', location:"Vaermina's shrine",
+  steps:[
+    'Investigate a settlement plagued by shared, terrible nightmares.',
+    'Trace the cause to Vaermina, Prince of Nightmares, and put an end to the source of the affliction at her shrine.'
+  ],
+  rewards:['Skull of Corruption (unique staff, drains and corrupts sleeping victims)'], trackable:true },
+
+/* ======================= SIDE QUESTS & MISCELLANEOUS ======================= */
+{ id:900, line:'misc', title:'The Ghost of Vitharn', giver:'A local rumor', location:'Vitharn Castle', trackable:true,
+  steps:['Investigate a haunted, ruined castle said to hold the ghost of a betrayed knight and his lost sword.'], rewards:[] },
+
+{ id:901, line:'misc', title:'The Ring of Namira (Bravil rumor)', giver:'A local rumor', location:'Bravil', trackable:true,
+  steps:['Chase down a rumor in Bravil about a cursed ring with a dark reputation.'], rewards:[] },
+
+{ id:902, line:'misc', title:'Origin of the Gray Prince', giver:'Ysabel Andronica', location:'Imperial City Arena', trackable:true,
+  steps:['Investigate the mysterious past of the Arena\'s reigning champion, the Gray Prince, at the request of a curious bard.'], rewards:[] },
+
+{ id:903, line:'misc', title:'The Assassinated Man (rumor)', giver:'A local rumor', location:'Skingrad', trackable:true,
+  steps:['Look into a suspicious death in Skingrad that doesn\'t add up.'], rewards:[] },
+
+{ id:904, line:'misc', title:'A Venerable Vintage', giver:'A County Skingrad vintner', location:'Skingrad', trackable:true,
+  steps:['Help settle a dispute between Skingrad\'s two rival wineries over a prized vintage.'], rewards:[] },
+
+{ id:905, line:'misc', title:'The Collector', giver:'A wealthy patron', location:'Leyawiin', trackable:true,
+  steps:['Track down a set of rare and valuable curios for an obsessive collector in Leyawiin.'], rewards:[] },
+
+{ id:906, line:'misc', title:'Property in Anvil / Rosethorn Hall', giver:'A local land agent', location:'Anvil', trackable:true,
+  steps:['Buy and renovate a rundown estate outside Anvil to unlock it as a player home.'], rewards:[] },
+
+{ id:907, line:'misc', title:'The Wayward Knight', giver:'A traveling knight', location:'Various', trackable:true,
+  steps:['Aid a member of the Order of the Virtuous Blood hunting a dangerous vampire coven.'], rewards:[] },
+
+{ id:908, line:'misc', title:'Confessions of a Skooma Eater', giver:'An addict', location:'Bravil', trackable:true,
+  steps:['Track the source of a skooma addiction plaguing a desperate contact in Bravil.'], rewards:[] },
+
+{ id:909, line:'misc', title:'Allies of Necessity', giver:'A cornered adventurer', location:'Cyrodiil (radiant)', trackable:true,
+  steps:['Team up with an unlikely ally, temporarily, to survive a dangerous ruin neither of you can clear alone.'], rewards:[] },
+
+{ id:910, line:'misc', title:"Grand Champion of the Arena", giver:'Owyn or the Arena Blademaster', location:'Imperial City Arena', trackable:true,
+  steps:[
+    'Sign up to fight in the Imperial City Arena and work your way up from Pit Dog through the ranked bloodwork matches.',
+    'Defeat the reigning Gray Prince to become the new Grand Champion.'
+  ], rewards:['Title: Grand Champion of the Arena'] },
+
+{ id:911, line:'misc', title:'Sheep-Herding Contract', giver:'A frustrated farmer', location:'Cyrodiil (radiant)', trackable:true,
+  steps:['Round up a farmer\'s scattered livestock before predators or bandits get to them.'], rewards:[] },
+
+{ id:912, line:'misc', title:"Ulterior Motives", giver:'A merchant with a secret', location:'Cheydinhal', trackable:true,
+  steps:['Uncover a merchant\'s hidden dealings behind an ordinary-looking storefront.'], rewards:[] },
+
+{ id:913, line:'misc', title:'Bringer of Renewal', giver:'A dying elder', location:'Cyrodiil (radiant)', trackable:true,
+  steps:['Deliver an important message or item on behalf of someone who won\'t live to do it themselves.'], rewards:[] },
+
+{ id:914, line:'misc', title:'Bittneld the Curse-Breaker', giver:'A local legend', location:'Bruma region', trackable:true,
+  steps:['Investigate a legendary Nordic hero\'s tomb, said to be cursed, near Bruma.'], rewards:[] },
+
+{ id:915, line:'misc', title:'The Enchanted Rock', giver:'A Chorrol farmer', location:'Near Chorrol', trackable:true,
+  steps:['Look into a farmer\'s claim that his fields are haunted by a mysterious moving boulder.'], rewards:[] },
+
+{ id:916, line:'misc', title:'The Copious Coinpurse', giver:'A merchant', location:'Bravil', trackable:true,
+  steps:['Chase down a con artist who has been swindling merchants across Bravil with a clever coinpurse trick.'], rewards:[] },
+
+{ id:917, line:'misc', title:'The Voice of Reason', giver:'A cornered guard', location:'Any county capital', trackable:true,
+  steps:['Talk down a tense standoff between city guards and a desperate local before it turns violent.'], rewards:[] },
+
+{ id:918, line:'misc', title:'Delivery Contracts', giver:'Various merchants', location:'Cyrodiil (radiant)', trackable:true,
+  steps:['Carry sealed packages and messages between merchants and contacts across the province for quick coin.'], rewards:[] },
+
+{ id:919, line:'misc', title:'Superstitions', giver:'A worried villager', location:'Cyrodiil (radiant)', trackable:true,
+  steps:['Investigate a village\'s ghost story or superstition — some turn out to be real threats, others just rumor.'], rewards:[] },
+
+];
+
+/* ============================= ACHIEVEMENTS ============================= */
+const ACHIEVEMENTS = [
+  // Main Quest (8)
+  { id:1000, name:'Welcome to Cyrodiil', points:10, trophy:'bronze', group:'Main Quest', description:'Escape the Imperial City sewers.', linkLine:'main', linkQuest:100 },
+  { id:1001, name:'Breaking the Siege of Kvatch', points:20, trophy:'bronze', group:'Main Quest', description:'Close the Oblivion Gate at Kvatch and save Martin.', linkLine:'main', linkQuest:103 },
+  { id:1002, name:'Ready for Anything', points:10, trophy:'bronze', group:'Main Quest', description:'Obtain a copy of the Mythic Dawn commentaries.', linkLine:'main', linkQuest:104 },
+  { id:1003, name:'Spies Like Us', points:15, trophy:'bronze', group:'Main Quest', description:'Infiltrate the Mythic Dawn\'s hidden shrine.', linkLine:'main', linkQuest:108 },
+  { id:1004, name:'Bruma Under Siege', points:30, trophy:'silver', group:'Main Quest', description:'Survive the Gate assault outside Bruma.', linkLine:'main', linkQuest:111 },
+  { id:1005, name:'Allies of the Empire', points:20, trophy:'bronze', group:'Main Quest', description:'Rally every county for Bruma\'s defense.', linkLine:'main', linkQuest:112 },
+  { id:1006, name:'Trial of the Blades', points:30, trophy:'silver', group:'Main Quest', description:'Uncover the secrets of Sancre Tor.', linkLine:'main', linkQuest:114 },
+  { id:1007, name:'Light the Dragonfires', points:50, trophy:'gold', group:'Main Quest', description:'Complete the Main Quest and become Champion of Cyrodiil.', linkLine:'main', linkQuest:116 },
+  // Fighters Guild (2)
+  { id:1008, name:'Take Up the Blade', points:10, trophy:'bronze', group:'Fighters Guild', description:'Join the Fighters Guild.', linkLine:'fighters', linkQuest:200 },
+  { id:1009, name:'Guildmaster', points:30, trophy:'silver', group:'Fighters Guild', description:'Expose the Blackwood Company and become Guildmaster.', linkLine:'fighters', linkQuest:210 },
+  // Mages Guild (2)
+  { id:1010, name:'A Student of the Arcane', points:10, trophy:'bronze', group:'Mages Guild', description:'Join the Mages Guild.', linkLine:'mages', linkQuest:300 },
+  { id:1011, name:'Arch-Mage', points:30, trophy:'silver', group:'Mages Guild', description:'Defeat the King of Worms and become Arch-Mage.', linkLine:'mages', linkQuest:309 },
+  // Thieves Guild (2)
+  { id:1012, name:'Fingersmith', points:10, trophy:'bronze', group:'Thieves Guild', description:'Join the Thieves Guild.', linkLine:'thieves', linkQuest:400 },
+  { id:1013, name:'The New Gray Fox', points:30, trophy:'silver', group:'Thieves Guild', description:'Don the Gray Cowl of Nocturnal.', linkLine:'thieves', linkQuest:408 },
+  // Dark Brotherhood (2)
+  { id:1014, name:'With Friends Like These...', points:10, trophy:'bronze', group:'Dark Brotherhood', description:'Join the Dark Brotherhood.', linkLine:'brotherhood', linkQuest:501 },
+  { id:1015, name:'Listener', points:30, trophy:'silver', group:'Dark Brotherhood', description:'Root out the traitor and become the new Listener.', linkLine:'brotherhood', linkQuest:509 },
+  // Daedric (2)
+  { id:1016, name:'Consorting with Daedra', points:10, trophy:'bronze', group:'Daedric', description:'Complete your first Daedric Shrine quest.' },
+  { id:1017, name:'Prince Among Princes', points:50, trophy:'gold', group:'Daedric', description:'Complete all fifteen Daedric Shrine quests.' },
+  // General (23)
+  { id:1018, name:'Grand Champion', points:30, trophy:'silver', group:'General', description:'Become Grand Champion of the Imperial City Arena.', linkLine:'misc', linkQuest:910 },
+  { id:1019, name:'A Roof Over Your Head', points:10, trophy:'bronze', group:'General', description:'Buy a house in any city.' },
+  { id:1020, name:'Landlord', points:30, trophy:'silver', group:'General', description:'Own a house in every county capital.' },
+  { id:1021, name:'Well Read', points:20, trophy:'bronze', group:'General', description:'Read 10 skill books.' },
+  { id:1022, name:'Master of One', points:40, trophy:'silver', group:'General', description:'Raise a skill to 100.' },
+  { id:1023, name:'Apprentice', points:5, trophy:'bronze', group:'General', description:'Reach character level 5.' },
+  { id:1024, name:'Adept', points:10, trophy:'bronze', group:'General', description:'Reach character level 10.' },
+  { id:1025, name:'Expert', points:20, trophy:'bronze', group:'General', description:'Reach character level 20.' },
+  { id:1026, name:'Master', points:40, trophy:'silver', group:'General', description:'Reach character level 30.' },
+  { id:1027, name:'Alchemist\'s Apprentice', points:10, trophy:'bronze', group:'General', description:'Discover all four effects of 10 different ingredients.' },
+  { id:1028, name:'Enchanter', points:20, trophy:'bronze', group:'General', description:'Create your first enchanted item at an Enchanting altar.' },
+  { id:1029, name:'Spellcrafter', points:10, trophy:'bronze', group:'General', description:'Create a custom spell at a Spellmaking altar.' },
+  { id:1030, name:'Explorer of Ruins', points:30, trophy:'silver', group:'General', description:'Discover 20 Ayleid ruins.' },
+  { id:1031, name:'Gatecrasher', points:20, trophy:'bronze', group:'General', description:'Close 10 Oblivion Gates.' },
+  { id:1032, name:'Sigil Collector', points:20, trophy:'bronze', group:'General', description:'Collect 10 Sigil Stones from closed Gates.' },
+  { id:1033, name:"Porphyric Hemophilia", points:10, trophy:'bronze', group:'General', description:'Contract vampirism.' },
+  { id:1034, name:'Cured!', points:10, trophy:'bronze', group:'General', description:'Cure yourself of vampirism.' },
+  { id:1035, name:'Master Thief', points:20, trophy:'bronze', group:'General', description:'Reach a bounty of 1,000 gold across every county at once.' },
+  { id:1036, name:'Wanted', points:10, trophy:'bronze', group:'General', description:'Escape from jail.' },
+  { id:1037, name:'Citizen', points:10, trophy:'bronze', group:'General', description:'Buy your first house.' },
+  { id:1038, name:'Golden Touch', points:30, trophy:'silver', group:'General', description:'Have 50,000 gold at once.' },
+  { id:1039, name:'Delver', points:30, trophy:'silver', group:'General', description:'Clear 25 dungeons, forts, or ruins.' },
+  { id:1040, name:'Recruiter', points:10, trophy:'bronze', group:'General', description:'Recruit your first follower.' },
+];
+const ACHIEVEMENT_GROUPS = ['Main Quest','Fighters Guild','Mages Guild','Thieves Guild','Dark Brotherhood','Daedric','General'];
+
+/* ============================= CHARACTER BUILDS ============================= */
+
+const BUILD_TABS = [
+  { id:'races',      label:'Races',      icon:'🧬' },
+  { id:'classes',    label:'Classes',    icon:'🎭' },
+  { id:'birthsigns', label:'Birthsigns', icon:'✨' },
+];
+
+const RACES = [
+  { id:2000, name:'Altmer (High Elf)', leaning:'Mage', power:'Highborn', effect:'A large starting Magicka bonus and resistance to disease. Highborn grants a brief burst of fast Magicka regeneration once per day.' },
+  { id:2001, name:'Argonian', leaning:'Stealth', power:'Histskin, Waterbreathing', effect:'Resistant to disease and poison, and breathes underwater at all times. Histskin grants a burst of rapid health regeneration once per day.' },
+  { id:2002, name:'Bosmer (Wood Elf)', leaning:'Stealth', power:'Command Creature', effect:'Resistant to disease, with a natural affinity for beasts. Command Creature lets you charm a wild animal to your side once per day.' },
+  { id:2003, name:'Breton', leaning:'Mage', power:'Dragonskin', effect:'A strong, constant resistance to magic. Dragonskin grants temporary spell absorption once per day.' },
+  { id:2004, name:'Dunmer (Dark Elf)', leaning:'Balanced', power:'Ancestor Guardian', effect:'Resistant to fire. Ancestor Guardian summons a spectral guardian to fight at your side once per day.' },
+  { id:2005, name:'Imperial', leaning:'Combat/Speech', power:'Voice of the Emperor', effect:'A natural talent for persuasion and commerce. Voice of the Emperor calms nearby humans once per day.' },
+  { id:2006, name:'Khajiit', leaning:'Stealth', power:'Night-Eye, Claws', effect:'Natural claws give a small unarmed damage bonus, and Night-Eye grants darkvision once per day.' },
+  { id:2007, name:'Nord', leaning:'Warrior', power:'Rally / Battle Cry', effect:'Resistant to frost, with an innate bonus to blade and blunt weapons. Rally briefly frightens nearby enemies once per day.' },
+  { id:2008, name:'Orsimer (Orc)', leaning:'Warrior', power:'Berserk', effect:'Tough and strong by nature. Berserk grants a temporary combat boost to strength and endurance (at the cost of some defense) once per day.' },
+  { id:2009, name:'Redguard', leaning:'Warrior', power:'Adrenaline Rush', effect:'Resistant to poison and disease. Adrenaline Rush grants a temporary boost to combat stats once per day.' },
+];
+
+const CLASSES = [
+  { id:2100, name:'Acrobat', leaning:'Stealth', desc:'A nimble specialist built around mobility and evasion.' },
+  { id:2101, name:'Agent', leaning:'Stealth', desc:'A spy and information-broker, skilled in persuasion and subtlety.' },
+  { id:2102, name:'Archer', leaning:'Combat', desc:'A ranged specialist built around the bow.' },
+  { id:2103, name:'Assassin', leaning:'Stealth', desc:'A lethal specialist in sneak attacks and silent kills.' },
+  { id:2104, name:'Barbarian', leaning:'Combat', desc:'A heavy melee brawler favoring raw strength over finesse.' },
+  { id:2105, name:'Bard', leaning:'Balanced', desc:'A charismatic jack-of-all-trades, strong in speech and light combat.' },
+  { id:2106, name:'Battlemage', leaning:'Balanced', desc:'A warrior-mage hybrid blending destruction magic with melee.' },
+  { id:2107, name:'Crusader', leaning:'Combat', desc:'A holy warrior combining heavy armor with restoration magic.' },
+  { id:2108, name:'Duelist', leaning:'Combat', desc:'A precise one-handed weapon specialist favoring speed and blocking.' },
+  { id:2109, name:'Healer', leaning:'Magic', desc:'A restoration and alchemy specialist focused on support.' },
+  { id:2110, name:'Knight', leaning:'Combat', desc:'A classic heavy-armor melee fighter.' },
+  { id:2111, name:'Mage', leaning:'Magic', desc:'A generalist spellcaster spanning the magic schools.' },
+  { id:2112, name:'Monk', leaning:'Stealth', desc:'An unarmed and acrobatic specialist relying on discipline over weapons.' },
+  { id:2113, name:'Nightblade', leaning:'Balanced', desc:'A stealth-magic hybrid blending illusion, mysticism, and blade work.' },
+  { id:2114, name:'Pilgrim', leaning:'Balanced', desc:'A traveling generalist balancing survival, speech, and light combat.' },
+  { id:2115, name:'Rogue', leaning:'Stealth', desc:'A light-armored generalist favoring mobility and sneak tactics.' },
+  { id:2116, name:'Scout', leaning:'Stealth', desc:'A wilderness specialist strong in athletics, armor, and archery.' },
+  { id:2117, name:'Sorcerer', leaning:'Magic', desc:'A conjuration and destruction specialist.' },
+  { id:2118, name:'Spellsword', leaning:'Balanced', desc:'A melee fighter who weaves in offensive and defensive magic.' },
+  { id:2119, name:'Thief', leaning:'Stealth', desc:'A classic light-fingered specialist in sneaking, security, and larceny.' },
+  { id:2120, name:'Warrior', leaning:'Combat', desc:'The archetypal heavy-weapon melee specialist.' },
+  { id:2121, name:'Custom Class', leaning:'Your choice', desc:'Build your own class at character creation, choosing any seven Major Skills and a specialization (Combat, Magic, or Stealth) to match your own playstyle instead of a preset.' },
+];
+
+const BIRTHSIGNS = [
+  { id:2200, name:'The Apprentice', effect:'A large bonus to maximum Magicka, offset by a personal weakness to magic damage.' },
+  { id:2201, name:'The Atronach', effect:'An even larger Magicka bonus and a Spell Absorption power, but no natural Magicka regeneration — it must be recovered through absorption or drinking potions.' },
+  { id:2202, name:'The Lady', effect:'A flat bonus to Endurance and Personality.' },
+  { id:2203, name:'The Lord', effect:'A recurring health-regeneration power, offset by a personal weakness to fire.' },
+  { id:2204, name:"The Lover", effect:"Lover's Kiss — paralyzes anyone who attacks you in melee, once per day." },
+  { id:2205, name:'The Mage', effect:'A flat bonus to maximum Magicka.' },
+  { id:2206, name:'The Ritual', effect:"Mara's Gift, a powerful healing burst for those near you, and Blessed Word, which can turn undead — both usable once per day." },
+  { id:2207, name:'The Serpent', effect:"Serpent's Curse — a damaging poison power usable on a target once per day, paired with resistance to poison." },
+  { id:2208, name:'The Shadow', effect:'Moonshadow — turns you invisible for a short time, once per day.' },
+  { id:2209, name:'The Steed', effect:'A flat, permanent bonus to movement speed.' },
+  { id:2210, name:'The Thief', effect:'Small flat bonuses to Agility, Speed, and Luck.' },
+  { id:2211, name:'The Tower', effect:'The Warden — automatically unlocks weak locks and detects nearby life once per day, plus minor reflect damage.' },
+  { id:2212, name:'The Warrior', effect:'A flat bonus to Strength and Endurance.' },
+];
+
+/* ============================= BESTIARY / COMPENDIUM ============================= */
+
+const BESTIARY_GROUPS = ['Daedra','Undead','Wildlife','Humanoid Foes','Oblivion Realm & Other'];
+
+const CREATURES = [
+  // Daedra
+  { id:5000, name:'Scamp', group:'Daedra', tip:'The lowliest Daedra, weak but numerous — usually the first hostile thing you meet inside an Oblivion Gate.' },
+  { id:5001, name:'Clannfear', group:'Daedra', tip:'A fast, aggressive quadruped Daedra that charges and claws; more dangerous in packs.' },
+  { id:5002, name:'Daedroth', group:'Daedra', tip:'A heavily armored, reptilian Daedra that spits a damaging bolt attack at range.' },
+  { id:5003, name:'Dremora', group:'Daedra', tip:"Mehrunes Dagon's elite soldiers, found throughout Oblivion Gates in ranked tiers (Kynval, Kynmarcher, Caitiff, etc.) with steadily tougher gear." },
+  { id:5004, name:'Spider Daedra', group:'Daedra', tip:'A dangerous spellcasting Daedra with a poisonous ranged attack and a spider\'s lower body.' },
+  { id:5005, name:'Xivilai', group:'Daedra', tip:'A towering, horned Daedra lord capable of devastating melee and spell attacks — among the toughest Daedra encountered in Gates.' },
+  { id:5006, name:'Flesh Atronach', group:'Daedra', tip:'A hulking construct of stitched flesh, slow but capable of heavy melee damage and disease.' },
+  { id:5007, name:'Storm Atronach', group:'Daedra', tip:'A floating construct of living lightning; deals shock damage and can be immune to certain weapon types.' },
+  { id:5008, name:'Winged Twilight', group:'Daedra', tip:'A flying Daedra capable of healing its allies mid-battle — often the priority target in a group fight.' },
+  { id:5009, name:'Gatekeeper', group:'Daedra', tip:'A colossal Daedra guarding the tower at the heart of every Oblivion Gate — must be defeated to reach and destroy the Sigil Stone.' },
+  // Undead
+  { id:5010, name:'Skeleton', group:'Undead', tip:'A basic reanimated combatant, weak individually but common in ruins and crypts.' },
+  { id:5011, name:'Zombie', group:'Undead', tip:'A slow, shambling reanimated corpse that can carry disease on hit.' },
+  { id:5012, name:'Lich', group:'Undead', tip:'A powerful undead spellcaster, the endpoint of necromantic ambition — rare and dangerous.' },
+  { id:5013, name:'Wraith', group:'Undead', tip:'A spectral undead that can drain stats and is resistant to normal weapons.' },
+  { id:5014, name:'Ghost', group:'Undead', tip:'An incorporeal spirit haunting a specific location, often tied to unfinished business or a side quest.' },
+  { id:5015, name:'Bonewalker', group:'Undead', tip:'A reanimated warrior skeleton wielding real weapons and armor, tougher than a common skeleton.' },
+  // Wildlife
+  { id:5016, name:'Wolf', group:'Wildlife', tip:'A common pack predator found throughout Cyrodiil\'s forests.' },
+  { id:5017, name:'Timber Wolf', group:'Wildlife', tip:'A larger, tougher cousin of the common wolf.' },
+  { id:5018, name:'Black Bear', group:'Wildlife', tip:'A dangerous forest predator, much tougher than a wolf in a straight fight.' },
+  { id:5019, name:'Mountain Lion', group:'Wildlife', tip:'A fast, aggressive ambush predator found in Cyrodiil\'s hills.' },
+  { id:5020, name:'Deer', group:'Wildlife', tip:'Harmless wildlife, a source of venison and hides.' },
+  { id:5021, name:'Wild Boar', group:'Wildlife', tip:'An aggressive tusked animal that will charge if provoked.' },
+  { id:5022, name:'Mudcrab', group:'Wildlife', tip:'A slow-moving, low-threat crustacean found near water — an easy early kill.' },
+  { id:5023, name:'Slaughterfish', group:'Wildlife', tip:'An aggressive fish that attacks anyone swimming in its waters.' },
+  // Humanoid Foes
+  { id:5024, name:'Bandit', group:'Humanoid Foes', tip:'The most common human threat in Cyrodiil, found in camps and ruins across the province.' },
+  { id:5025, name:'Marauder', group:'Humanoid Foes', tip:'A tougher, better-equipped cousin of the common bandit.' },
+  { id:5026, name:'Conjurer', group:'Humanoid Foes', tip:'A spellcaster who summons Daedra to fight on their behalf — kill the caster fast to stop reinforcements.' },
+  { id:5027, name:'Necromancer', group:'Humanoid Foes', tip:'A dark spellcaster who raises and commands the undead, often found in ruined forts and crypts.' },
+  { id:5028, name:'Goblin', group:'Humanoid Foes', tip:'A tribal, cave-dwelling humanoid organized into ranks (Grunt, Shaman, Skirmisher, Berserker, War Chief) — tribes fight fiercely to defend their totems.' },
+  { id:5029, name:'Imp', group:'Humanoid Foes', tip:'A small flying Daedra-kin that harasses with weak ranged spells — individually easy, but persistent.' },
+  // Oblivion Realm & Other
+  { id:5030, name:'Minotaur', group:'Oblivion Realm & Other', tip:'A powerful horned brute found in caves and ruins — hits extremely hard in melee.' },
+  { id:5031, name:'Ogre', group:'Oblivion Realm & Other', tip:'A hulking, club-wielding giant found in caves — slow but devastating if it connects.' },
+  { id:5032, name:'Troll', group:'Oblivion Realm & Other', tip:'A regenerating brute that heals rapidly unless finished off with fire.' },
+  { id:5033, name:'Will-o-the-Wisp', group:'Oblivion Realm & Other', tip:'A floating, glowing hazard that shocks anyone who gets close.' },
+  { id:5034, name:'Land Dreugh', group:'Oblivion Realm & Other', tip:'An amphibious crustacean-like creature found near coastal water, tougher than a mudcrab.' },
+];
+
+/* ============================= ALCHEMY & ENCHANTING ============================= */
+
+const CRAFT_TABS = [
+  { id:'ingredients', label:'Alchemy Ingredients', icon:'🌿' },
+  { id:'potions',      label:'Alchemy Basics',      icon:'⚗️' },
+  { id:'enchanting',   label:'Enchanting Basics',   icon:'✨' },
+];
+
+// Note: each ingredient's best-known effects are listed as a practical starting reference, not
+// necessarily an exhaustive list of all four — worth cross-checking in-game if you need the complete set.
+const INGREDIENTS = [
+  { id:6000, name:'Nirnroot', rarity:'rare', source:'Glowing patches near streams and ponds', effects:['Restore Fatigue','Frenzy','Damage Speed','Cure Poison'] },
+  { id:6001, name:'Bloodgrass', rarity:'uncommon', source:'Open fields', effects:['Restore Health','Feather'] },
+  { id:6002, name:'Wisp Stalk Caps', rarity:'uncommon', source:'Near Will-o-the-Wisps', effects:['Restore Magicka','Fortify Magicka'] },
+  { id:6003, name:'Vampire Dust', rarity:'common', source:'Dropped by vampires', effects:['Damage Health','Restore Magicka'] },
+  { id:6004, name:"Daedra Heart", rarity:'rare', source:'Dropped by summoned or Gate Daedra', effects:['Restore Health','Fortify Strength','Damage Magicka'] },
+  { id:6005, name:'Ectoplasm', rarity:'common', source:'Dropped by ghosts and atronachs', effects:['Damage Magicka','Restore Fatigue'] },
+  { id:6006, name:"Ogre's Teeth", rarity:'uncommon', source:'Dropped by Ogres', effects:['Fortify Strength','Damage Health'] },
+  { id:6007, name:'Void Salts', rarity:'uncommon', source:'Dropped by Storm Atronachs; found near water', effects:['Shock Damage','Resist Shock'] },
+  { id:6008, name:'Ash Yam', rarity:'common', source:'Grows in Cyrodiil farmland', effects:['Restore Fatigue','Fortify Endurance'] },
+  { id:6009, name:'Bittergreen Petals', rarity:'uncommon', source:'Wildflowers', effects:['Damage Fatigue','Feather'] },
+  { id:6010, name:'Blister Pod Cap', rarity:'common', source:'Forest fungus', effects:['Damage Health','Damage Fatigue'] },
+  { id:6011, name:'Fennel Seeds', rarity:'common', source:'Farmland herb', effects:['Restore Health','Restore Fatigue'] },
+  { id:6012, name:'Fly Amanita', rarity:'common', source:'Forest mushroom (red cap, white spots)', effects:['Fortify Magicka','Damage Health'] },
+  { id:6013, name:'Ginkgo Leaf', rarity:'uncommon', source:'Scattered trees', effects:['Restore Magicka','Fortify Intelligence'] },
+  { id:6014, name:'Ginseng Root', rarity:'common', source:'Farmland and forest floor', effects:['Fortify Strength','Restore Fatigue'] },
+  { id:6015, name:'Green Stain Cup', rarity:'common', source:'Forest mushroom', effects:['Damage Health','Damage Strength'] },
+  { id:6016, name:'Harrada', rarity:'uncommon', source:'Scrubland plant', effects:['Damage Health','Damage Fatigue'] },
+  { id:6017, name:"Hound's Tooth", rarity:'uncommon', source:'Dropped by wild dogs and wolves', effects:['Fortify Strength','Damage Health'] },
+  { id:6018, name:"Lady's Smock", rarity:'common', source:'Common wildflower', effects:['Restore Health','Cure Disease'] },
+  { id:6019, name:'Mandrake Root', rarity:'common', source:'Farmland and forest floor', effects:['Fortify Strength','Restore Fatigue'] },
+  { id:6020, name:'Marshmerrow', rarity:'uncommon', source:'Marsh and wetland plant', effects:['Restore Fatigue','Fortify Personality'] },
+  { id:6021, name:'Minotaur Horn', rarity:'rare', source:'Dropped by Minotaurs', effects:['Fortify Strength','Damage Health'] },
+  { id:6022, name:'Motherwort Sprig', rarity:'uncommon', source:'Forest undergrowth', effects:['Restore Magicka','Fortify Willpower'] },
+  { id:6023, name:'Mountain Flower', rarity:'common', source:'Hillsides and mountain slopes', effects:['Restore Health','Fortify Endurance'] },
+  { id:6024, name:'Nightshade', rarity:'common', source:'Poisonous wild plant', effects:['Damage Health','Damage Strength'] },
+  { id:6025, name:'Rat Meat', rarity:'common', source:'Dropped by rats', effects:['Restore Fatigue','Damage Health'] },
+  { id:6026, name:'Redwort Flower', rarity:'uncommon', source:'Wildflower', effects:['Restore Health','Fortify Speed'] },
+  { id:6027, name:'Scaly Pholiota', rarity:'uncommon', source:'Forest mushroom', effects:['Fortify Magicka','Damage Fatigue'] },
+  { id:6028, name:'Spiddal Stick', rarity:'uncommon', source:'Swamp and marsh plant', effects:['Damage Health','Damage Magicka'] },
+  { id:6029, name:'Troll Fat', rarity:'uncommon', source:'Dropped by Trolls', effects:['Restore Health','Fortify Endurance'] },
+];
+
+const POTION_BASICS = [
+  { id:6100, name:'Discovering Effects', text:'Every ingredient hides up to four magical effects. Eating or tasting an ingredient for the first time reveals one of its effects at random — the fastest way to learn what an ingredient does is to combine it at a Mortar & Pestle with one you already know and see what overlaps.' },
+  { id:6101, name:'Making a Potion', text:'Combine two to eight ingredients that share at least one known effect at an Alchemy apparatus. Shared effects between ingredients become the finished potion\'s effects — the more ingredients that share an effect, the stronger it comes out.' },
+  { id:6102, name:'Apparatus Quality Matters', text:'Better Mortar & Pestle, Alembic, Calcinator, and Retort tiers (Novice → Apprentice → Journeyman → Expert → Master) all raise the magnitude, duration, and value of every potion you brew — worth upgrading before mass-producing anything.' },
+  { id:6103, name:'Poisons', text:'A brew made only of negative/harmful effects becomes a poison instead of a potion. Poisons can be applied directly to a weapon for a few extra hits, or thrown as a weapon of their own.' },
+  { id:6104, name:'Potent Reagents', text:'Rare ingredients like Daedra Hearts, Void Salts, and Nirnroot tend to carry unusually strong or valuable effects, making them prized (and expensive) inputs for serious potion-crafting.' },
+];
+
+const ENCHANTING_BASICS = [
+  { id:6200, name:'Soul Gems', text:'Enchanting requires a filled Soul Gem as the power source. Gems come in Petty, Lesser, Common, Greater, and Grand sizes — bigger gems hold bigger souls and produce stronger enchantments. Azura\'s Star and Black Soul Gems can also capture the souls of sapient (humanoid) creatures.' },
+  { id:6201, name:'Filling a Soul Gem', text:'Cast or use an item enchanted with Soul Trap on a creature before it dies; on its death, its soul is captured into the smallest empty gem in your inventory able to hold it.' },
+  { id:6202, name:'Enchanting Altars', text:'Enchanting requires access to an Enchanting Altar — available at the Arcane University (Mages Guild members only) or at Frostcrag Spire. Choose a base item, a filled soul gem, and one or more effects to imbue.' },
+  { id:6203, name:'Spellmaking Altars', text:'A separate Spellmaking Altar (same locations, same Mages Guild requirement) lets you design entirely custom spells from any effect you\'ve learned, rather than enchanting an item.' },
+  { id:6204, name:'Sigil Stones', text:'Destroying the Sigil Stone at the heart of an Oblivion Gate closes it — and the Stone itself can then be used at any Enchanting Altar in place of a soul gem, applying a fixed, powerful, Gate-flavored enchantment (its exact effect depends on the Stone\'s tier: Lesser, Greater, or Grand).' },
+];
+
+/* ============================= LOCATIONS ============================= */
+
+const LOCATION_TABS = [
+  { id:'cities', label:'Cities', icon:'🏰' },
+  { id:'poi',    label:'Points of Interest', icon:'🗺️' },
+];
+
+const CITIES = [
+  { id:7000, name:'Imperial City', county:'The Imperial City', desc:'The capital of Cyrodiil and all Tamriel, built across an island at the center of Lake Rumare. Eight districts — Temple, Arboretum, Elven Gardens, Talos Plaza, Market, Waterfront, Arena, and the central Imperial Palace — ring the towering White Gold Tower and the Temple of the One.' },
+  { id:7001, name:'Anvil', county:'County Anvil', desc:'A windswept coastal port city on Cyrodiil\'s western shore, built around shipping, piracy lore, and a working lighthouse.' },
+  { id:7002, name:'Bravil', county:'County Bravil', desc:'A poorer river city in the southern swamps, with a rougher reputation than the other county capitals.' },
+  { id:7003, name:'Bruma', county:'County Bruma', desc:"A snowy mountain city near Skyrim's border, with a strong Nordic character and the closest capital to Cloud Ruler Temple." },
+  { id:7004, name:'Cheydinhal', county:'County Cheydinhal', desc:'An eastern city near the border of Valenwood and Black Marsh, known for its distinctive Dunmer-influenced architecture.' },
+  { id:7005, name:'Chorrol', county:'County Chorrol', desc:"A forested western-central city and home to the Fighters Guild's main hall; Weynon Priory lies just outside its walls." },
+  { id:7006, name:'Kvatch', county:'County Kvatch', desc:'A small city west of the Imperial City, devastated early in the Oblivion Crisis by a Great Gate and slowly rebuilt afterward.' },
+  { id:7007, name:'Leyawiin', county:'County Leyawiin', desc:'A southeastern city where the Niben river meets Topal Bay, near the border of Black Marsh, known for its distinctive stepped architecture.' },
+  { id:7008, name:'Skingrad', county:'County Skingrad', desc:"A hillside city in Cyrodiil's West Weald, at the heart of the province's wine country." },
+];
+
+const POI = [
+  { id:7100, name:'Arcane University', desc:'The Mages Guild\'s seat of higher learning in the Imperial City, home to its Spellmaking and Enchanting altars and the Arch-Mage\'s tower.' },
+  { id:7101, name:'Imperial City Arena', desc:'The combat sport venue in the Arena District, where fighters claw their way up the ranks toward the title of Grand Champion.' },
+  { id:7102, name:'Weynon Priory', desc:'A small priory just outside Chorrol, and the Blades\' first hiding place for the Amulet of Kings and Martin Septim early in the Main Quest.' },
+  { id:7103, name:'Cloud Ruler Temple', desc:'An ancient dragon-motif fortress near Bruma, the true stronghold of the Blades once Weynon Priory is compromised.' },
+  { id:7104, name:'Sancre Tor', desc:'The ruined ancient capital of the Reman Dynasty, tied to the founding of the Blades and a major late-game Main Quest location.' },
+  { id:7105, name:'Vilverin', desc:'An Ayleid ruin close to the Imperial City, and many a Champion\'s very first dungeon crawl.' },
+  { id:7106, name:'Miscarcand', desc:'A large, dangerous Ayleid ruin holding a Great Welkynd Stone sought during the Main Quest.' },
+  { id:7107, name:'Vahtacen', desc:'An Ayleid ruin tied to a Mages Guild research quest.' },
+  { id:7108, name:'Frostcrag Spire', desc:"A ruined wizard's tower that can be restored into a personal home and alternate Spellmaking/Enchanting site." },
+  { id:7109, name:'White Gold Tower & the Temple of the One', desc:"The Imperial Palace's central tower and the temple beside it, where the Dragonfires burn — the site of the Main Quest's climax." },
+];
+
+/* ============================= GLOBAL SEARCH INDEX ============================= */
+
+function buildSearchIndex(){
+  const idx = [];
+
+  QUESTS.forEach(q => {
+    const ql = QUESTLINES.find(l => l.id === q.line);
+    idx.push({
+      itemId: q.id, title: q.title, sectionLabel: 'Quests & Factions', icon: ql ? ql.icon : '📜',
+      snippet: [q.giver, q.location].filter(Boolean).join(' — ') || (q.steps && q.steps[0]) || '',
+      searchText: [q.title, q.giver, q.location, q.prince, (q.steps||[]).join(' '), (q.rewards||[]).join(' '), q.choice ? q.choice.text : ''].join(' ').toLowerCase(),
+      nav: { section:'quests', line:q.line },
+    });
+  });
+
+  RACES.forEach(r => idx.push({
+    itemId: r.id, title: r.name, sectionLabel: 'Character Builds › Races', icon: '🧬',
+    snippet: r.power, searchText: [r.name, r.leaning, r.power, r.effect].join(' ').toLowerCase(),
+    nav: { section:'builds', buildTab:'races' },
+  }));
+  CLASSES.forEach(c => idx.push({
+    itemId: c.id, title: c.name, sectionLabel: 'Character Builds › Classes', icon: '🎭',
+    snippet: c.desc, searchText: [c.name, c.leaning, c.desc].join(' ').toLowerCase(),
+    nav: { section:'builds', buildTab:'classes' },
+  }));
+  BIRTHSIGNS.forEach(b => idx.push({
+    itemId: b.id, title: b.name, sectionLabel: 'Character Builds › Birthsigns', icon: '✨',
+    snippet: b.effect, searchText: [b.name, b.effect].join(' ').toLowerCase(),
+    nav: { section:'builds', buildTab:'birthsigns' },
+  }));
+
+  ACHIEVEMENTS.forEach(a => idx.push({
+    itemId: a.id, title: a.name, sectionLabel: 'Achievements', icon: '🏆',
+    snippet: `${a.group} — ${a.points} pts`,
+    searchText: [a.name, a.description, a.group].join(' ').toLowerCase(),
+    nav: { section:'achievements' },
+  }));
+
+  CREATURES.forEach(c => idx.push({
+    itemId: c.id, title: c.name, sectionLabel: 'Bestiary / Compendium', icon: '👹',
+    snippet: c.tip, searchText: [c.name, c.group, c.tip].join(' ').toLowerCase(),
+    nav: { section:'bestiary' },
+  }));
+
+  INGREDIENTS.forEach(i => idx.push({
+    itemId: i.id, title: i.name, sectionLabel: 'Alchemy & Enchanting › Ingredients', icon: '🌿',
+    snippet: i.effects.join(', '),
+    searchText: [i.name, i.source, i.rarity, ...i.effects].join(' ').toLowerCase(),
+    nav: { section:'crafting', craftTab:'ingredients' },
+  }));
+  POTION_BASICS.forEach(p => idx.push({
+    itemId: null, title: p.name, sectionLabel: 'Alchemy & Enchanting › Alchemy Basics', icon: '⚗️',
+    snippet: p.text.slice(0, 120),
+    searchText: [p.name, p.text].join(' ').toLowerCase(),
+    nav: { section:'crafting', craftTab:'potions' },
+  }));
+  ENCHANTING_BASICS.forEach(e => idx.push({
+    itemId: null, title: e.name, sectionLabel: 'Alchemy & Enchanting › Enchanting Basics', icon: '✨',
+    snippet: e.text.slice(0, 120),
+    searchText: [e.name, e.text].join(' ').toLowerCase(),
+    nav: { section:'crafting', craftTab:'enchanting' },
+  }));
+
+  CITIES.forEach(c => idx.push({
+    itemId: c.id, title: c.name, sectionLabel: 'Locations › Cities', icon: '🏰',
+    snippet: c.county, searchText: [c.name, c.county, c.desc].join(' ').toLowerCase(),
+    nav: { section:'locations', locationTab:'cities' },
+  }));
+  POI.forEach(p => idx.push({
+    itemId: p.id, title: p.name, sectionLabel: 'Locations › Points of Interest', icon: '🗺️',
+    snippet: p.desc, searchText: [p.name, p.desc].join(' ').toLowerCase(),
+    nav: { section:'locations', locationTab:'poi' },
+  }));
+
+  return idx;
+}
+const SEARCH_INDEX = buildSearchIndex();
+
+/* ============================= STATE ============================= */
+
+let activeSection = 'overview';
+let activeLine = null;          // questline id within Quests & Factions
+let activeBuildTab = 'races';   // sub-tab within Character Builds
+let activeCraftTab = 'ingredients'; // sub-tab within Alchemy & Enchanting
+let activeLocationTab = 'cities';   // sub-tab within Locations
+let favOnly = false;
+let hideCompleted = false;
+let query = '';
+let favorites = new Set();
+let tracked = new Set();
+
+function storageKey(){ return 'oblivion-journal-progress'; }
+
+function syncFilterPills(){
+  document.querySelectorAll('.filter-pill[data-fav]').forEach(p => p.classList.toggle('active', p.dataset.fav === (favOnly ? 'favorites' : 'all')));
+  const hideBtn = document.querySelector('.filter-pill[data-hide-done]');
+  if (hideBtn) hideBtn.classList.toggle('active', hideCompleted);
+}
+
+function loadProgress(){
+  try {
+    const raw = localStorage.getItem(storageKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      favorites = new Set(parsed.favorites || []);
+      tracked = new Set(parsed.tracked || []);
+    }
+  } catch (e) { /* start fresh */ }
+}
+function saveProgress(){
+  try {
+    localStorage.setItem(storageKey(), JSON.stringify({
+      favorites: Array.from(favorites),
+      tracked: Array.from(tracked),
+    }));
+  } catch (e) { console.error('Could not save progress', e); }
+}
+
+function navStateKey(){ return 'oblivion-journal-lastview'; }
+function saveNavState(){
+  try {
+    localStorage.setItem(navStateKey(), JSON.stringify({
+      activeSection, activeLine, activeBuildTab, activeCraftTab, activeLocationTab,
+    }));
+  } catch (e) { /* not critical */ }
+}
+function loadNavState(){
+  try {
+    const raw = localStorage.getItem(navStateKey());
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s && typeof s === 'object' && SECTIONS.some(sec => sec.id === s.activeSection)) activeSection = s.activeSection;
+    if ('activeLine' in s) activeLine = s.activeLine;
+    if (s.activeBuildTab) activeBuildTab = s.activeBuildTab;
+    if (s.activeCraftTab) activeCraftTab = s.activeCraftTab;
+    if (s.activeLocationTab) activeLocationTab = s.activeLocationTab;
+  } catch (e) { /* start at the default view */ }
+}
+
+function questsForLine(line){ return QUESTS.filter(q => q.line === line); }
+function statFor(line){
+  const scoped = questsForLine(line).filter(q => q.trackable);
+  const done = scoped.filter(q => tracked.has(q.id)).length;
+  return { done, total: scoped.length };
+}
+function achStat(){
+  const done = ACHIEVEMENTS.filter(a => tracked.has(a.id)).length;
+  return { done, total: ACHIEVEMENTS.length };
+}
+function achPointsStat(){
+  let earned = 0, total = 0;
+  ACHIEVEMENTS.forEach(a => { total += a.points; if (tracked.has(a.id)) earned += a.points; });
+  return { earned, total };
+}
+function buildsStat(){
+  const items = [...RACES, ...CLASSES, ...BIRTHSIGNS];
+  const done = items.filter(i => tracked.has(i.id)).length;
+  return { done, total: items.length };
+}
+function bestiaryStat(){
+  const done = CREATURES.filter(c => tracked.has(c.id)).length;
+  return { done, total: CREATURES.length };
+}
+function craftingStat(){
+  const done = INGREDIENTS.filter(i => tracked.has(i.id)).length;
+  return { done, total: INGREDIENTS.length };
+}
+function locationsStat(){
+  const items = [...CITIES, ...POI];
+  const done = items.filter(i => tracked.has(i.id)).length;
+  return { done, total: items.length };
+}
+function overallStat(){
+  let done = 0, total = 0;
+  QUESTLINES.forEach(ql => { const s = statFor(ql.id); done += s.done; total += s.total; });
+  [achStat(), buildsStat(), bestiaryStat(), craftingStat(), locationsStat()]
+    .forEach(s => { done += s.done; total += s.total; });
+  return { done, total };
+}
+
+/* ============================= NAV ============================= */
+
+function renderNav(){
+  const btns = SECTIONS.map(s => `<button class="nav-btn ${activeSection===s.id?'active':''}" data-section="${s.id}">
+      <span class="icon">${s.icon}</span> ${s.label}
+    </button>`).join('');
+  document.getElementById('nav-desktop').innerHTML = btns;
+  document.getElementById('nav-mobile').innerHTML = btns;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSection = btn.dataset.section;
+      if (activeSection === 'quests' && !activeLine) activeLine = 'main';
+      favOnly = false; hideCompleted = false; query = '';
+      const si = document.getElementById('search'); if (si) si.value = '';
+      syncFilterPills();
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ============================= HEADER ============================= */
+
+function renderHeader(){
+  const titleEl = document.getElementById('page-title');
+  const subEl = document.getElementById('page-subtitle');
+  if (activeSection === 'overview') {
+    titleEl.textContent = "The Champion's Codex";
+    subEl.textContent = '— a record of the Empire, Cyrodiil —';
+  } else {
+    const sec = SECTIONS.find(s => s.id === activeSection);
+    titleEl.textContent = sec ? sec.label : "The Champion's Codex";
+    subEl.textContent = activeSection === 'quests' ? '— the Main Quest, the guilds, the Daedra, and the small favors between —'
+      : activeSection === 'achievements' ? '— trophies and deeds of the Champion —'
+      : activeSection === 'builds' ? '— races, classes & birthsigns —'
+      : activeSection === 'crafting' ? '— alchemy & enchanting —'
+      : activeSection === 'bestiary' ? '— creatures & foes of Cyrodiil —'
+      : activeSection === 'locations' ? '— cities, ruins & landmarks —'
+      : '— a record of the Empire, Cyrodiil —';
+  }
+}
+
+/* ============================= SUB NAV (questlines) ============================= */
+
+function renderSubRow(){
+  const subRow = document.getElementById('sub-row');
+  const banner = document.getElementById('branch-banner');
+  banner.style.display = 'none';
+  banner.innerHTML = '';
+  if (activeSection !== 'quests') {
+    subRow.style.display = 'none';
+    subRow.innerHTML = '';
+    return;
+  }
+  subRow.style.display = 'flex';
+  subRow.innerHTML = QUESTLINES.map(ql => {
+    const { done, total } = statFor(ql.id);
+    return `<span class="sub-pill ${activeLine===ql.id?'active':''}" data-line="${ql.id}">${ql.icon} ${ql.label} <span class="n">${done}/${total}</span></span>`;
+  }).join('');
+  subRow.querySelectorAll('[data-line]').forEach(pill => {
+    pill.addEventListener('click', () => {
+      activeLine = pill.dataset.line;
+      renderAll();
+    });
+  });
+}
+
+/* ============================= OVERVIEW DASHBOARD ============================= */
+
+function renderOverview(){
+  const container = document.getElementById('entries');
+  container.classList.add('grid-mode');
+  document.getElementById('search-row').style.display = 'none';
+
+  let questDone = 0, questTotal = 0;
+  QUESTLINES.forEach(ql => { const s = statFor(ql.id); questDone += s.done; questTotal += s.total; });
+  const favCount = favorites.size;
+
+  const heroCard = (() => {
+    const { done, total } = overallStat();
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    const { earned, total: totalPts } = achPointsStat();
+    const r = 52, circumference = 2 * Math.PI * r;
+    const offset = circumference * (1 - pct / 100);
+    return `
+    <div class="overview-hero" style="grid-column:1/-1;">
+      <div class="completion-ring-wrap">
+        <svg class="completion-ring" viewBox="0 0 120 120">
+          <circle class="completion-ring-track" cx="60" cy="60" r="${r}"></circle>
+          <circle class="completion-ring-fill" cx="60" cy="60" r="${r}"
+            style="stroke-dasharray:${circumference.toFixed(2)}; stroke-dashoffset:${offset.toFixed(2)};"></circle>
+        </svg>
+        <div class="completion-ring-pct">${pct}%</div>
+      </div>
+      <div class="overview-hero-info">
+        <div class="overview-hero-title">Overall Completion</div>
+        <div class="overview-hero-count">${done} of ${total} trackable entries logged across the entire codex</div>
+        <div class="points-total-badge">🏆 ${earned} / ${totalPts} pts</div>
+      </div>
+    </div>`;
+  })();
+
+  const cardFor = (icon, label, section, done, total, noun) => {
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    return `
+    <div class="dash-card" data-nav-section="${section}">
+      <div class="dash-card-top"><span class="dash-icon">${icon}</span><span class="dash-label">${label}</span></div>
+      <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="dash-count">${done} of ${total} ${noun} — ${pct}%</div>
+    </div>`;
+  };
+
+  const achS = achStat(), buildsS = buildsStat(), bestS = bestiaryStat(), craftS = craftingStat(), locS = locationsStat();
+
+  const dashCards = [
+    cardFor('📜', 'Quests & Factions', 'quests', questDone, questTotal, 'quests logged'),
+    cardFor('🏆', 'Achievements', 'achievements', achS.done, achS.total, 'earned'),
+    cardFor('⚔️', 'Character Builds', 'builds', buildsS.done, buildsS.total, 'races/classes/signs logged'),
+    cardFor('👹', 'Bestiary / Compendium', 'bestiary', bestS.done, bestS.total, 'encountered'),
+    cardFor('⚗️', 'Alchemy & Enchanting', 'crafting', craftS.done, craftS.total, 'ingredients logged'),
+    cardFor('🗺️', 'Locations', 'locations', locS.done, locS.total, 'visited'),
+  ].join('');
+
+  const favCard = `
+    <div class="dash-card" data-nav-section="quests" data-nav-fav="true" style="margin-top:14px;">
+      <div class="dash-card-top"><span class="dash-icon">★</span><span class="dash-label">Favorites Saved</span></div>
+      <div class="dash-count">${favCount} ${favCount === 1 ? 'entry' : 'entries'} starred across the codex</div>
+    </div>`;
+
+  container.innerHTML = `
+    ${heroCard}
+    <div class="dash-grid" style="grid-column:1/-1;">${dashCards}</div>
+    ${favCard}
+    <div class="rune-divider" style="grid-column:1/-1;"></div>
+    <div class="reset-zone" style="grid-column:1/-1;">
+      <button id="export-progress-btn" class="io-btn">Export Progress</button>
+      <button id="import-progress-btn" class="io-btn">Import Progress</button>
+      <input id="import-progress-file" type="file" accept="application/json,.json" style="display:none;" />
+      <button id="reset-progress-btn" class="reset-btn">Reset All Progress</button>
+      <span class="reset-hint">Clears every checkmark and favorite — can't be undone.</span>
+      <span id="io-status" class="io-status"></span>
+    </div>
+  `;
+
+  let resetArmed = false, resetTimer = null;
+  const resetBtn = document.getElementById('reset-progress-btn');
+  resetBtn.addEventListener('click', () => {
+    if (!resetArmed) {
+      resetArmed = true;
+      resetBtn.textContent = 'Are you sure? Click to confirm';
+      resetBtn.classList.add('armed');
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => { resetArmed = false; resetBtn.textContent = 'Reset All Progress'; resetBtn.classList.remove('armed'); }, 4000);
+    } else {
+      clearTimeout(resetTimer);
+      favorites = new Set(); tracked = new Set();
+      saveProgress(); renderAll();
+    }
+  });
+
+  const showIoStatus = (msg, ok) => {
+    const el = document.getElementById('io-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.toggle('ok', ok);
+    el.classList.toggle('err', !ok);
+  };
+
+  document.getElementById('export-progress-btn').addEventListener('click', () => {
+    try {
+      const payload = {
+        app: 'oblivion-champions-codex',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        favorites: Array.from(favorites),
+        tracked: Array.from(tracked),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = payload.exportedAt.slice(0, 10);
+      a.href = url;
+      a.download = `champions-codex-progress-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showIoStatus(`✓ Exported ${payload.tracked.length} tracked + ${payload.favorites.length} favorited entries.`, true);
+    } catch (e) {
+      showIoStatus('Export failed — see console for details.', false);
+      console.error('Export failed', e);
+    }
+  });
+
+  const importInput = document.getElementById('import-progress-file');
+  document.getElementById('import-progress-btn').addEventListener('click', () => { importInput.value = ''; importInput.click(); });
+  importInput.addEventListener('change', () => {
+    const file = importInput.files && importInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try { parsed = JSON.parse(reader.result); }
+      catch (e) { showIoStatus('Import failed — that file is not valid JSON.', false); return; }
+
+      const isIdArray = arr => Array.isArray(arr) && arr.every(v => typeof v === 'number' || typeof v === 'string');
+      if (!parsed || typeof parsed !== 'object' || !isIdArray(parsed.favorites) || !isIdArray(parsed.tracked)) {
+        showIoStatus('Import failed — file is missing the expected "favorites"/"tracked" id lists.', false);
+        return;
+      }
+
+      favorites = new Set(parsed.favorites);
+      tracked = new Set(parsed.tracked);
+      saveProgress();
+      renderAll();
+      showIoStatus(`✓ Imported ${parsed.tracked.length} tracked + ${parsed.favorites.length} favorited entries.`, true);
+    };
+    reader.onerror = () => showIoStatus('Import failed — could not read that file.', false);
+    reader.readAsText(file);
+  });
+
+  container.querySelectorAll('.dash-card[data-nav-section]').forEach(card => {
+    card.addEventListener('click', () => {
+      activeSection = card.dataset.navSection;
+      if (activeSection === 'quests') activeLine = 'main';
+      favOnly = card.dataset.navFav === 'true';
+      hideCompleted = false;
+      renderAll();
+      syncFilterPills();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ============================= QUESTS RENDER ============================= */
+
+function renderQuests(){
+  try { renderQuestsInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderQuestsInner(){
+  document.getElementById('search-row').style.display = 'flex';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  let list = questsForLine(activeLine);
+  if (favOnly) list = list.filter(q => favorites.has(q.id));
+  if (hideCompleted) list = list.filter(q => !tracked.has(q.id));
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    list = list.filter(item =>
+      item.title.toLowerCase().includes(q) ||
+      (item.steps||[]).join(' ').toLowerCase().includes(q) ||
+      (item.rewards||[]).join(' ').toLowerCase().includes(q) ||
+      (item.giver||'').toLowerCase().includes(q) ||
+      (item.prince||'').toLowerCase().includes(q) ||
+      (item.choice ? item.choice.text.toLowerCase().includes(q) : false)
+    );
+  }
+
+  const progressEl = document.getElementById('progress-tally');
+  const stat = statFor(activeLine);
+  progressEl.textContent = `${stat.done} of ${stat.total} quests complete`;
+  progressEl.style.display = 'inline';
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state">No entries here yet. Try another questline or clear the search.</div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(q => {
+    const isFav = favorites.has(q.id);
+    const isDone = tracked.has(q.id);
+    const stepsHtml = (q.steps||[]).map(s => `<li>${s}</li>`).join('');
+    const rewardsHtml = (q.rewards||[]).map(r => `<span class="reward-chip">${r}</span>`).join('');
+    const metaBits = [
+      q.prince ? `<span><b>Prince:</b> ${q.prince}</span>` : '',
+      q.giver ? `<span><b>Giver:</b> ${q.giver}</span>` : '',
+      q.location ? `<span><b>Where:</b> ${q.location}</span>` : '',
+    ].join('');
+    return `
+    <article class="quest ${isDone ? 'done' : ''}" data-id="${q.id}">
+      <div class="quest-top">
+        <div class="quest-title-wrap">
+          ${q.order ? `<span class="quest-order">#${q.order}</span>` : ''}
+          <h3>${q.title}</h3>
+        </div>
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${q.id}" aria-label="Favorite">★</button>
+      </div>
+      ${metaBits ? `<div class="quest-meta">${metaBits}</div>` : ''}
+      ${stepsHtml ? `<ol class="quest-steps">${stepsHtml}</ol>` : ''}
+      ${q.choice ? `<div class="choice-box"><b>${q.choice.flag || 'Choice Point'}</b>${q.choice.text}</div>` : ''}
+      ${rewardsHtml ? `<div class="rewards-row">${rewardsHtml}</div>` : ''}
+      <div class="quest-foot">
+        <span></span>
+        ${q.trackable ? `<button class="track-btn" data-track="${q.id}"><span class="box"></span> ${isDone ? 'Completed' : 'Mark complete'}</button>` : ''}
+      </div>
+    </article>`;
+  }).join('');
+
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderQuests(); saveProgress(); renderSubRow(); renderNav();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderQuests(); saveProgress(); renderSubRow();
+    });
+  });
+}
+
+/* ============================= ACHIEVEMENTS RENDER ============================= */
+
+function renderAchievements(){
+  try { renderAchievementsInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderAchievementsInner(){
+  document.getElementById('search-row').style.display = 'flex';
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  let list = ACHIEVEMENTS.slice();
+  if (favOnly) list = list.filter(a => favorites.has(a.id));
+  if (hideCompleted) list = list.filter(a => !tracked.has(a.id));
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    list = list.filter(a =>
+      a.name.toLowerCase().includes(q) ||
+      a.description.toLowerCase().includes(q) ||
+      a.group.toLowerCase().includes(q)
+    );
+  }
+
+  const { done, total } = achStat();
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.textContent = `${done} of ${total} earned`;
+  progressEl.style.display = 'inline';
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state">No achievements match. Try another search or clear the filter.</div>`;
+    return;
+  }
+
+  const grouped = ACHIEVEMENT_GROUPS.map(g => ({ g, items: list.filter(a => a.group === g) })).filter(x => x.items.length);
+
+  const cardHtml = a => {
+    const isFav = favorites.has(a.id);
+    const isDone = tracked.has(a.id);
+    const trophyClass = a.trophy === 'gold' ? 'gold' : a.trophy === 'silver' ? 'silver' : '';
+    const linkBtn = a.linkLine ? `<button class="ach-link-btn" data-link-line="${a.linkLine}" data-link-quest="${a.linkQuest||''}">🔗 View quest</button>` : '<span></span>';
+    return `
+    <article class="quest ach-card ${isDone ? 'done' : ''}" data-id="${a.id}">
+      <div class="quest-top">
+        <div class="quest-title-wrap">
+          <span class="points-badge ${trophyClass}">${a.points} pts</span>
+          <h3>${a.name}</h3>
+        </div>
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${a.id}" aria-label="Favorite">★</button>
+      </div>
+      <p class="ach-desc">${a.description}</p>
+      <div class="quest-foot">
+        ${linkBtn}
+        <button class="track-btn" data-track="${a.id}"><span class="box"></span> ${isDone ? 'Earned' : 'Mark earned'}</button>
+      </div>
+    </article>`;
+  };
+
+  container.innerHTML = `<div class="ach-categories">${grouped.map(({ g, items }) => `
+    <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(a=>tracked.has(a.id)).length}/${items.length})</span></div>
+    <div class="ach-grid">${items.map(cardHtml).join('')}</div>
+  `).join('')}</div>`;
+
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderAchievements(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderAchievements(); saveProgress(); renderNav();
+    });
+  });
+  container.querySelectorAll('[data-link-line]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const line = btn.dataset.linkLine;
+      activeSection = 'quests';
+      activeLine = line;
+      favOnly = false; hideCompleted = false; query = '';
+      const si = document.getElementById('search'); if (si) si.value = '';
+      renderAll();
+      syncFilterPills();
+      const questId = btn.dataset.linkQuest ? Number(btn.dataset.linkQuest) : null;
+      if (questId !== null) {
+        const targetCard = document.querySelector(`.quest[data-id="${questId}"]`);
+        if (targetCard) {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.classList.add('flash-highlight');
+          setTimeout(() => targetCard.classList.remove('flash-highlight'), 2200);
+        }
+      }
+    });
+  });
+}
+
+/* ============================= CHARACTER BUILDS RENDER ============================= */
+
+function renderBuilds(){
+  try { renderBuildsInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderBuildsInner(){
+  document.getElementById('search-row').style.display = 'flex';
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${BUILD_TABS.map(t =>
+    `<span class="sub-pill ${activeBuildTab===t.id?'active':''}" data-buildtab="${t.id}">${t.icon} ${t.label}</span>`).join('')}</div>`;
+
+  const dataFor = activeBuildTab === 'races' ? RACES : activeBuildTab === 'classes' ? CLASSES : BIRTHSIGNS;
+  const verb = 'Mark played';
+  const verbDone = 'Played';
+
+  let list = dataFor.slice();
+  if (favOnly) list = list.filter(i => favorites.has(i.id));
+  if (hideCompleted) list = list.filter(i => !tracked.has(i.id));
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    list = list.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+  }
+
+  const { done, total } = (() => {
+    const d = dataFor.filter(i => tracked.has(i.id)).length;
+    return { done: d, total: dataFor.length };
+  })();
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.textContent = `${done} of ${total} tried`;
+  progressEl.style.display = 'inline';
+
+  const cardHtml = i => {
+    const isFav = favorites.has(i.id);
+    const isDone = tracked.has(i.id);
+    const meta = i.leaning ? `<div class="quest-meta"><span><b>Leaning:</b> ${i.leaning}</span>${i.power ? ` <span><b>Power:</b> ${i.power}</span>` : ''}</div>` : '';
+    const desc = i.effect || i.desc || '';
+    return `
+    <article class="quest ${isDone ? 'done' : ''}" data-id="${i.id}">
+      <div class="quest-top">
+        <div class="quest-title-wrap"><h3>${i.name}</h3></div>
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${i.id}" aria-label="Favorite">★</button>
+      </div>
+      ${meta}
+      <p class="ach-desc">${desc}</p>
+      <div class="quest-foot">
+        <span></span>
+        <button class="track-btn" data-track="${i.id}"><span class="box"></span> ${isDone ? verbDone : verb}</button>
+      </div>
+    </article>`;
+  };
+
+  const body = list.length === 0
+    ? `<div class="empty-state">No entries match. Try another search or clear the filter.</div>`
+    : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`;
+
+  container.innerHTML = tabsHtml + body;
+
+  container.querySelectorAll('[data-buildtab]').forEach(pill => {
+    pill.addEventListener('click', () => { activeBuildTab = pill.dataset.buildtab; favOnly = false; hideCompleted = false; query = ''; const si = document.getElementById('search'); if (si) si.value = ''; renderAll(); });
+  });
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderBuilds(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderBuilds(); saveProgress(); renderNav();
+    });
+  });
+}
+
+/* ============================= BESTIARY RENDER ============================= */
+
+function renderBestiary(){
+  try { renderBestiaryInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderBestiaryInner(){
+  document.getElementById('search-row').style.display = 'flex';
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  let list = CREATURES.slice();
+  if (favOnly) list = list.filter(c => favorites.has(c.id));
+  if (hideCompleted) list = list.filter(c => !tracked.has(c.id));
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    list = list.filter(c => c.name.toLowerCase().includes(q) || c.tip.toLowerCase().includes(q) || c.group.toLowerCase().includes(q));
+  }
+  const { done, total } = bestiaryStat();
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.textContent = `${done} of ${total} encountered`;
+  progressEl.style.display = 'inline';
+
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state">No creatures match. Try another search or clear the filter.</div>`;
+  } else {
+    const grouped = BESTIARY_GROUPS.map(g => ({ g, items: list.filter(c => c.group === g) })).filter(x => x.items.length);
+    const cardHtml = c => {
+      const isFav = favorites.has(c.id), isDone = tracked.has(c.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${c.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${c.name}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${c.id}" aria-label="Favorite">★</button>
+        </div>
+        <p class="ach-desc">${c.tip}</p>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${c.id}"><span class="box"></span> ${isDone ? 'Encountered' : 'Mark encountered'}</button></div>
+      </article>`;
+    };
+    container.innerHTML = grouped.map(({ g, items }) => `
+      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(c=>tracked.has(c.id)).length}/${items.length})</span></div>
+      <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
+    `).join('');
+  }
+
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderBestiary(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderBestiary(); saveProgress(); renderNav();
+    });
+  });
+}
+
+/* ============================= ALCHEMY & ENCHANTING RENDER ============================= */
+
+function renderCrafting(){
+  try { renderCraftingInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderCraftingInner(){
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${CRAFT_TABS.map(t =>
+    `<span class="sub-pill ${activeCraftTab===t.id?'active':''}" data-crafttab="${t.id}">${t.icon} ${t.label}</span>`).join('')}</div>`;
+
+  if (activeCraftTab === 'ingredients') {
+    document.getElementById('search-row').style.display = 'flex';
+    let list = INGREDIENTS.slice();
+    if (favOnly) list = list.filter(i => favorites.has(i.id));
+    if (hideCompleted) list = list.filter(i => !tracked.has(i.id));
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter(i => i.name.toLowerCase().includes(q) || i.source.toLowerCase().includes(q) || i.effects.join(' ').toLowerCase().includes(q));
+    }
+    const done = INGREDIENTS.filter(i => tracked.has(i.id)).length;
+    const progressEl = document.getElementById('progress-tally');
+    progressEl.textContent = `${done} of ${INGREDIENTS.length} logged`;
+    progressEl.style.display = 'inline';
+
+    const rarityClass = r => r === 'rare' ? 'tag-rare' : r === 'uncommon' ? 'tag-uncommon' : 'tag-common';
+    const cardHtml = i => {
+      const isFav = favorites.has(i.id), isDone = tracked.has(i.id);
+      const effectsHtml = i.effects.map(e => `<span class="reward-chip">${e}</span>`).join('');
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${i.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><span class="tag-chip ${rarityClass(i.rarity)}">${i.rarity}</span><h3>${i.name}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${i.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Found:</b> ${i.source}</span></div>
+        <div class="rewards-row">${effectsHtml}</div>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${i.id}"><span class="box"></span> ${isDone ? 'Logged' : 'Mark logged'}</button></div>
+      </article>`;
+    };
+    container.innerHTML = tabsHtml + (list.length === 0
+      ? `<div class="empty-state">No ingredients match. Try another search or clear the filter.</div>`
+      : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
+  } else if (activeCraftTab === 'potions') {
+    document.getElementById('search-row').style.display = 'none';
+    container.innerHTML = tabsHtml + `<div class="ach-group-list">${POTION_BASICS.map(p => `
+      <article class="quest"><div class="quest-top"><div class="quest-title-wrap"><h3>${p.name}</h3></div></div>
+        <p class="ach-desc">${p.text}</p>
+      </article>`).join('')}</div>`;
+  } else if (activeCraftTab === 'enchanting') {
+    document.getElementById('search-row').style.display = 'none';
+    container.innerHTML = tabsHtml + `<div class="ach-group-list">${ENCHANTING_BASICS.map(e => `
+      <article class="quest"><div class="quest-top"><div class="quest-title-wrap"><h3>${e.name}</h3></div></div>
+        <p class="ach-desc">${e.text}</p>
+      </article>`).join('')}</div>`;
+  }
+
+  container.querySelectorAll('[data-crafttab]').forEach(pill => {
+    pill.addEventListener('click', () => { activeCraftTab = pill.dataset.crafttab; favOnly = false; hideCompleted = false; query = ''; const si = document.getElementById('search'); if (si) si.value = ''; renderAll(); });
+  });
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderCrafting(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderCrafting(); saveProgress(); renderNav();
+    });
+  });
+}
+
+/* ============================= LOCATIONS RENDER ============================= */
+
+function renderLocations(){
+  try { renderLocationsInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderLocationsInner(){
+  document.getElementById('search-row').style.display = 'flex';
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${LOCATION_TABS.map(t =>
+    `<span class="sub-pill ${activeLocationTab===t.id?'active':''}" data-loctab="${t.id}">${t.icon} ${t.label}</span>`).join('')}</div>`;
+
+  const dataFor = activeLocationTab === 'cities' ? CITIES : POI;
+  let list = dataFor.slice();
+  if (favOnly) list = list.filter(i => favorites.has(i.id));
+  if (hideCompleted) list = list.filter(i => !tracked.has(i.id));
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    list = list.filter(i => JSON.stringify(i).toLowerCase().includes(q));
+  }
+  const done = dataFor.filter(i => tracked.has(i.id)).length;
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.textContent = `${done} of ${dataFor.length} visited`;
+  progressEl.style.display = 'inline';
+
+  const cardHtml = i => {
+    const isFav = favorites.has(i.id), isDone = tracked.has(i.id);
+    return `
+    <article class="quest ${isDone ? 'done' : ''}" data-id="${i.id}">
+      <div class="quest-top">
+        <div class="quest-title-wrap"><h3>${i.name}</h3></div>
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${i.id}" aria-label="Favorite">★</button>
+      </div>
+      ${i.county ? `<div class="quest-meta"><span><b>${i.county}</b></span></div>` : ''}
+      <p class="ach-desc">${i.desc}</p>
+      <div class="quest-foot"><span></span><button class="track-btn" data-track="${i.id}"><span class="box"></span> ${isDone ? 'Visited' : 'Mark visited'}</button></div>
+    </article>`;
+  };
+
+  container.innerHTML = tabsHtml + (list.length === 0
+    ? `<div class="empty-state">No locations match. Try another search or clear the filter.</div>`
+    : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
+
+  container.querySelectorAll('[data-loctab]').forEach(pill => {
+    pill.addEventListener('click', () => { activeLocationTab = pill.dataset.loctab; favOnly = false; hideCompleted = false; query = ''; const si = document.getElementById('search'); if (si) si.value = ''; renderAll(); });
+  });
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderLocations(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderLocations(); saveProgress(); renderNav();
+    });
+  });
+}
+
+/* ============================= ERROR / MASTER RENDER ============================= */
+
+function showRenderError(err){
+  console.error('Codex render error:', err);
+  const container = document.getElementById('entries');
+  if (!container) return;
+  container.classList.remove('grid-mode');
+  container.innerHTML = `
+    <div class="placeholder-card" style="border-color: var(--blood);">
+      <div class="p-icon">⚠️</div>
+      <h2 style="color: var(--blood);">Something tore in the page</h2>
+      <p>The codex hit an unexpected error while drawing this page. Try clicking another tab and back again. If it keeps happening, this is the detail to report:</p>
+      <p style="font-family:'Spectral', monospace; font-size:11px; color: var(--ink-dim); word-break:break-word;">${(err && err.message) ? err.message : String(err)}</p>
+    </div>`;
+}
+
+/* ============================= GLOBAL SEARCH RESULTS RENDER ============================= */
+
+function navigateToResult(r){
+  const nav = r.nav;
+  activeSection = nav.section;
+  if ('line' in nav) activeLine = nav.line;
+  if (nav.buildTab) activeBuildTab = nav.buildTab;
+  if (nav.craftTab) activeCraftTab = nav.craftTab;
+  if (nav.locationTab) activeLocationTab = nav.locationTab;
+  favOnly = false; hideCompleted = false; query = '';
+  const si = document.getElementById('search'); if (si) si.value = '';
+  renderAll();
+  syncFilterPills();
+  let scrolled = false;
+  if (r.itemId !== null && r.itemId !== undefined) {
+    const targetCard = document.querySelector(`.quest[data-id="${r.itemId}"]`);
+    if (targetCard) {
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetCard.classList.add('flash-highlight');
+      setTimeout(() => targetCard.classList.remove('flash-highlight'), 2200);
+      scrolled = true;
+    }
+  }
+  if (!scrolled) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderGlobalSearchResults(){
+  document.getElementById('search-row').style.display = 'flex';
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+
+  const q = query.trim().toLowerCase();
+  let results = SEARCH_INDEX.filter(r => r.searchText.includes(q));
+  if (favOnly) results = results.filter(r => r.itemId !== null && favorites.has(r.itemId));
+  if (hideCompleted) results = results.filter(r => r.itemId === null || !tracked.has(r.itemId));
+
+  const progressEl = document.getElementById('progress-tally');
+  const sectionCount = new Set(results.map(r => r.sectionLabel.split(' › ')[0])).size;
+  progressEl.textContent = results.length
+    ? `${results.length} result${results.length === 1 ? '' : 's'} across ${sectionCount} section${sectionCount === 1 ? '' : 's'}`
+    : '';
+  progressEl.style.display = results.length ? 'inline' : 'none';
+
+  if (results.length === 0) {
+    container.innerHTML = `<div class="empty-state">No matches for "${query.trim()}" anywhere in the codex. Try a different search term.</div>`;
+    return;
+  }
+
+  const order = [];
+  const bySection = {};
+  results.forEach(r => {
+    if (!bySection[r.sectionLabel]) { bySection[r.sectionLabel] = []; order.push(r.sectionLabel); }
+    bySection[r.sectionLabel].push(r);
+  });
+
+  const resultCardHtml = (r, idx) => `
+    <article class="quest ach-card search-result-card" data-search-idx="${idx}">
+      <div class="quest-top">
+        <div class="quest-title-wrap"><span class="result-icon">${r.icon}</span><h3>${r.title}</h3></div>
+      </div>
+      ${r.snippet ? `<p class="ach-desc">${r.snippet}</p>` : ''}
+    </article>`;
+
+  container.innerHTML = `<p class="search-section-note">Searching the whole codex — every quest, race, class, birthsign, achievement, creature, ingredient, and location, not just this tab.</p>
+    <div class="ach-categories">${order.map(label => {
+      const items = bySection[label];
+      return `<div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${label} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.length})</span></div>
+        <div class="ach-grid">${items.map(r => resultCardHtml(r, results.indexOf(r))).join('')}</div>`;
+    }).join('')}</div>`;
+
+  container.querySelectorAll('[data-search-idx]').forEach(card => {
+    card.addEventListener('click', () => navigateToResult(results[Number(card.dataset.searchIdx)]));
+  });
+}
+
+/* ============================= MASTER RENDER ============================= */
+
+function renderSectionContent(){
+  if (query.trim()) { renderGlobalSearchResults(); return; }
+  if (activeSection === 'overview') { renderOverview(); }
+  else if (activeSection === 'quests') { renderQuests(); }
+  else if (activeSection === 'achievements') { renderAchievements(); }
+  else if (activeSection === 'builds') { renderBuilds(); }
+  else if (activeSection === 'bestiary') { renderBestiary(); }
+  else if (activeSection === 'crafting') { renderCrafting(); }
+  else if (activeSection === 'locations') { renderLocations(); }
+}
+
+function renderAll(){
+  try {
+    renderNav();
+    renderHeader();
+    renderSubRow();
+    renderSectionContent();
+    saveNavState();
+  } catch (err) {
+    showRenderError(err);
+  }
+}
+
+function renderCurrentList(){
+  try {
+    renderSectionContent();
+  } catch (err) {
+    showRenderError(err);
+  }
+}
+
+document.getElementById('search').addEventListener('input', e => { query = e.target.value; renderCurrentList(); });
+document.querySelectorAll('.filter-pill[data-fav]').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill[data-fav]').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    favOnly = pill.dataset.fav === 'favorites';
+    renderCurrentList();
+  });
+});
+document.querySelectorAll('.filter-pill[data-hide-done]').forEach(pill => {
+  pill.addEventListener('click', () => {
+    hideCompleted = !hideCompleted;
+    pill.classList.toggle('active', hideCompleted);
+    renderCurrentList();
+  });
+});
+
+loadProgress();
+loadNavState();
+renderAll();
+</script>
+</body>
+</html>
