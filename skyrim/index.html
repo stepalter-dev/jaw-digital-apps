@@ -35,9 +35,14 @@
     --blood: #A24B45;
     /* "done"/success accent — a completed quest reads as an active frost glow */
     --sage-ok: #A2C4D9;
-    /* desaturated moss-green — used only for the Fishing "Uncommon" rarity tag, to sit between
-       frost-blue (Rare) and stone-grey (Common) without introducing a bright, out-of-theme green */
+    /* desaturated moss-green — shared by The Reach's map-hold fill and (historically) the Fishing
+       "Uncommon" tag. The Fishing tag now uses its own --tag-uncommon below instead: --moss's hue sits
+       too close to --ink-soft at a glance to read as a distinct rarity tier next to Common. */
     --moss: #93A886;
+    /* Fishing rarity tags only — a clearly blue/green/grey trio, desaturated to fit the theme but with
+       enough hue separation to actually read as three different tiers at a glance (Rare reuses --frost). */
+    --tag-uncommon: #7FA35E;
+    --tag-common: #9A968C;
   }
 
   * { box-sizing: border-box; }
@@ -479,8 +484,8 @@
   /* Fishing rarity tags — Rare reuses frost-blue, Uncommon gets a desaturated moss-green, Common
      stays neutral stone-grey; "Common to uncommon" is treated as the rarer (uncommon) tier. */
   .tag-rare { background: rgba(162,196,217,0.14); color: var(--frost); }
-  .tag-uncommon { background: rgba(147,168,134,0.16); color: var(--moss); }
-  .tag-common { background: rgba(142,148,153,0.14); color: var(--ink-soft); }
+  .tag-uncommon { background: rgba(127,163,94,0.18); color: var(--tag-uncommon); }
+  .tag-common { background: rgba(154,150,140,0.16); color: var(--tag-common); }
 
   .fav-btn, .track-btn { all: unset; cursor: pointer; }
   .fav-btn { font-size: 16px; line-height: 1; flex-shrink: 0; color: var(--ink-dim); opacity: 0.7; transition: color .15s ease, opacity .15s ease, transform .15s ease; }
@@ -2936,9 +2941,38 @@ const ACHIEVEMENTS = [
   { id:972, name:'Dragonrider', points:20, trophy:'bronze', group:'Dragonborn', description:'Tame and ride 5 dragons.', linkLine:'dragonborn', linkQuest:1356 },
   { id:973, name:'Raven Rock Owner', points:20, trophy:'bronze', group:'Dragonborn', description:'Own a house in Raven Rock.' },
   { id:974, name:'Solstheim Explorer', points:30, trophy:'bronze', group:'Dragonborn', description:'Discover 30 locations on the island of Solstheim.' },
+  // Anniversary Edition (25) — these are custom journal achievements, not official Bethesda/Steam
+  // achievements (the Creation Club content added by the AE upgrade doesn't carry its own Gamerscore/
+  // trophies), tracking meaningful milestones across the 10 new questlines, gameplay systems, and
+  // legendary item recoveries added in Stage 4.
+  { id:975, name:'Coldharbour Bound', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete the Saints & Seducers questline.', linkLine:'saintsseducers', linkQuest:9000 },
+  { id:976, name:'Dreams of the Dead', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Gallows Hall.', linkLine:'gallowshall', linkQuest:10000 },
+  { id:977, name:'Plague Doctor', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete The Rising Dead.', linkLine:'risingdead', linkQuest:10010 },
+  { id:978, name:'Ghost Story', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Ghosts of the Tribunal.', linkLine:'tribunal', linkQuest:10020 },
+  { id:979, name:'For the Cause', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete The Cause.', linkLine:'thecause', linkQuest:10030 },
+  { id:980, name:'Green-Skinned Menace', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Goblins.', linkLine:'goblins', linkQuest:10040 },
+  { id:981, name:'Manor of Madness', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Bloodchill Manor.', linkLine:'bloodchill', linkQuest:10050 },
+  { id:982, name:'The Ghostly Hare', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Myrwatch.', linkLine:'myrwatch', linkQuest:10060 },
+  { id:983, name:"Warrior's Rest", points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Hendraheim.', linkLine:'hendraheim', linkQuest:10070 },
+  { id:984, name:'Dwarven Homecoming', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Complete Nchuanthumz: Dwarven Home.', linkLine:'nchuanthumz', linkQuest:10080 },
+  { id:985, name:"Pirate's Due", points:15, trophy:'bronze', group:'Anniversary Edition', description:"Complete Dead Man's Dread.", linkLine:'deadmansdread', linkQuest:10090 },
+  { id:986, name:'Turning of the Seasons', points:30, trophy:'silver', group:'Anniversary Edition', description:'Complete the full Forgotten Seasons dungeon arc — Forgotten Seasons, The Dwarven Crown, and The Dwarven Horse.' },
+  { id:987, name:'Vamidium Rider', points:15, trophy:'bronze', group:'Anniversary Edition', description:'Claim the rideable Dwarven Horse automaton from Forgotten Seasons.' },
+  { id:988, name:"A Farmer's Life", points:20, trophy:'bronze', group:'Anniversary Edition', description:"Complete the Farming questline (The Unquiet Dead and A Farmer's Life For Me) and take over Goldenhills Plantation." },
+  { id:989, name:'Home Away From Home', points:10, trophy:'bronze', group:'Anniversary Edition', description:'Craft Camping Supplies and pitch your first campsite.' },
+  { id:990, name:'Bare-Knuckle Brawler', points:10, trophy:'bronze', group:'Anniversary Edition', description:'Craft or find a Fearsome Fists gauntlet.' },
+  { id:991, name:'First of Many', points:10, trophy:'bronze', group:'Anniversary Edition', description:'Recover your first Creation Club legendary weapon.' },
+  { id:992, name:'Arsenal Builder', points:30, trophy:'silver', group:'Anniversary Edition', description:'Recover 6 of the 13 Creation Club legendary weapons.' },
+  { id:993, name:'Legendary Arsenal', points:50, trophy:'gold', group:'Anniversary Edition', description:'Recover all 13 Creation Club legendary weapons.' },
+  { id:994, name:'Divine Crusader', points:20, trophy:'bronze', group:'Anniversary Edition', description:'Recover the full Divine Crusader set at Four Skull Lookout.' },
+  { id:995, name:'A Soul Divided', points:20, trophy:'bronze', group:'Anniversary Edition', description:'Recover Dawnfang & Duskfang from the Guardian Vault.' },
+  { id:996, name:"Champion's Legacy", points:20, trophy:'bronze', group:'Anniversary Edition', description:'Recover Chrysamere from Forelhost.' },
+  { id:997, name:'Creation Collector', points:20, trophy:'bronze', group:'Anniversary Edition', description:'Log 10 minor Creation Club extras.' },
+  { id:998, name:'Anniversary Adventurer', points:30, trophy:'silver', group:'Anniversary Edition', description:'Complete 5 of the 10 new Anniversary Edition questlines.' },
+  { id:999, name:'Anniversary Completionist', points:50, trophy:'gold', group:'Anniversary Edition', description:'Complete all 10 new Anniversary Edition questlines added in the AE upgrade.' },
 ];
 
-const ACHIEVEMENT_GROUPS = ['Main Quest','Companions','College of Winterhold','Thieves Guild','Dark Brotherhood','Civil War','General','Dawnguard','Hearthfire','Dragonborn'];
+const ACHIEVEMENT_GROUPS = ['Main Quest','Companions','College of Winterhold','Thieves Guild','Dark Brotherhood','Civil War','General','Dawnguard','Hearthfire','Dragonborn','Anniversary Edition'];
 
 /* ============================= CHARACTER BUILDS ============================= */
 
@@ -3736,6 +3770,13 @@ const CREATURES = [
 { id:5052, name:'Vampire', group:'Human Factions', tip:'Weak to fire; powerful vampires take continuous sun damage outdoors during the day.' },
 { id:5053, name:'Riekling', group:'Human Factions', tip:'Small, spear-wielding Solstheim natives (Dragonborn) who sometimes ride tamed boars into battle.' },
 { id:5066, name:'Imperial Soldier / Stormcloak Soldier', group:'Human Factions', tip:"Regular troops of whichever Civil War faction you haven't sided with (or are actively fighting) — encountered in faction-held forts and during Civil War battles; competent but unremarkable in a straight fight." },
+// UESP audit additions — genuine gaps found against the full creature roster
+{ id:5067, name:'Familiar', group:'Daedra', tip:'A weak Daedra summoned by low-level Conjuration (yours or a hostile mage\'s) — quick to dispatch on its own, but watch for the conjurer resummoning it mid-fight.' },
+{ id:5068, name:'Ice Wraith', group:'Animals & Beasts', tip:'A fast, ethereal frost creature usually found near frozen water — highly resistant to frost damage, so use fire or physical weapons instead.' },
+{ id:5069, name:'Spriggan Matron', group:'Animals & Beasts', tip:'A tougher, more dangerous Spriggan variant guarding certain sacred groves — hits harder and summons more allies than a standard Spriggan.' },
+{ id:5070, name:'Bonewalker', group:'Draugr & Undead', tip:"A skeletal Nordic warrior native to Solstheim's ash wastes (Dragonborn) — tougher and more aggressive than a mainland Skeleton, sometimes found in a stronger 'Great Bonewalker' variant." },
+{ id:5071, name:'Bonewolf', group:'Draugr & Undead', tip:"A war-mangled wolf construct built from bone and scrap, encountered near Skaal territory on Solstheim (Dragonborn) — attacks in melee only, with no pack tactics." },
+{ id:5072, name:'Vampire Lord', group:'Human Factions', tip:'A powerful vampire boss encountered in its true winged, clawed form (Dawnguard) — hits far harder and casts stronger vampiric spells than a standard Vampire; the same form the Dawnguard vampirism power lets you take yourself.' },
 ];
 
 /* ============================= SHOUTS (THU'UM) ============================= */
@@ -4145,8 +4186,8 @@ const LOCATIONS_POI = [
 
 /* ============================= DUNGEONS BY HOLD ============================= */
 
-// The 9 mainland holds (Solstheim is Dragonborn's own region, not a hold) — Eastmarch is populated first;
-// the rest are "coming soon" placeholders until researched in future batches.
+// The 9 mainland holds (Solstheim is Dragonborn's own region, not a hold) — all 9 are fully populated
+// as of the Stage 2 dungeon-detail pass; see HOLD_DUNGEONS below.
 const LOCATION_HOLDS = ['Eastmarch', 'Whiterun Hold', 'Haafingar', 'The Rift', 'The Reach', 'Hjaalmarch', 'Falkreath Hold', 'The Pale', 'Winterhold'];
 
 /* ============================= MAP GEOGRAPHY ============================= */
