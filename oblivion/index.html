@@ -123,14 +123,25 @@
 
   .nav-mobile { display: none; }
 
-  /* ---------- PAGE ---------- */
+  /* ---------- PAGE ----------
+     Cream parchment, like the open pages of an in-game journal — the dark
+     leather-bound --stone/--void chrome stays on the .nav "cover" (a sibling,
+     untouched by these overrides); everything nested in .page inherits this
+     lighter palette instead via the cascade. */
   .page {
+    --stone-2: #F1DFB2;
+    --panel: rgba(255, 250, 235, 0.55);
+    --panel-hi: rgba(255, 255, 255, 0.6);
+    --ink: #3B2A18;
+    --ink-soft: #6B5636;
+    --ink-dim: #8C7A57;
+    --heading: #2A1C0E;
     flex: 1;
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(201,162,39,0.03), transparent 45%),
-      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.45), transparent 55%),
-      linear-gradient(165deg, var(--stone-3), var(--stone-2) 65%, var(--stone-1));
-    background-color: var(--stone-2);
+      radial-gradient(ellipse at 20% 0%, rgba(201,162,39,0.07), transparent 45%),
+      radial-gradient(ellipse at 100% 100%, rgba(120,90,40,0.10), transparent 55%),
+      linear-gradient(165deg, #F8ECCF, #F1DFB2 60%, #E6D093);
+    background-color: #F1DFB2;
     padding: 34px clamp(24px, 3.4vw, 54px) 50px;
     position: relative;
     min-height: 680px;
@@ -141,10 +152,10 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(120,90,40,0.08) 1px, transparent 1px);
     background-size: 3px 3px;
     opacity: 0.5;
-    mix-blend-mode: overlay;
+    mix-blend-mode: multiply;
   }
 
   header.title-block {
@@ -177,9 +188,10 @@
   .seal {
     font-family: 'Cinzel', serif;
     font-size: 10px;
-    color: var(--gold-dim);
-    background: rgba(0,0,0,0.3);
-    border: 2px solid var(--gold-dim);
+    color: var(--gold-bright);
+    background: radial-gradient(circle at 35% 30%, #2E4A78, #1B2E4D 75%);
+    border: 2px solid var(--gold);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(232,199,102,0.25);
     border-radius: 50%;
     width: 62px;
     height: 62px;
@@ -232,7 +244,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(11,13,14,0.55);
+    background: rgba(0,0,0,0.06);
     color: var(--ink);
     padding: 9px 14px;
     border-radius: 0;
@@ -342,7 +354,7 @@
   .dash-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .dash-icon { font-size: 18px; }
   .dash-label { font-family: 'Cinzel', serif; font-size: 12px; color: var(--heading); letter-spacing: 0.08em; text-transform: uppercase; }
-  .dash-bar-track { background: rgba(0,0,0,0.4); border: 1px solid var(--iron); border-radius: 0; height: 7px; overflow: hidden; margin-bottom: 8px; }
+  .dash-bar-track { background: rgba(0,0,0,0.08); border: 1px solid var(--iron); border-radius: 0; height: 7px; overflow: hidden; margin-bottom: 8px; }
   .dash-bar-fill { background: var(--gold); height: 100%; border-radius: 0; transition: width .3s ease; }
   .dash-count { font-family: 'Spectral', serif; font-size: 11px; color: var(--ink-soft); }
 
@@ -361,7 +373,7 @@
   }
   .completion-ring-wrap { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
   .completion-ring { width: 104px; height: 104px; transform: rotate(-90deg); }
-  .completion-ring-track { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 9; }
+  .completion-ring-track { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 9; }
   .completion-ring-fill { fill: none; stroke: var(--gold); stroke-width: 9; stroke-linecap: butt; transition: stroke-dashoffset .6s ease; }
   .completion-ring-pct {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -662,6 +674,7 @@
 </div>
 
 <script src="../sync.js"></script>
+<script src="../account.js"></script>
 <script>
 /* ============================= DATA ============================= */
 
@@ -1560,13 +1573,15 @@ function loadProgress(){
 }
 function saveProgress(){
   try {
-    const payload = JSON.stringify({
+    const state = {
       favorites: Array.from(favorites),
       tracked: Array.from(tracked),
       updatedAt: Date.now(),
-    });
+    };
+    const payload = JSON.stringify(state);
     localStorage.setItem(storageKey(), payload);
     if (window.JawSync) window.JawSync.save(storageKey(), payload);
+    if (window.JawAccount && window.JawAccount.isSignedIn()) window.JawAccount.save('oblivion', state);
   } catch (e) { console.error('Could not save progress', e); }
 }
 
@@ -1588,6 +1603,24 @@ async function syncPullAndReconcile(){
       renderAll();
     }
   } catch (e) { console.error('Sync pull failed', e); }
+}
+
+// Same idea, but against a signed-in JawAccount (Supabase) instead of the GitHub Gist —
+// the account-backed path shared with the Skyrim journal.
+async function syncAccountPullAndReconcile(){
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const remote = await window.JawAccount.load('oblivion');
+    if (!remote) return;
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remote.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remote.favorites || []);
+      tracked = new Set(remote.tracked || []);
+      localStorage.setItem(storageKey(), JSON.stringify(remote));
+      renderAll();
+    }
+  } catch (e) { console.error('Account sync pull failed', e); }
 }
 
 function navStateKey(){ return 'oblivion-journal-lastview'; }
@@ -2506,6 +2539,8 @@ loadNavState();
 renderAll();
 syncPullAndReconcile();
 window.__jawSyncOnConfigured = syncPullAndReconcile;
+syncAccountPullAndReconcile();
+window.__jawAccountOnSignedIn = syncAccountPullAndReconcile;
 </script>
 </body>
 </html>
