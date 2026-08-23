@@ -50,6 +50,12 @@
     if (error) throw error;
   }
 
+  // Verifies the 6-digit code from that email and completes sign-in.
+  async function verifyCode(email, code) {
+    const { error } = await client.auth.verifyOtp({ email, token: code, type: 'email' });
+    if (error) throw error;
+  }
+
   async function signOut() {
     await client.auth.signOut();
   }
@@ -129,32 +135,62 @@
     modal.innerHTML = `
       <div style="background:#1c1812;color:#e8e0d0;border:1px solid #3a3226;border-radius:8px;padding:20px;max-width:360px;width:90%;">
         <h3 style="margin:0 0 8px;font-size:15px;">Sign in</h3>
-        <p style="font-size:12px;color:#a89b7f;margin:0 0 12px;line-height:1.5;">
-          Enter your email and we'll send a sign-in link. No password needed —
-          your progress follows your account across any device.
+        <p id="jaw-account-step1-copy" style="font-size:12px;color:#a89b7f;margin:0 0 12px;line-height:1.5;">
+          Enter your email and we'll send you a 6-digit code. No password
+          needed — your progress follows your account across any device.
         </p>
         <input id="jaw-account-email" type="email" placeholder="you@example.com"
           style="width:100%;box-sizing:border-box;padding:8px;margin-bottom:12px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:12px;" />
+        <input id="jaw-account-code" type="text" inputmode="numeric" placeholder="6-digit code" maxlength="6"
+          style="display:none;width:100%;box-sizing:border-box;padding:8px;margin-bottom:12px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:14px;letter-spacing:3px;text-align:center;" />
         <div id="jaw-account-msg" style="font-size:11px;color:#a89b7f;margin-bottom:8px;min-height:14px;"></div>
         <div style="display:flex;gap:8px;justify-content:flex-end;">
           <button id="jaw-account-close" style="padding:6px 12px;background:transparent;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;cursor:pointer;font-size:12px;">Close</button>
-          <button id="jaw-account-send" style="padding:6px 12px;background:#c9a227;border:none;color:#151515;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">Send link</button>
+          <button id="jaw-account-send" style="padding:6px 12px;background:#c9a227;border:none;color:#151515;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">Send code</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
     modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
     document.getElementById('jaw-account-close').addEventListener('click', () => modal.remove());
+
+    let codeSentFor = null;
     document.getElementById('jaw-account-send').addEventListener('click', async () => {
       const email = document.getElementById('jaw-account-email').value.trim();
+      const codeInput = document.getElementById('jaw-account-code');
+      const sendBtn = document.getElementById('jaw-account-send');
       const msg = document.getElementById('jaw-account-msg');
       if (!email) { msg.textContent = 'Enter an email first.'; return; }
-      msg.textContent = 'Sending…';
+
+      if (codeSentFor !== email) {
+        // Step 1: request the code.
+        msg.textContent = 'Sending…';
+        try {
+          await signIn(email);
+          codeSentFor = email;
+          document.getElementById('jaw-account-step1-copy').textContent = 'Enter the 6-digit code we just emailed you.';
+          document.getElementById('jaw-account-email').disabled = true;
+          codeInput.style.display = 'block';
+          codeInput.focus();
+          sendBtn.textContent = 'Verify';
+          msg.textContent = 'Code sent — check your email.';
+        } catch (e) {
+          console.error('Sign-in failed', e);
+          msg.textContent = 'Could not send code — try again.';
+        }
+        return;
+      }
+
+      // Step 2: verify the code.
+      const code = codeInput.value.trim();
+      if (!code) { msg.textContent = 'Enter the code from your email.'; return; }
+      msg.textContent = 'Verifying…';
       try {
-        await signIn(email);
-        msg.textContent = 'Check your email for the sign-in link.';
+        await verifyCode(email, code);
+        msg.textContent = 'Signed in.';
+        setTimeout(() => modal.remove(), 600);
       } catch (e) {
-        console.error('Sign-in failed', e);
-        msg.textContent = 'Could not send link — try again.';
+        console.error('Code verification failed', e);
+        msg.textContent = 'Invalid or expired code — try again.';
       }
     });
   }
