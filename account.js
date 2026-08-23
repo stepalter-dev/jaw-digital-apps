@@ -136,12 +136,12 @@
       <div style="background:#1c1812;color:#e8e0d0;border:1px solid #3a3226;border-radius:8px;padding:20px;max-width:360px;width:90%;">
         <h3 style="margin:0 0 8px;font-size:15px;">Sign in</h3>
         <p id="jaw-account-step1-copy" style="font-size:12px;color:#a89b7f;margin:0 0 12px;line-height:1.5;">
-          Enter your email and we'll send you a 6-digit code. No password
+          Enter your email and we'll send you a sign-in code. No password
           needed — your progress follows your account across any device.
         </p>
         <input id="jaw-account-email" type="email" placeholder="you@example.com"
           style="width:100%;box-sizing:border-box;padding:8px;margin-bottom:12px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:12px;" />
-        <input id="jaw-account-code" type="text" inputmode="numeric" placeholder="6-digit code" maxlength="6"
+        <input id="jaw-account-code" type="text" inputmode="numeric" placeholder="code from your email" maxlength="12"
           style="display:none;width:100%;box-sizing:border-box;padding:8px;margin-bottom:12px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:14px;letter-spacing:3px;text-align:center;" />
         <div id="jaw-account-msg" style="font-size:11px;color:#a89b7f;margin-bottom:8px;min-height:14px;"></div>
         <div style="display:flex;gap:8px;justify-content:flex-end;">
@@ -167,7 +167,7 @@
         try {
           await signIn(email);
           codeSentFor = email;
-          document.getElementById('jaw-account-step1-copy').textContent = 'Enter the 6-digit code we just emailed you.';
+          document.getElementById('jaw-account-step1-copy').textContent = 'Enter the code we just emailed you.';
           document.getElementById('jaw-account-email').disabled = true;
           codeInput.style.display = 'block';
           codeInput.focus();
