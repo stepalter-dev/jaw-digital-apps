@@ -661,6 +661,7 @@
   </main>
 </div>
 
+<script src="../sync.js"></script>
 <script>
 /* ============================= DATA ============================= */
 
@@ -1559,11 +1560,34 @@ function loadProgress(){
 }
 function saveProgress(){
   try {
-    localStorage.setItem(storageKey(), JSON.stringify({
+    const payload = JSON.stringify({
       favorites: Array.from(favorites),
       tracked: Array.from(tracked),
-    }));
+      updatedAt: Date.now(),
+    });
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
   } catch (e) { console.error('Could not save progress', e); }
+}
+
+// Pulls the Gist's copy of this journal's progress (if sync is configured) and adopts it
+// if it's newer than what's in localStorage — recovers progress after cleared storage,
+// a reinstall, or opening on a new device. Local storage stays the fast, offline-safe path.
+async function syncPullAndReconcile(){
+  if (!window.JawSync) return;
+  try {
+    const remote = await window.JawSync.pull(storageKey());
+    if (!remote) return;
+    const remoteParsed = JSON.parse(remote);
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remoteParsed.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remoteParsed.favorites || []);
+      tracked = new Set(remoteParsed.tracked || []);
+      localStorage.setItem(storageKey(), remote);
+      renderAll();
+    }
+  } catch (e) { console.error('Sync pull failed', e); }
 }
 
 function navStateKey(){ return 'oblivion-journal-lastview'; }
@@ -2480,6 +2504,8 @@ document.querySelectorAll('.filter-pill[data-hide-done]').forEach(pill => {
 loadProgress();
 loadNavState();
 renderAll();
+syncPullAndReconcile();
+window.__jawSyncOnConfigured = syncPullAndReconcile;
 </script>
 </body>
 </html>

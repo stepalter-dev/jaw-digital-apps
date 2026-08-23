@@ -848,6 +848,7 @@
   </main>
 </div>
 
+<script src="../sync.js"></script>
 <script>
 /* ============================= DATA ============================= */
 
@@ -1231,6 +1232,30 @@ const QUESTS = [
   choice:{ flag:'Cure Kodlak — and optionally, yourself', text:"Use a Glenmoril Witch head to cure Kodlak's spirit, freeing him to pass on to Sovngarde instead of Hircine's Hunting Grounds — this step is required to finish the quest. Kodlak's spirit then offers to use a second witch head, if you have one, to cure YOUR OWN lycanthropy on the spot. You may accept (becoming fully human again) or decline and remain a werewolf — a low-stakes, reversible flavor choice either way." },
   rewards:['Wuuthrad (unique battleaxe)', 'Shield of Ysgramor', 'Word for the Animal Allegiance shout', 'Title: Harbinger of the Companions', 'New Skyforge crafting options', 'Up to 7 new recruitable followers'], trackable:true },
 
+{ id:306, line:'companions', order:7, optional:true, title:'Animal Extermination', giver:'Companions job board (Aela, Vilkas, or Farkas)', location:'Random — a leveled animal den or lair',
+  steps:[
+    'Ask a senior Companion for work to be offered a randomly-assigned radiant job.',
+    'Travel to the assigned location and kill the troublesome animal (often a bear, sabre cat, or similar predator) terrorizing the area.',
+    'Return to Jorrvaskr to report success and collect payment.'
+  ],
+  rewards:['Gold', 'Companions reputation'], trackable:true },
+
+{ id:307, line:'companions', order:8, optional:true, title:'Trouble in Skyrim', giver:'Companions job board (Aela, Vilkas, or Farkas)', location:'Random — a leveled bandit or Forsworn camp',
+  steps:[
+    'Ask a senior Companion for work to be offered a randomly-assigned radiant job.',
+    'Travel to the assigned camp or hideout and kill the bandit or Forsworn leader causing trouble.',
+    'Return to Jorrvaskr to report success and collect payment.'
+  ],
+  rewards:['Gold', 'Companions reputation'], trackable:true },
+
+{ id:308, line:'companions', order:9, optional:true, title:'Striking the Heart', giver:'Companions job board (Aela, Vilkas, or Farkas)', location:'Random — a leveled vampire or necromancer lair',
+  steps:[
+    'Ask a senior Companion for work to be offered a randomly-assigned radiant job.',
+    'Travel to the assigned lair and kill the vampire or necromancer leader responsible for local attacks.',
+    'Return to Jorrvaskr to report success and collect payment.'
+  ],
+  rewards:['Gold', 'Companions reputation'], trackable:true },
+
 /* ======================= COLLEGE OF WINTERHOLD ======================= */
 { id:400, line:'college', order:1, title:'First Lessons', giver:'Faralda (gatekeeper)', location:'College of Winterhold',
   steps:[
@@ -1312,6 +1337,14 @@ const QUESTS = [
     'Repeatable radiant jobs from Drevis Neloren, Sergius Turrianus, Tolfdir, and Urag gro-Shub.'
   ],
   rewards:['Varies by quest — includes the 5 Ritual spells and several unique followers'], trackable:true },
+
+{ id:409, line:'college', order:10, optional:true, title:'Retrieval', giver:'Drevis Neloren, Sergius Turrianus, Tolfdir, or Urag gro-Shub', location:'Random — a leveled dungeon',
+  steps:[
+    'Ask a College instructor for work to be offered a randomly-assigned radiant job.',
+    'Travel to the assigned dungeon and recover the requested item (commonly a soul gem, staff, or piece of equipment).',
+    'Return the item to the instructor who sent you to collect payment.'
+  ],
+  rewards:['Gold', 'College reputation'], trackable:true },
 
 /* ======================= DARK BROTHERHOOD ======================= */
 { id:500, line:'brotherhood', order:1, optional:true, title:'Delayed Burial', giver:'Cicero', location:'Road to Windhelm',
@@ -4446,7 +4479,7 @@ const EASTMARCH_LOCATIONS = [
     loot:["The Locked Room (Lockpicking skill book) and a strongbox — on a table inside the vampires' building", 'A random filled soul gem alongside the skill book'],
     resources:['1 Iron ore vein, 1 Moonstone ore vein', '1 Alchemy Lab, 1 Arcane Enchanter'],
     hazards:['Six frostbite spiders plus an egg sac in the entry chamber', 'A flame-spout trap in the passage leading to the sleeping vampires'],
-    links:[],
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }],
     notes:'Ties to the Creation Club quest "Caught in a Web" (The Contest) and Pets of Skyrim; also a target for the radiant Animal Extermination and the Dawnguard quest A New Order.' },
 
   { id:11007, name:'Eldergleam Sanctuary', type:'Cave (sacred grove)',
@@ -4589,7 +4622,7 @@ const EASTMARCH_LOCATIONS = [
     loot:['No notable unique loot — an adept-locked chest at the top of the tower is the only container of note'],
     resources:['No notable ore veins'],
     hazards:['Leveled wild animals only — no organized enemies'],
-    links:[],
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }],
     notes:'A target for the radiant Companions quest Animal Extermination.' },
 
   { id:11024, name:'Sacellum of Boethiah', type:'Daedric Shrine', level:'Min 12',
@@ -4988,7 +5021,7 @@ const RIFT_LOCATIONS = [
     loot:['No notable named treasure'],
     resources:['1 Iron ore vein, 2 Silver ore veins'],
     hazards:['Leveled animals, frostbite spiders, and giants', 'The passage to Giant\'s Grove stays blocked until The Cursed Tribe begins'],
-    links:[{ itemId:705, nav:{ section:'quests', line:'daedric' }, label:'The Cursed Tribe' }],
+    links:[{ itemId:705, nav:{ section:'quests', line:'daedric' }, label:'The Cursed Tribe' }, { itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }],
     notes:'Also a common radiant target for Animal Extermination and A New Order (Dawnguard).' },
 
   { id:11511, name:'Boulderfall Cave', type:'Cave', level:'Min 6',
@@ -5076,7 +5109,7 @@ const RIFT_LOCATIONS = [
     loot:['Proper Lock Design, The Lunar Lorkhan, and The Marksmanship Lesson (books)'],
     resources:['1 Tanning Rack, 1 Forge/Anvil, 1 Grindstone, 1 Cooking Pot, 1 Fishing Supplies (Creation Club)'],
     hazards:['Bandits and wolves throughout, including the central fighting pit'],
-    links:[], notes:'A common radiant target for Amulet of the Moon, Arniel\'s Endeavor, and Retrieval.' },
+    links:[{ itemId:409, nav:{ section:'quests', line:'college' }, label:'Retrieval' }], notes:'A common radiant target for Amulet of the Moon, Arniel\'s Endeavor, and Retrieval.' },
 
   { id:11523, name:'Fort Greenwall', type:'Fort', level:'Min 6',
     overview:'A large four-zone fort north-northwest of Riften, initially bandit-held and later garrisoned by whichever side controls Riften.',
@@ -5126,7 +5159,7 @@ const RIFT_LOCATIONS = [
     loot:['Battle of Sancre Tor (book)'],
     resources:['3 Corundum ore veins', '1 Tanning Rack, 1 Cooking Pot'],
     hazards:['Bandits throughout'],
-    links:[], notes:'Tied to the miscellaneous quest "Flight or Fight" (Grosta\'s missing husband) and a common radiant target for Amulet of the Moon, Arniel\'s Endeavor, and Retrieval.' },
+    links:[{ itemId:409, nav:{ section:'quests', line:'college' }, label:'Retrieval' }], notes:'Tied to the miscellaneous quest "Flight or Fight" (Grosta\'s missing husband) and a common radiant target for Amulet of the Moon, Arniel\'s Endeavor, and Retrieval.' },
 
   { id:11530, name:'Clearspring Cave', type:'Cave', level:'Min 2',
     overview:'A small, easily-missed cave along a cliff path west of Shor\'s Stone, home to a single troll.',
@@ -5140,21 +5173,21 @@ const RIFT_LOCATIONS = [
     loot:["Gadnor's Staff of Charming (unique staff)", 'Mystery of Talara, v2 (book)'],
     resources:['1 Iron ore vein, 1 Moonstone ore vein', '1 Cooking Pot'],
     hazards:['Leveled wild animals'],
-    links:[], notes:'A common radiant target for Animal Extermination.' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination.' },
 
   { id:11532, name:'Honeystrand Cave', type:'Cave', level:'Min 2',
     overview:'A single-zone cave south of Ivarstead, home to a family of bears.',
     loot:['The Locked Room (Lockpicking skill book)'],
     resources:['No notable ore veins'],
     hazards:['Bears'],
-    links:[], notes:'A common radiant target for Animal Extermination and A New Order (Dawnguard).' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination and A New Order (Dawnguard).' },
 
   { id:11533, name:'Pinepeak Cavern', type:'Cave', level:'Min 2',
     overview:'A single-zone cave north of Ivarstead, home to bears.',
     loot:['Heavy Armor Forging (recipe book)'],
     resources:['1 Corundum ore vein'],
     hazards:['Bears'],
-    links:[], notes:'A common radiant target for Animal Extermination, Arniel\'s Endeavor, and A New Order (Dawnguard).' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination, Arniel\'s Endeavor, and A New Order (Dawnguard).' },
 
   { id:11534, name:"Gromm's Pass", type:'Cave (Creation Club)', level:null,
     overview:'A collapsed underground pass to Cyrodiil south of Forelhost, now home to a tribe of goblins led by the Blue God and Gogh.',
@@ -5524,7 +5557,7 @@ const HJAALMARCH_LOCATIONS = [
     loot:['The Black Arrow, v2 (book)'],
     resources:['1 Corundum ore vein, 1 Iron ore vein', '1 Fishing Supplies (Creation Club)'],
     hazards:['Leveled animals'],
-    links:[], notes:'A common radiant target for Animal Extermination and Salty Sea-Dogs.' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination and Salty Sea-Dogs.' },
 
   { id:11709, name:"Forebears' Holdout", type:'Cave (Dawnguard)', level:null,
     overview:'A single-zone cave southeast of Dragon Bridge whose occupants flip entirely based on your Dawnguard allegiance — vampires led by Malkus if you sided with the Dawnguard, or Dawnguard soldiers led by Vanik if you sided with the vampires.',
@@ -5726,14 +5759,14 @@ const FALKREATH_LOCATIONS = [
     loot:['2920, MidYear, v6 (book)'],
     resources:['1 Silver ore vein'],
     hazards:['Leveled animals'],
-    links:[], notes:'A common radiant target for Animal Extermination and A New Order (Dawnguard).' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination and A New Order (Dawnguard).' },
 
   { id:11816, name:'Greywater Grotto', type:'Cave', level:'Min 2',
     overview:'A single-zone cave east of Falkreath, home to leveled wild animals.',
     loot:['No notable named treasure'],
     resources:['1 Corundum ore vein, 1 Gold ore vein, 1 Iron ore vein'],
     hazards:['Leveled animals'],
-    links:[], notes:'A common radiant target for Animal Extermination.' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination.' },
 
   { id:11817, name:"Ancient's Ascent", type:'Dragon Lair', level:null,
     overview:'A mountaintop dragon lair southwest of Helgen.',
@@ -5906,7 +5939,7 @@ const PALE_LOCATIONS = [
     loot:['No notable named treasure'],
     resources:['No notable ore veins'],
     hazards:['Leveled animals'],
-    links:[], notes:'Also the site of the Creation Club quest "Beneath Bronze Waters," and a common radiant target for Animal Extermination and A New Order (Dawnguard).' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'Also the site of the Creation Club quest "Beneath Bronze Waters," and a common radiant target for Animal Extermination and A New Order (Dawnguard).' },
 
   { id:11915, name:'Forsaken Cave', type:'Cave', level:'Min 6',
     overview:'A two-zone cave west of Windhelm, tied to the miscellaneous quest chain for The White Phial.',
@@ -6047,7 +6080,7 @@ const WINTERHOLD_LOCATIONS = [
     loot:['Battle of Sancre Tor (book)'],
     resources:['1 Iron ore vein'],
     hazards:['Frost trolls'],
-    links:[], notes:'A common radiant target for Animal Extermination.' },
+    links:[{ itemId:306, nav:{ section:'quests', line:'companions' }, label:'Animal Extermination' }], notes:'A common radiant target for Animal Extermination.' },
 
   { id:12012, name:'Mount Anthor', type:'Dragon Lair', level:'Min 10',
     overview:'A mountaintop dragon lair south-southwest of Winterhold, also held by warlocks.',
@@ -6473,11 +6506,34 @@ function loadProgress(){
 }
 function saveProgress(){
   try {
-    localStorage.setItem(storageKey(), JSON.stringify({
+    const payload = JSON.stringify({
       favorites: Array.from(favorites),
       tracked: Array.from(tracked),
-    }));
+      updatedAt: Date.now(),
+    });
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
   } catch (e) { console.error('Could not save progress', e); }
+}
+
+// Pulls the Gist's copy of this journal's progress (if sync is configured) and adopts it
+// if it's newer than what's in localStorage — recovers progress after cleared storage,
+// a reinstall, or opening on a new device. Local storage stays the fast, offline-safe path.
+async function syncPullAndReconcile(){
+  if (!window.JawSync) return;
+  try {
+    const remote = await window.JawSync.pull(storageKey());
+    if (!remote) return;
+    const remoteParsed = JSON.parse(remote);
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remoteParsed.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remoteParsed.favorites || []);
+      tracked = new Set(remoteParsed.tracked || []);
+      localStorage.setItem(storageKey(), remote);
+      renderAll();
+    }
+  } catch (e) { console.error('Sync pull failed', e); }
 }
 
 // Remembers which tab/sub-tab the user was last viewing — kept in its own localStorage key, separate from
@@ -8718,6 +8774,8 @@ document.querySelectorAll('.filter-pill[data-hide-done]').forEach(pill => {
 loadProgress();
 loadNavState();
 renderAll();
+syncPullAndReconcile();
+window.__jawSyncOnConfigured = syncPullAndReconcile;
 </script>
 </body>
 </html>

@@ -504,6 +504,7 @@
   </main>
 </div>
 
+<script src="../sync.js"></script>
 <script>
 const CATEGORIES = [
   { id: 'compendium', label: 'Compendium',        icon: '📚' },
@@ -1225,11 +1226,17 @@ let foundSet = new Set();
 let horseName = '';
 let storageReady = false;
 
+// NOTE: this used to call a nonexistent window.storage.get/set API (an artifact-preview-only
+// API that doesn't exist in a real browser), so progress silently never persisted at all on
+// the live site — every visit "started fresh". Fixed to use real localStorage, same as the
+// Skyrim/Oblivion journals, plus the same Gist-backed sync so it survives cleared storage too.
+function storageKey(){ return 'rdr2-progress'; }
+
 async function loadProgress(){
   try {
-    const result = await window.storage.get('rdr2-progress', false);
-    if (result && result.value) {
-      const parsed = JSON.parse(result.value);
+    const raw = localStorage.getItem(storageKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
       favorites = new Set(parsed.favorites || []);
       tracked = new Set(parsed.tracked || []);
       foundSet = new Set(parsed.found || []);
@@ -1242,19 +1249,47 @@ async function loadProgress(){
   const nameInput = document.getElementById('horse-name-input');
   if (nameInput) nameInput.value = horseName;
   renderEntries();
+  await syncPullAndReconcile();
 }
 
-async function saveProgress(){
+function saveProgress(){
   try {
-    await window.storage.set('rdr2-progress', JSON.stringify({
+    const payload = JSON.stringify({
       favorites: Array.from(favorites),
       tracked: Array.from(tracked),
       found: Array.from(foundSet),
-      horseName: horseName
-    }), false);
+      horseName: horseName,
+      updatedAt: Date.now(),
+    });
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
   } catch (e) {
     console.error('Could not save progress', e);
   }
+}
+
+// Pulls the Gist's copy of this journal's progress (if sync is configured) and adopts it
+// if it's newer than what's in localStorage — recovers progress after cleared storage,
+// a reinstall, or opening on a new device. Local storage stays the fast, offline-safe path.
+async function syncPullAndReconcile(){
+  if (!window.JawSync) return;
+  try {
+    const remote = await window.JawSync.pull(storageKey());
+    if (!remote) return;
+    const remoteParsed = JSON.parse(remote);
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remoteParsed.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remoteParsed.favorites || []);
+      tracked = new Set(remoteParsed.tracked || []);
+      foundSet = new Set(remoteParsed.found || []);
+      horseName = remoteParsed.horseName || '';
+      localStorage.setItem(storageKey(), remote);
+      const nameInput = document.getElementById('horse-name-input');
+      if (nameInput) nameInput.value = horseName;
+      renderEntries();
+    }
+  } catch (e) { console.error('Sync pull failed', e); }
 }
 
 function countFor(catId){ return TIPS.filter(t => t.cat === catId).length; }
@@ -1599,6 +1634,7 @@ document.querySelectorAll('.filter-pill[data-fav]').forEach(pill => {
 renderTabs();
 renderSubTabs();
 loadProgress();
+window.__jawSyncOnConfigured = syncPullAndReconcile;
 </script>
 
 </body>
