@@ -60,6 +60,18 @@
     await client.auth.signOut();
   }
 
+  function displayName() {
+    return (session && session.user && session.user.user_metadata && session.user.user_metadata.display_name) || null;
+  }
+
+  // Renames the signed-in account (shown in the widget instead of the email once set).
+  // Stored directly on the Supabase auth user — no separate table needed.
+  async function setDisplayName(name) {
+    const { data, error } = await client.auth.updateUser({ data: { display_name: name } });
+    if (error) throw error;
+    if (data && data.user) session = Object.assign({}, session, { user: data.user });
+  }
+
   // Pulls this game's progress row for the signed-in user, or null if signed out / no row yet.
   async function load(game) {
     if (!client || !session) return null;
@@ -103,7 +115,7 @@
     if (!dotEl) return;
     const map = {
       'signed-out': ['#786b4e', 'Sign in'],
-      'signed-in': ['#4caf50', session && session.user ? session.user.email : 'Signed in'],
+      'signed-in': ['#4caf50', displayName() || (session && session.user ? session.user.email : 'Signed in')],
     };
     const [color, label] = map[state] || map['signed-out'];
     dotEl.style.background = color;
@@ -121,15 +133,35 @@
         <div style="background:#1c1812;color:#e8e0d0;border:1px solid #3a3226;border-radius:8px;padding:20px;max-width:360px;width:90%;">
           <h3 style="margin:0 0 8px;font-size:15px;">Signed in</h3>
           <p style="font-size:12px;color:#a89b7f;margin:0 0 16px;">${session.user.email}</p>
-          <div style="display:flex;gap:8px;justify-content:flex-end;">
-            <button id="jaw-account-close" style="padding:6px 12px;background:transparent;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;cursor:pointer;font-size:12px;">Close</button>
-            <button id="jaw-account-signout" style="padding:6px 12px;background:#e5484d;border:none;color:#151515;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">Sign out</button>
+          <label style="font-size:11px;color:#a89b7f;display:block;margin-bottom:4px;">Character name (shown here instead of your email)</label>
+          <input id="jaw-account-name" type="text" maxlength="40" placeholder="e.g. Dovahkiin" value="${displayName() ? String(displayName()).replace(/"/g, '&quot;') : ''}"
+            style="width:100%;box-sizing:border-box;padding:8px;margin-bottom:8px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:12px;" />
+          <div id="jaw-account-name-msg" style="font-size:11px;color:#a89b7f;margin-bottom:12px;min-height:14px;"></div>
+          <div style="display:flex;gap:8px;justify-content:space-between;">
+            <button id="jaw-account-save-name" style="padding:6px 12px;background:#c9a227;border:none;color:#151515;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">Save name</button>
+            <div style="display:flex;gap:8px;">
+              <button id="jaw-account-close" style="padding:6px 12px;background:transparent;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;cursor:pointer;font-size:12px;">Close</button>
+              <button id="jaw-account-signout" style="padding:6px 12px;background:#e5484d;border:none;color:#151515;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px;">Sign out</button>
+            </div>
           </div>
         </div>`;
       document.body.appendChild(modal);
       modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
       document.getElementById('jaw-account-close').addEventListener('click', () => modal.remove());
       document.getElementById('jaw-account-signout').addEventListener('click', async () => { await signOut(); modal.remove(); });
+      document.getElementById('jaw-account-save-name').addEventListener('click', async () => {
+        const nameMsg = document.getElementById('jaw-account-name-msg');
+        const name = document.getElementById('jaw-account-name').value.trim();
+        nameMsg.textContent = 'Saving…';
+        try {
+          await setDisplayName(name);
+          setStatus('signed-in');
+          nameMsg.textContent = 'Saved.';
+        } catch (e) {
+          console.error('Could not save name', e);
+          nameMsg.textContent = 'Could not save — try again.';
+        }
+      });
       return;
     }
     modal.innerHTML = `
@@ -141,7 +173,7 @@
         </p>
         <input id="jaw-account-email" type="email" placeholder="you@example.com"
           style="width:100%;box-sizing:border-box;padding:8px;margin-bottom:12px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:12px;" />
-        <input id="jaw-account-code" type="text" inputmode="numeric" placeholder="code from your email" maxlength="12"
+        <input id="jaw-account-code" type="text" inputmode="numeric" placeholder="Enter code" maxlength="12"
           style="display:none;width:100%;box-sizing:border-box;padding:8px;margin-bottom:12px;background:#151515;border:1px solid #3a3226;color:#e8e0d0;border-radius:4px;font-size:14px;letter-spacing:3px;text-align:center;" />
         <div id="jaw-account-msg" style="font-size:11px;color:#a89b7f;margin-bottom:8px;min-height:14px;"></div>
         <div style="display:flex;gap:8px;justify-content:flex-end;">
