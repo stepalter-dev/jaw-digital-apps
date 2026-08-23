@@ -136,6 +136,11 @@
     --ink-soft: #6B5636;
     --ink-dim: #8C7A57;
     --heading: #2A1C0E;
+    /* --gold-bright was tuned for glow-on-dark; on this cream page it's repointed to a
+       richer amber so tab labels/badges/chips relying on it stay readable. The .seal
+       medallion keeps a dark navy face specifically so it can use the original bright
+       gold — see its hardcoded color below rather than this variable. */
+    --gold-bright: #A9821E;
     flex: 1;
     background:
       radial-gradient(ellipse at 20% 0%, rgba(201,162,39,0.07), transparent 45%),
@@ -188,7 +193,8 @@
   .seal {
     font-family: 'Cinzel', serif;
     font-size: 10px;
-    color: var(--gold-bright);
+    color: #E8C766; /* stays the original bright gold — this badge keeps a dark navy face
+                        regardless of .page's cream palette, so it needs the un-remapped tone */
     background: radial-gradient(circle at 35% 30%, #2E4A78, #1B2E4D 75%);
     border: 2px solid var(--gold);
     box-shadow: 0 2px 8px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(232,199,102,0.25);
@@ -497,8 +503,8 @@
     font-family: 'Spectral', serif;
     font-size: 11px;
     color: var(--gold-bright);
-    background: rgba(201,162,39,0.1);
-    border: 1px solid rgba(201,162,39,0.35);
+    background: rgba(201,162,39,0.14);
+    border: 1px solid rgba(201,162,39,0.45);
     padding: 3px 9px;
     border-radius: 0;
     margin: 0;
