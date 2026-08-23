@@ -849,6 +849,7 @@
 </div>
 
 <script src="../sync.js"></script>
+<script src="../account.js"></script>
 <script>
 /* ============================= DATA ============================= */
 
@@ -6506,14 +6507,34 @@ function loadProgress(){
 }
 function saveProgress(){
   try {
-    const payload = JSON.stringify({
+    const state = {
       favorites: Array.from(favorites),
       tracked: Array.from(tracked),
       updatedAt: Date.now(),
-    });
+    };
+    const payload = JSON.stringify(state);
     localStorage.setItem(storageKey(), payload);
     if (window.JawSync) window.JawSync.save(storageKey(), payload);
+    if (window.JawAccount && window.JawAccount.isSignedIn()) window.JawAccount.save('skyrim', state);
   } catch (e) { console.error('Could not save progress', e); }
+}
+
+// Same idea as syncPullAndReconcile() below, but against a signed-in JawAccount (Supabase)
+// instead of the GitHub Gist — the account-backed path used by the paid version of this app.
+async function syncAccountPullAndReconcile(){
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const remote = await window.JawAccount.load('skyrim');
+    if (!remote) return;
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remote.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remote.favorites || []);
+      tracked = new Set(remote.tracked || []);
+      localStorage.setItem(storageKey(), JSON.stringify(remote));
+      renderAll();
+    }
+  } catch (e) { console.error('Account sync pull failed', e); }
 }
 
 // Pulls the Gist's copy of this journal's progress (if sync is configured) and adopts it
@@ -8776,6 +8797,8 @@ loadNavState();
 renderAll();
 syncPullAndReconcile();
 window.__jawSyncOnConfigured = syncPullAndReconcile;
+syncAccountPullAndReconcile();
+window.__jawAccountOnSignedIn = syncAccountPullAndReconcile;
 </script>
 </body>
 </html>
