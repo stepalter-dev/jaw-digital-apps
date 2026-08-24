@@ -270,6 +270,36 @@
   }
   .search-plate input::placeholder { color: var(--ink-dim); }
 
+  /* floating "back to top" button — appears once the reader has scrolled a screen or more down a
+     long list, so jumping back to the search bar/filters doesn't require manual scrolling.
+     Bottom-LEFT deliberately: sync.js's own status widget already fixes itself to bottom-right
+     (bottom:14px;right:14px;z-index:99999) on every page, so the right corner is taken. */
+  .back-to-top {
+    position: fixed;
+    left: 22px;
+    bottom: 22px;
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--iron);
+    box-shadow: inset 0 1px 0 var(--panel-hi), 0 4px 14px rgba(0,0,0,0.45);
+    color: var(--gold-bright);
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity .2s ease, transform .2s ease, border-color .15s ease, color .15s ease;
+  }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { border-color: var(--gold-dim); color: var(--gold); }
+
   .filter-pill {
     font-family: 'Cinzel', serif;
     font-size: 10.5px;
@@ -847,6 +877,8 @@
     <footer class="note">A record kept for one Dragonborn by JAW Digital</footer>
   </main>
 </div>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 
 <script src="../sync.js"></script>
 <script src="../account.js"></script>
@@ -8715,13 +8747,24 @@ function renderGlobalSearchResults(){
     bySection[r.sectionLabel].push(r);
   });
 
-  const resultCardHtml = (r, idx) => `
-    <article class="quest ach-card search-result-card" data-search-idx="${idx}">
+  // Trackable entries (itemId !== null) get a "mark complete" toggle right on the result card, so a
+  // completed quest can be checked off without leaving the search results to open its full entry.
+  // Shouts are the one exception: their itemId is a slug used only for scroll-to-card, since the
+  // shout itself isn't individually tracked — only its 1-3 component words are (see renderShoutsInner) —
+  // so a shout search result never gets this button.
+  const isShoutResult = r => r.nav.section === 'shouts' && r.nav.shoutTab === 'shouts';
+  const resultCardHtml = (r, idx) => {
+    const canTrack = r.itemId !== null && r.itemId !== undefined && !isShoutResult(r);
+    const isDone = canTrack && tracked.has(r.itemId);
+    return `
+    <article class="quest ach-card search-result-card ${isDone ? 'done' : ''}" data-search-idx="${idx}">
       <div class="quest-top">
         <div class="quest-title-wrap"><span class="result-icon">${r.icon}</span><h3>${r.title}</h3></div>
       </div>
       ${r.snippet ? `<p class="ach-desc">${r.snippet}</p>` : ''}
+      ${canTrack ? `<div class="quest-foot"><span></span><button class="track-btn" data-search-track="${r.itemId}"><span class="box"></span> ${isDone ? 'Completed' : 'Mark complete'}</button></div>` : ''}
     </article>`;
+  };
 
   container.innerHTML = `<p class="search-section-note">Searching the whole journal — every quest, perk, follower, crafting entry, creature, shout, treasure, and location, not just this tab.</p>
     <div class="ach-categories">${order.map(label => {
@@ -8732,6 +8775,15 @@ function renderGlobalSearchResults(){
 
   container.querySelectorAll('[data-search-idx]').forEach(card => {
     card.addEventListener('click', () => navigateToResult(results[Number(card.dataset.searchIdx)]));
+  });
+  container.querySelectorAll('[data-search-track]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // don't also trigger the card's navigate-away click
+      const id = Number(btn.dataset.searchTrack);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      saveProgress();
+      renderGlobalSearchResults();
+    });
   });
 }
 
@@ -8791,6 +8843,14 @@ document.querySelectorAll('.filter-pill[data-hide-done]').forEach(pill => {
     renderCurrentList();
   });
 });
+
+/* ============================= BACK TO TOP ============================= */
+
+const backToTopBtn = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => {
+  backToTopBtn.classList.toggle('visible', window.scrollY > 600);
+});
+backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 loadProgress();
 loadNavState();
