@@ -467,12 +467,18 @@ const RESOURCES = [
 // Wastelanders (Apr 2020) is the update that changed that: it added the game's first
 // living, voiced human NPCs and a new main quest, plus two new faction storylines
 // (Settlers at Foundation, Raiders at the Crater). Steel Dawn/Steel Reign later brought
-// the Brotherhood of Steel back as a third human faction. Later expansions (Skyline
-// Valley and beyond) exist but aren't detailed here yet — add them as custom entries.
+// the Brotherhood of Steel back as a third human faction, and the expansions since keep
+// adding regions & factions. The most recent entries (Atlantic City especially) are past
+// this app's confident-knowledge cutoff — treat their details as a rough placeholder and
+// correct them once you've actually played them.
 const STORYLINES = [
-  { id: 'launch',      label: 'Launch — The Overseer\'s Mission', icon: '🕳️', era: 'Nov 2018' },
-  { id: 'wastelanders', label: 'Wastelanders',                    icon: '🤝', era: 'Apr 2020' },
-  { id: 'brotherhood',  label: 'Brotherhood of Steel',             icon: '⚙️', era: 'Dec 2020 – Jul 2021' },
+  { id: 'launch',       label: 'Launch — The Overseer\'s Mission', icon: '🕳️', era: 'Nov 2018' },
+  { id: 'wastelanders', label: 'Wastelanders',                     icon: '🤝', era: 'Apr 2020' },
+  { id: 'brotherhood',  label: 'Brotherhood of Steel',              icon: '⚙️', era: 'Dec 2020 – Jul 2021' },
+  { id: 'pitt',         label: 'The Pitt',                          icon: '⚒️', era: 'Sept 2022' },
+  { id: 'carnival',     label: 'Nuka-World on Tour',                icon: '🎡', era: '2022' },
+  { id: 'skyline',      label: 'Skyline Valley',                    icon: '🏔️', era: 'Mar 2024' },
+  { id: 'atlantic',     label: 'Atlantic City: Boardwalk Paradise', icon: '🎰', era: '2025 – rolling out in parts' },
 ];
 
 const STORY_QUESTS = [
@@ -490,6 +496,14 @@ const STORY_QUESTS = [
     desc:'The Brotherhood of Steel returns to Appalachia in force as a third faction. You help a small outpost re-establish itself and start shaping how the chapter will operate.' },
   { id:'story-steelreign', line:'brotherhood', order:7, title:'Steel Reign', npcs:['Paladin Rahmani','rival Elder-track NPCs'], addsNpcs:true,
     desc:'Direct continuation of Steel Dawn — the Brotherhood\'s internal power struggle in Appalachia comes to a head, with your choices shaping who ends up leading the chapter.' },
+  { id:'story-pitt', line:'pitt', order:8, title:'The Pitt', npcs:['Union faction NPCs'], addsNpcs:true,
+    desc:'Adds the Pittsburgh region — revisiting the steel-mill setting of Fallout 3\'s "The Pitt" DLC — with a new questline centered on the Union, a workers\' faction fighting to reclaim the ruined city.' },
+  { id:'story-carnival', line:'carnival', order:9, title:'Nuka-World on Tour', npcs:['Cavalier & the traveling carnival crew'], addsNpcs:true,
+    desc:'A traveling Nuka-World carnival rolls into Appalachia, adding a new questline around the Cavalier and the performers running it, plus a mobile carnival area with new rides & attractions.' },
+  { id:'story-skyline', line:'skyline', order:10, title:'Skyline Valley', npcs:['Order of Mysteries cult NPCs'], addsNpcs:true,
+    desc:'Adds the Shenandoah/Skyline Valley region and a questline investigating the secretive "Order of Mysteries" and the area\'s pre-war history.' },
+  { id:'story-atlanticcity', line:'atlantic', order:11, title:'Atlantic City: Boardwalk Paradise', npcs:['Atlantic City NPCs (rolling out per chapter)'], addsNpcs:true,
+    desc:'The most recent major expansion, bringing Atlantic City into the game across multiple release chapters. This entry is a placeholder — it landed after this app\'s confident-knowledge cutoff, so fill in specifics (or split it into per-chapter entries) once you\'ve actually played it.' },
 ];
 
 // Repeatable content: Daily Ops (one rotating dungeon system), world Public Events
