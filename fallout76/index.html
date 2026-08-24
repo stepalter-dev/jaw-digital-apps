@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vault Dweller's Almanac — Fallout 76 Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Pip-Boy CRT — near-black green screen, phosphor glow */
+    --void: #030b06;
+    --stone-1: #071a0f;
+    --stone-2: #0b2416;
+    --stone-3: #10301c;
+    --stone-4: #163d24;
+    --stone-5: #1d4c2e;
+    --panel: rgba(11, 36, 22, 0.62);
+    --panel-hi: rgba(157, 255, 190, 0.05);
+    --iron: #1f5c38;
+    --iron-light: #3f8f5c;
+    /* amber — the alternate Pip-Boy mode color, used sparingly for warnings/rare */
+    --amber: #ffb000;
+    --amber-dim: #b37c00;
+    /* phosphor green — key highlights */
+    --gold: #6dffa0;
+    --gold-bright: #b7ffd2;
+    --gold-dim: #3f9e68;
+    /* text */
+    --heading: #d4ffe4;
+    --ink: #b9ffcf;
+    --ink-soft: #6fbd8e;
+    --ink-dim: #3d7a56;
+    --blood: #ff5555;
+    --sage-ok: #6dffa0;
+    --moss: #4f9e6f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(109,255,160,0.06), transparent 40%),
+      radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.65) 100%),
+      repeating-linear-gradient(180deg, rgba(0,0,0,0.16) 0px, transparent 1px, transparent 3px);
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .tome {
+    width: min(95vw, 1520px);
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(31,92,56,0.7), 0 0 40px rgba(109,255,160,0.05);
+    overflow: hidden;
+  }
+
+  /* ---------- SIDE NAV (desktop) ---------- */
+  .nav {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
+    padding: 28px 0 20px;
+    min-width: 220px;
+    flex-shrink: 0;
+    position: relative;
+    border-right: 1px solid var(--iron);
+  }
+  .nav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
+    pointer-events: none;
+  }
+  .nav-brand {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 0.08em;
+    padding: 0 16px 20px;
+    border-bottom: 1px solid var(--iron);
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(109,255,160,0.35);
+  }
+
+  .nav-btn {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 18px;
+    margin: 1px 8px;
+    color: var(--ink-soft);
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 500;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background .15s ease, color .15s ease;
+    border-left: 2px solid transparent;
+  }
+  .nav-btn .icon { font-size: 15px; filter: saturate(0.8); flex-shrink: 0; width: 18px; text-align: center; }
+  .nav-btn:hover { background: rgba(109,255,160,0.06); color: var(--heading); }
+  .nav-btn.active {
+    background: rgba(109,255,160,0.1);
+    color: var(--gold-bright);
+    border-left-color: var(--gold);
+    text-shadow: 0 0 6px rgba(109,255,160,0.4);
+  }
+
+  .nav-mobile { display: none; }
+
+  /* ---------- MAIN PAGE ---------- */
+  .page {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px 60px;
+    background: linear-gradient(180deg, var(--stone-1), var(--void) 60%);
+  }
+
+  .title-block { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+  .title-block h1 {
+    font-family: 'VT323', monospace;
+    font-size: 34px;
+    letter-spacing: 0.03em;
+    color: var(--heading);
+    margin: 0 0 2px;
+    text-shadow: 0 0 10px rgba(109,255,160,0.3);
+  }
+  .subtitle { font-size: 12.5px; color: var(--ink-dim); letter-spacing: 0.04em; }
+  .seal {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--gold-dim);
+    border: 1px solid var(--iron);
+    padding: 8px 12px;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .rune-divider {
+    height: 1px;
+    margin: 18px 0 22px;
+    background: linear-gradient(90deg, transparent, var(--iron) 15%, var(--iron) 85%, transparent);
+  }
+
+  .search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .search-plate {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    padding: 9px 14px;
+    min-width: 220px;
+    flex: 1;
+  }
+  .search-plate input {
+    background: transparent; border: none; outline: none;
+    color: var(--ink); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 100%;
+  }
+  .search-plate input::placeholder { color: var(--ink-dim); }
+
+  .filter-pill {
+    font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 8px 12px; border: 1px solid var(--iron); color: var(--ink-soft);
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  .filter-pill.active { border-color: var(--gold-dim); color: var(--gold-bright); background: rgba(109,255,160,0.08); }
+
+  .btn {
+    all: unset; cursor: pointer;
+    font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 9px 16px; border: 1px solid var(--iron); color: var(--ink-soft);
+  }
+  .btn:hover { color: var(--gold-bright); border-color: var(--gold-dim); background: rgba(109,255,160,0.06); }
+  .btn.primary { border-color: var(--gold-dim); color: var(--gold-bright); }
+  .btn.primary:hover { background: rgba(109,255,160,0.12); }
+  .btn.danger { border-color: #7a2a2a; color: #ff8a8a; }
+  .btn.danger:hover { background: rgba(255,80,80,0.08); }
+  .btn.small { padding: 5px 10px; font-size: 10px; }
+
+  /* ---------- GRIDS / CARDS ---------- */
+  .entries { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 12px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    padding: 16px 18px;
+    position: relative;
+  }
+  .card.owned { border-color: var(--gold-dim); box-shadow: inset 0 0 0 1px rgba(109,255,160,0.15); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .card-title { font-family: 'VT323', monospace; font-size: 19px; color: var(--heading); letter-spacing: 0.02em; }
+  .card-tag { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-dim); border: 1px solid var(--iron); padding: 2px 7px; }
+  .card-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; margin: 4px 0 10px; }
+  .card-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11px; color: var(--ink-dim); margin-bottom: 10px; }
+  .card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  .checkbox {
+    width: 18px; height: 18px; border: 1px solid var(--iron); cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    color: var(--gold-bright); font-size: 12px; background: var(--panel);
+  }
+  .checkbox.checked { border-color: var(--gold); background: rgba(109,255,160,0.15); }
+
+  .rank-stepper { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink-soft); }
+  .rank-stepper button {
+    all: unset; cursor: pointer; width: 20px; height: 20px; text-align: center;
+    border: 1px solid var(--iron); color: var(--gold-bright); line-height: 18px;
+  }
+  .rank-stepper button:hover { background: rgba(109,255,160,0.1); }
+
+  input[type=number], input[type=text], textarea, select {
+    background: var(--panel); border: 1px solid var(--iron); color: var(--ink);
+    font-family: 'Share Tech Mono', monospace; font-size: 12.5px; padding: 7px 10px; outline: none;
+  }
+  input[type=number] { width: 64px; }
+  textarea { width: 100%; resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold-dim); }
+  label.field-label { display: block; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 5px; }
+
+  .form-panel { background: var(--panel); border: 1px solid var(--iron); padding: 20px; margin-bottom: 16px; }
+  .form-row { margin-bottom: 14px; }
+  .form-grid7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+  .form-grid7 .stat-box { text-align: center; }
+  .form-grid7 .stat-box label { display:block; font-size: 10px; color: var(--gold-dim); margin-bottom: 4px; letter-spacing: 0.06em; }
+  .form-grid7 input { width: 100%; text-align: center; }
+
+  .stat-group-head {
+    font-family: 'VT323', monospace; font-size: 18px; color: var(--gold-bright);
+    display: flex; align-items: center; gap: 8px; margin: 22px 0 10px; letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--iron); padding-bottom: 6px;
+  }
+  .stat-group-head:first-child { margin-top: 0; }
+  .stat-points { font-size: 11px; color: var(--ink-dim); font-weight: normal; text-transform: none; letter-spacing: normal; }
+  .stat-points.over { color: var(--blood); }
+
+  .empty-state { color: var(--ink-dim); font-size: 13px; padding: 30px 10px; text-align: center; border: 1px dashed var(--iron); }
+
+  .progress-tally { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--sage-ok); }
+
+  .note-card { background: var(--panel); border: 1px solid var(--iron); padding: 16px 18px; }
+  .note-card h3 { font-family: 'VT323', monospace; font-size: 19px; color: var(--heading); margin: 0 0 4px; }
+  .note-card .note-date { font-size: 10.5px; color: var(--ink-dim); margin-bottom: 8px; }
+  .note-card .note-body { font-size: 12.5px; color: var(--ink-soft); white-space: pre-wrap; line-height: 1.5; }
+
+  .stat-tally-row { display: flex; gap: 22px; flex-wrap: wrap; margin: 18px 0 4px; }
+  .stat-tally { text-align: center; }
+  .stat-tally .n { font-family: 'VT323', monospace; font-size: 30px; color: var(--gold-bright); text-shadow: 0 0 8px rgba(109,255,160,0.35); }
+  .stat-tally .l { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .overview-lede { font-size: 13px; color: var(--ink-soft); line-height: 1.7; max-width: 640px; }
+  .overview-lede code { color: var(--gold-bright); }
+
+  .star-btn { all: unset; cursor: pointer; font-size: 15px; color: var(--ink-dim); }
+  .star-btn.active { color: var(--amber); }
+
+  .back-to-top {
+    position: fixed; left: 22px; bottom: 22px; z-index: 20;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel); backdrop-filter: blur(4px);
+    border: 1px solid var(--iron); color: var(--gold-bright); cursor: pointer;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease;
+  }
+  .back-to-top.show { opacity: 1; pointer-events: auto; }
+
+  footer.note { text-align: center; font-size: 11px; color: var(--ink-dim); margin-top: 40px; letter-spacing: 0.04em; }
+
+  @media (min-width: 900px) { .grid2.wide { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); } }
+
+  @media (max-width: 780px) {
+    .tome { flex-direction: column; width: 100%; }
+    .nav { display: none; }
+    .nav-mobile {
+      display: flex; overflow-x: auto; gap: 6px; padding: 12px; background: var(--stone-1);
+    }
+    .nav-mobile .nav-btn { margin: 0; flex-shrink: 0; }
+    .page { padding: 24px 18px 40px; }
+    .form-grid7 { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="tome">
+  <nav class="nav" id="nav-desktop"></nav>
+
+  <main class="page">
+    <nav class="nav-mobile" id="nav-mobile"></nav>
+
+    <header class="title-block">
+      <div>
+        <h1 id="page-title">Vault Dweller's Almanac</h1>
+        <div class="subtitle" id="page-subtitle">— a survival record for Appalachia —</div>
+      </div>
+      <div class="seal">RobCo<br/>PIP-OS v7.1.0.9</div>
+    </header>
+    <div class="rune-divider"></div>
+
+    <div class="search-row" id="search-row" style="display:none;">
+      <div class="search-plate">
+        <span>🔎</span>
+        <input id="search" type="text" placeholder="Search perk cards…" />
+      </div>
+      <span class="filter-pill active" data-fav="all">All cards</span>
+      <span class="filter-pill" data-fav="owned">★ Owned only</span>
+      <span id="progress-tally" class="progress-tally" style="display:none;"></span>
+    </div>
+
+    <section id="content"></section>
+
+    <footer class="note">Field data compiled for one Vault Dweller by JAW Digital — verify against live game balance; Bethesda tweaks perk costs & levels regularly.</footer>
+  </main>
+</div>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<script>window.JAW_GAME = 'fallout76';</script>
+<script src="../sync.js"></script>
+<script src="../account.js"></script>
+<script>
+
+/* ============================================================
+   DATA
+   ============================================================ */
+
+const SECTIONS = [
+  { id: 'overview',  label: 'Overview',           icon: '📻' },
+  { id: 'special',   label: 'S.P.E.C.I.A.L. Cards', icon: '🃏' },
+  { id: 'builds',    label: 'CAMP & Builds',       icon: '🏕️' },
+  { id: 'stockpile', label: 'Junk Stockpile',      icon: '🔩' },
+  { id: 'notes',     label: 'Field Log',           icon: '📝' },
+];
+
+const SPECIALS = [
+  { id: 'S', name: 'Strength',    icon: '💪', desc: 'Melee & heavy gun damage, carry weight.' },
+  { id: 'P', name: 'Perception',  icon: '👁️', desc: 'Ranged accuracy, lockpicking, VATS.' },
+  { id: 'E', name: 'Endurance',   icon: '❤️', desc: 'Max HP, damage & disease resistance.' },
+  { id: 'C', name: 'Charisma',    icon: '🗣️', desc: 'Team buffs, prices, group play.' },
+  { id: 'I', name: 'Intelligence',icon: '🧠', desc: 'Crafting, chems, energy weapons, XP.' },
+  { id: 'A', name: 'Agility',     icon: '🏃', desc: 'Gun archetypes, AP, sneak, stealth.' },
+  { id: 'L', name: 'Luck',        icon: '🍀', desc: 'Crits, loot, mutation stability.' },
+];
+function specialInfo(id){ return SPECIALS.find(s => s.id === id); }
+
+// Curated set of well-known, stable perk cards. Level & cost values are approximate —
+// Bethesda has rebalanced several of these over the game's lifetime. Use "+ Add Card"
+// below to fill in anything missing or renamed since this list was written.
+const PERKS = [
+  // ---- STRENGTH ----
+  { id:'s1', special:'S', name:'Barbarian',        lvl:2,  maxRank:3, cost:1, desc:'Melee damage bonus while at full health.' },
+  { id:'s2', special:'S', name:'Iron Fist',        lvl:3,  maxRank:3, cost:1, desc:'Unarmed damage bonus.' },
+  { id:'s3', special:'S', name:'Blocker',          lvl:4,  maxRank:3, cost:1, desc:'Chance to reduce melee damage taken to a graze.' },
+  { id:'s4', special:'S', name:'Slugger',          lvl:9,  maxRank:3, cost:2, desc:'Two-handed melee weapon damage bonus.' },
+  { id:'s5', special:'S', name:'Sturdy Frame',     lvl:11, maxRank:3, cost:1, desc:'Reduced leg crippling & less carry weight from armor.' },
+  { id:'s6', special:'S', name:'Traveling Pharmacy', lvl:13, maxRank:2, cost:1, desc:'Chems weigh less.' },
+  { id:'s7', special:'S', name:'Strong Back',      lvl:16, maxRank:4, cost:2, desc:'Extra carry weight; can fast-travel while overweight (higher ranks).' },
+  { id:'s8', special:'S', name:'Bear Arms',        lvl:21, maxRank:3, cost:2, desc:'Heavy gun damage bonus while at full health.' },
+  { id:'s9', special:'S', name:'Steel Yourself',   lvl:18, maxRank:2, cost:1, desc:'Damage resistance while swinging a melee weapon.' },
+
+  // ---- PERCEPTION ----
+  { id:'p1', special:'P', name:'Awareness',        lvl:3,  maxRank:1, cost:2, desc:'See a targeted enemy’s damage resistances in VATS.' },
+  { id:'p2', special:'P', name:'Locksmith',        lvl:2,  maxRank:3, cost:1, desc:'Improved lockpicking; unlocks harder locks.' },
+  { id:'p3', special:'P', name:'Concentrated Fire', lvl:32, maxRank:3, cost:3, desc:'VATS accuracy on a body part rises the longer you target it.' },
+  { id:'p4', special:'P', name:'Glow Sight',       lvl:8,  maxRank:2, cost:1, desc:'See glowing enemies & radioactive resources through walls.' },
+  { id:'p5', special:'P', name:'Grenadier',        lvl:22, maxRank:3, cost:1, desc:'Explosives do more damage & are thrown farther.' },
+  { id:'p6', special:'P', name:'Ammosmith',        lvl:12, maxRank:2, cost:1, desc:'Crafting ammo yields more per batch.' },
+  { id:'p7', special:'P', name:'Tank Killer',      lvl:27, maxRank:2, cost:2, desc:'Increased damage & penetration vs. robots & power armor.' },
+
+  // ---- ENDURANCE ----
+  { id:'e1', special:'E', name:'Lifegiver',        lvl:6,  maxRank:3, cost:2, desc:'Increases maximum HP.' },
+  { id:'e2', special:'E', name:'Ironclad',         lvl:5,  maxRank:3, cost:1, desc:'Damage resistance bonus while wearing heavy armor.' },
+  { id:'e3', special:'E', name:'Adamantium Skeleton', lvl:10, maxRank:3, cost:1, desc:'Reduces limb damage & removes fall damage at max rank.' },
+  { id:'e4', special:'E', name:'Fireproof',        lvl:14, maxRank:2, cost:1, desc:'Resistance to fire & explosion damage.' },
+  { id:'e5', special:'E', name:'Rejuvenated',      lvl:17, maxRank:2, cost:1, desc:'HP & AP regenerate faster while well fed & hydrated.' },
+  { id:'e6', special:'E', name:'Slow Metabolizer', lvl:23, maxRank:2, cost:1, desc:'Radiation resistance from food & drink.' },
+  { id:'e7', special:'E', name:'Healing Factor',   lvl:29, maxRank:3, cost:2, desc:'Healing items restore more HP.' },
+
+  // ---- CHARISMA ----
+  { id:'c1', special:'C', name:'Hard Bargain',     lvl:3,  maxRank:3, cost:1, desc:'Better prices from vendors.' },
+  { id:'c2', special:'C', name:'Team Player',      lvl:7,  maxRank:3, cost:1, desc:'Bonus XP for you & your team while grouped.' },
+  { id:'c3', special:'C', name:'Tenderizer',       lvl:19, maxRank:3, cost:2, desc:'Your hits reduce a target’s damage resistance for the whole team.' },
+  { id:'c4', special:'C', name:'Field Surgeon',    lvl:25, maxRank:2, cost:1, desc:'Stimpaks you use also heal nearby teammates.' },
+  { id:'c5', special:'C', name:'Party Boy',        lvl:15, maxRank:3, cost:1, desc:'Alcohol buffs last longer & apply to the team.', note:'"Party Girl" for female characters — same card.' },
+  { id:'c6', special:'C', name:'Inspirational',    lvl:31, maxRank:3, cost:2, desc:'Team gains bonus carry weight while grouped.' },
+
+  // ---- INTELLIGENCE ----
+  { id:'i1', special:'I', name:'Science!',         lvl:4,  maxRank:4, cost:1, desc:'Energy weapon damage bonus & unlocks high-tech recipes.' },
+  { id:'i2', special:'I', name:'Chemist',          lvl:8,  maxRank:3, cost:1, desc:'Chems crafted yield double & last longer.' },
+  { id:'i3', special:'I', name:'First Aid',        lvl:10, maxRank:3, cost:1, desc:'Stimpaks & RadAway are more effective.' },
+  { id:'i4', special:'I', name:'Nerd Rage!',       lvl:20, maxRank:3, cost:2, desc:'Damage resistance & damage boost when HP drops low (glasses required).' },
+  { id:'i5', special:'I', name:'Robotics Expert',  lvl:24, maxRank:3, cost:1, desc:'Sneak attacks vs. robots, hack terminals from farther away, and repair robot allies.' },
+  { id:'i6', special:'I', name:'Nuclear Physicist', lvl:33, maxRank:3, cost:2, desc:'Radiation weapon damage bonus & reduced self-radiation.' },
+
+  // ---- AGILITY ----
+  { id:'a1', special:'A', name:'Gunslinger',       lvl:2,  maxRank:5, cost:1, desc:'One-handed (pistol) weapon damage bonus.' },
+  { id:'a2', special:'A', name:'Rifleman',         lvl:2,  maxRank:5, cost:1, desc:'Non-automatic rifle damage bonus.' },
+  { id:'a3', special:'A', name:'Commando',         lvl:2,  maxRank:5, cost:1, desc:'Automatic & non-explosive heavy gun damage bonus.' },
+  { id:'a4', special:'A', name:'Shotgunner',       lvl:2,  maxRank:5, cost:1, desc:'Shotgun damage bonus.' },
+  { id:'a5', special:'A', name:'Action Boy',       lvl:12, maxRank:3, cost:1, desc:'AP regenerates faster.', note:'"Action Girl" for female characters — same card.' },
+  { id:'a6', special:'A', name:'Adrenaline',       lvl:26, maxRank:5, cost:1, desc:'Stacking damage bonus per kill; resets on death.' },
+  { id:'a7', special:'A', name:'Evasive',          lvl:16, maxRank:3, cost:1, desc:'Chance to dodge attacks; better the more you’ve moved recently.' },
+  { id:'a8', special:'A', name:'Moving Target',    lvl:28, maxRank:3, cost:1, desc:'Damage resistance & energy resistance while moving.' },
+
+  // ---- LUCK ----
+  { id:'l1', special:'L', name:'Bloody Mess',      lvl:3,  maxRank:3, cost:1, desc:'Flat damage bonus to all attacks (plus extra gore).' },
+  { id:'l2', special:'L', name:'Better Criticals', lvl:9,  maxRank:3, cost:2, desc:'Critical hits do more damage.' },
+  { id:'l3', special:'L', name:'Four Leaf Clover', lvl:13, maxRank:3, cost:2, desc:'Chance any hit fills your critical meter.' },
+  { id:'l4', special:'L', name:'Fortune Finder',   lvl:6,  maxRank:3, cost:1, desc:'Find more bottle caps in containers.' },
+  { id:'l5', special:'L', name:'Scrounger',        lvl:11, maxRank:3, cost:1, desc:'Find more ammunition in containers.' },
+  { id:'l6', special:'L', name:'Grim Reaper’s Sprint', lvl:30, maxRank:3, cost:3, desc:'Killing an enemy has a chance to fully refill AP.' },
+  { id:'l7', special:'L', name:'Starched Genes',   lvl:34, maxRank:1, cost:3, desc:'Prevents active mutations from being removed when you die.' },
+];
+
+// Common crafting junk components worth stockpiling, with the usual bottleneck items starred by default.
+const RESOURCES = [
+  { id:'adhesive',   name:'Adhesive',        icon:'🧴', starDefault:true,  note:'Constant drain — mods, chems, cooking.' },
+  { id:'aluminum',   name:'Aluminum',        icon:'🥫', starDefault:false, note:'' },
+  { id:'antiseptic', name:'Antiseptic',      icon:'🩹', starDefault:false, note:'' },
+  { id:'asbestos',   name:'Asbestos',        icon:'🧱', starDefault:false, note:'' },
+  { id:'ballistic-fiber', name:'Ballistic Fiber', icon:'🦺', starDefault:true, note:'Armor mods — scarce, from clipboards/pouches/leather.' },
+  { id:'black-titanium', name:'Black Titanium', icon:'⬛', starDefault:true, note:'Power armor/rare mods — limited spawns.' },
+  { id:'bone',       name:'Bone',            icon:'🦴', starDefault:false, note:'' },
+  { id:'ceramic',    name:'Ceramic',         icon:'🏺', starDefault:false, note:'' },
+  { id:'circuitry',  name:'Circuitry',       icon:'🔌', starDefault:false, note:'' },
+  { id:'cloth',      name:'Cloth',           icon:'🧵', starDefault:false, note:'' },
+  { id:'concrete',   name:'Concrete',        icon:'🧱', starDefault:false, note:'' },
+  { id:'copper',     name:'Copper',          icon:'🟠', starDefault:false, note:'' },
+  { id:'cork',       name:'Cork',            icon:'🍾', starDefault:false, note:'' },
+  { id:'crystal',    name:'Crystal',         icon:'💎', starDefault:true,  note:'Energy weapon mods — scarce, from pre-war watches/lasers.' },
+  { id:'fiber-optics', name:'Fiber Optics',  icon:'🔦', starDefault:true,  note:'High-tier mods — limited spawns.' },
+  { id:'fiberglass', name:'Fiberglass',      icon:'🎣', starDefault:false, note:'' },
+  { id:'gears',      name:'Gears',           icon:'⚙️', starDefault:false, note:'' },
+  { id:'glass',      name:'Glass',           icon:'🍶', starDefault:false, note:'' },
+  { id:'gold',       name:'Gold',            icon:'🟡', starDefault:false, note:'' },
+  { id:'lead',       name:'Lead',            icon:'⚫', starDefault:false, note:'Ammo crafting.' },
+  { id:'leather',    name:'Leather',         icon:'🧥', starDefault:false, note:'' },
+  { id:'nuclear-material', name:'Nuclear Material', icon:'☢️', starDefault:true, note:'High-tier crafting — scarce.' },
+  { id:'oil',        name:'Oil',             icon:'🛢️', starDefault:false, note:'' },
+  { id:'plastic',    name:'Plastic',         icon:'🧴', starDefault:false, note:'' },
+  { id:'rubber',     name:'Rubber',          icon:'⚫', starDefault:false, note:'' },
+  { id:'screw',      name:'Screw',           icon:'🔩', starDefault:true,  note:'Constant drain — weapon mods.' },
+  { id:'silver',     name:'Silver',          icon:'⚪', starDefault:false, note:'' },
+  { id:'spring',     name:'Spring',          icon:'🌀', starDefault:true,  note:'Constant drain — weapon mods.' },
+  { id:'steel',      name:'Steel',           icon:'🔧', starDefault:false, note:'' },
+  { id:'sugar',      name:'Sugar',           icon:'🍬', starDefault:false, note:'' },
+  { id:'wood',       name:'Wood',            icon:'🪵', starDefault:false, note:'' },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let activeSection = 'overview';
+let searchTerm = '';
+let ownedOnly = false;
+
+let ownedCards = new Set();   // perk ids the player owns
+let cardRank = {};            // perk id -> current rank (>=1 once owned)
+let plans = [];               // [{id,name,special:{S..L},cards:[ids],notes,updatedAt}]
+let stockpile = {};           // resourceId -> {target, have, starred, note}
+let notesList = [];           // [{id,title,body,updatedAt}]
+
+let editingPlanId = null;     // plan currently open in the builder form, or 'new'
+let editingNoteId = null;
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ============================================================
+   PERSISTENCE
+   ============================================================ */
+
+function storageKey(){ return 'fallout76-journal-progress'; }
+function navStateKey(){ return 'fallout76-journal-lastview'; }
+
+function loadProgress(){
+  try {
+    const raw = localStorage.getItem(storageKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      ownedCards = new Set(parsed.ownedCards || []);
+      cardRank = parsed.cardRank || {};
+      plans = parsed.plans || [];
+      stockpile = parsed.stockpile || {};
+      notesList = parsed.notesList || [];
+    }
+  } catch (e) { /* start fresh */ }
+  // seed default stars for resources not yet touched
+  RESOURCES.forEach(r => {
+    if (!stockpile[r.id]) stockpile[r.id] = { target: 0, have: false, starred: r.starDefault, note: '' };
+  });
+}
+
+function saveProgress(){
+  try {
+    const state = {
+      ownedCards: Array.from(ownedCards),
+      cardRank,
+      plans,
+      stockpile,
+      notesList,
+      updatedAt: Date.now(),
+    };
+    const payload = JSON.stringify(state);
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
+    if (window.JawAccount && window.JawAccount.isSignedIn()) window.JawAccount.save('fallout76', state);
+  } catch (e) { console.error('Could not save progress', e); }
+}
+
+async function syncPullAndReconcile(){
+  if (window.JawSync && window.JawSync.load) {
+    try {
+      const remote = await window.JawSync.load(storageKey());
+      const localRaw = localStorage.getItem(storageKey());
+      const remoteParsed = remote && JSON.parse(remote);
+      const localParsed = localRaw && JSON.parse(localRaw);
+      if (remoteParsed && (!localParsed || (remoteParsed.updatedAt||0) > (localParsed.updatedAt||0))) {
+        localStorage.setItem(storageKey(), remote);
+        loadProgress(); renderAll();
+      }
+    } catch (e) { /* ignore */ }
+  }
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const remote = await window.JawAccount.load('fallout76');
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw && JSON.parse(localRaw);
+    if (remote && (!localParsed || (remote.updatedAt||0) > (localParsed.updatedAt||0))) {
+      localStorage.setItem(storageKey(), JSON.stringify(remote));
+      loadProgress(); renderAll();
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function saveNavState(){
+  try { localStorage.setItem(navStateKey(), JSON.stringify({ section: activeSection })); } catch(e){}
+}
+function loadNavState(){
+  try {
+    const raw = localStorage.getItem(navStateKey());
+    if (raw) { const p = JSON.parse(raw); if (p.section) activeSection = p.section; }
+  } catch(e){}
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+
+function renderNav(){
+  const btns = SECTIONS.map(s => `<button class="nav-btn ${activeSection===s.id?'active':''}" data-section="${s.id}">
+      <span class="icon">${s.icon}</span><span>${s.label}</span>
+    </button>`).join('');
+  document.getElementById('nav-desktop').innerHTML = `<div class="nav-brand">PIP-BOY 3000</div>` + btns;
+  document.getElementById('nav-mobile').innerHTML = btns;
+  document.querySelectorAll('[data-section]').forEach(b => {
+    b.addEventListener('click', () => { activeSection = b.dataset.section; saveNavState(); renderAll(); });
+  });
+}
+
+/* ============================================================
+   RENDER: OVERVIEW
+   ============================================================ */
+
+function renderOverview(){
+  document.getElementById('page-title').textContent = 'Vault Dweller’s Almanac';
+  document.getElementById('page-subtitle').textContent = '— a survival record for Appalachia —';
+  document.getElementById('search-row').style.display = 'none';
+
+  const ownedCount = ownedCards.size;
+  const starredIncomplete = RESOURCES.filter(r => stockpile[r.id] && stockpile[r.id].starred && !stockpile[r.id].have).length;
+
+  document.getElementById('content').innerHTML = `
+    <div class="overview-lede">
+      Welcome back, Vault Dweller. This almanac tracks the S.P.E.C.I.A.L. perk cards you’ve found,
+      the CAMP & build plans you’re running, your junk stockpile, and a field log for anything worth
+      remembering — event timers, workshop notes, trade offers. Everything syncs the same way as the
+      other JAW Digital journals: it lives in this browser, and if you’ve set up sync or signed in
+      below, it follows you to other devices too.
+      <br/><br/>
+      Card levels & point costs are <code>approximate</code> — Bethesda rebalances these over time.
+      Use <code>+ Add Card</code> in the S.P.E.C.I.A.L. tab for anything that’s missing or changed.
+    </div>
+    <div class="stat-tally-row">
+      <div class="stat-tally"><div class="n">${ownedCount}</div><div class="l">Cards Owned</div></div>
+      <div class="stat-tally"><div class="n">${plans.length}</div><div class="l">Build Plans</div></div>
+      <div class="stat-tally"><div class="n">${starredIncomplete}</div><div class="l">Rare Junk Needed</div></div>
+      <div class="stat-tally"><div class="n">${notesList.length}</div><div class="l">Field Log Entries</div></div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   RENDER: S.P.E.C.I.A.L. PERK LIBRARY
+   ============================================================ */
+
+function renderLibrary(){
+  document.getElementById('page-title').textContent = 'S.P.E.C.I.A.L. Perk Cards';
+  document.getElementById('page-subtitle').textContent = '— tap a card to mark it owned, then set its rank —';
+  document.getElementById('search-row').style.display = 'flex';
+  document.getElementById('search').value = searchTerm;
+  document.getElementById('search').placeholder = 'Search perk cards…';
+  document.querySelectorAll('.filter-pill[data-fav]').forEach(p => p.classList.toggle('active', (p.dataset.fav === 'owned') === ownedOnly));
+
+  const tally = document.getElementById('progress-tally');
+  tally.style.display = 'inline';
+  tally.textContent = `${ownedCards.size} / ${PERKS.length} cards owned`;
+
+  const term = searchTerm.trim().toLowerCase();
+  let html = '';
+  SPECIALS.forEach(sp => {
+    let cards = PERKS.filter(p => p.special === sp.id);
+    if (term) cards = cards.filter(p => p.name.toLowerCase().includes(term) || p.desc.toLowerCase().includes(term));
+    if (ownedOnly) cards = cards.filter(p => ownedCards.has(p.id));
+    if (!cards.length) return;
+    html += `<div class="stat-group-head">${sp.icon} ${sp.name} <span class="stat-points">— ${sp.desc}</span></div>`;
+    html += `<div class="grid2 wide">`;
+    cards.forEach(p => {
+      const owned = ownedCards.has(p.id);
+      const rank = cardRank[p.id] || 1;
+      html += `
+        <div class="card ${owned?'owned':''}">
+          <div class="card-head">
+            <span class="card-title">${p.name}</span>
+            <span class="checkbox ${owned?'checked':''}" data-toggle-card="${p.id}">${owned?'✓':''}</span>
+          </div>
+          <div class="card-desc">${p.desc}${p.note?`<br/><em>${p.note}</em>`:''}</div>
+          <div class="card-meta">
+            <span>Lvl ~${p.lvl}</span>
+            <span>Cost ${p.cost}pt${p.cost>1?'s':''}/rank</span>
+            <span>Max Rank ${p.maxRank}</span>
+          </div>
+          ${owned ? `
+          <div class="card-actions">
+            <div class="rank-stepper">
+              Rank
+              <button data-rank-down="${p.id}">−</button>
+              <span>${rank} / ${p.maxRank}</span>
+              <button data-rank-up="${p.id}">+</button>
+            </div>
+          </div>` : ''}
+        </div>`;
+    });
+    html += `</div>`;
+  });
+
+  if (!html) html = `<div class="empty-state">No cards match your search.</div>`;
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-toggle-card]').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.toggleCard;
+      if (ownedCards.has(id)) { ownedCards.delete(id); delete cardRank[id]; }
+      else { ownedCards.add(id); cardRank[id] = 1; }
+      saveProgress(); renderLibrary();
+    });
+  });
+  document.querySelectorAll('[data-rank-up]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = PERKS.find(x => x.id === el.dataset.rankUp);
+      cardRank[p.id] = Math.min(p.maxRank, (cardRank[p.id]||1) + 1);
+      saveProgress(); renderLibrary();
+    });
+  });
+  document.querySelectorAll('[data-rank-down]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = PERKS.find(x => x.id === el.dataset.rankDown);
+      cardRank[p.id] = Math.max(1, (cardRank[p.id]||1) - 1);
+      saveProgress(); renderLibrary();
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: CAMP & BUILD PLANS
+   ============================================================ */
+
+function emptyPlan(){
+  return { id: uid(), name: '', special: {S:1,P:1,E:1,C:1,I:1,A:1,L:1}, cards: [], notes: '', updatedAt: Date.now() };
+}
+
+function renderBuilds(){
+  document.getElementById('page-title').textContent = 'CAMP & Build Plans';
+  document.getElementById('page-subtitle').textContent = '— save S.P.E.C.I.A.L. loadouts & CAMP notes for different playstyles —';
+  document.getElementById('search-row').style.display = 'none';
+
+  let html = '';
+  if (editingPlanId) {
+    const plan = editingPlanId === 'new' ? emptyPlan() : plans.find(p => p.id === editingPlanId);
+    html += renderPlanForm(plan);
+  } else {
+    html += `<div class="card-actions" style="margin-bottom:16px;"><button class="btn primary" id="new-plan-btn">+ New Build Plan</button></div>`;
+    if (!plans.length) {
+      html += `<div class="empty-state">No build plans yet. Create one to lock in a S.P.E.C.I.A.L. spread, equipped cards, and CAMP notes for a playstyle.</div>`;
+    } else {
+      html += `<div class="entries">`;
+      plans.forEach(plan => {
+        const specStr = SPECIALS.map(s => `${s.id}${plan.special[s.id]}`).join(' ');
+        const cardNames = plan.cards.map(id => { const c = PERKS.find(p=>p.id===id); return c ? c.name : null; }).filter(Boolean);
+        html += `
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">${plan.name || 'Untitled Plan'}</span>
+              <div class="card-actions">
+                <button class="btn small" data-edit-plan="${plan.id}">Edit</button>
+                <button class="btn small danger" data-delete-plan="${plan.id}">Delete</button>
+              </div>
+            </div>
+            <div class="card-meta"><span>${specStr}</span><span>${cardNames.length} card${cardNames.length!==1?'s':''} equipped</span></div>
+            ${cardNames.length ? `<div class="card-desc">${cardNames.join(', ')}</div>` : ''}
+            ${plan.notes ? `<div class="card-desc"><em>${plan.notes}</em></div>` : ''}
+          </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+  document.getElementById('content').innerHTML = html;
+  wireBuildsHandlers();
+}
+
+function renderPlanForm(plan){
+  const specInputs = SPECIALS.map(s => `
+    <div class="stat-box">
+      <label>${s.icon} ${s.id}</label>
+      <input type="number" min="1" max="15" value="${plan.special[s.id]}" data-spec-input="${s.id}">
+    </div>`).join('');
+
+  let cardPicker = '';
+  SPECIALS.forEach(sp => {
+    const cards = PERKS.filter(p => p.special === sp.id && ownedCards.has(p.id));
+    if (!cards.length) return;
+    const spent = cards.filter(c => plan.cards.includes(c.id)).reduce((sum,c) => sum + c.cost * (cardRank[c.id]||1), 0);
+    const budget = plan.special[sp.id];
+    cardPicker += `<div class="stat-group-head">${sp.icon} ${sp.name} <span class="stat-points ${spent>budget?'over':''}">— ${spent} / ${budget} pts used</span></div>`;
+    cardPicker += `<div class="grid2">`;
+    cards.forEach(c => {
+      const checked = plan.cards.includes(c.id);
+      cardPicker += `
+        <div class="card ${checked?'owned':''}" style="padding:10px 14px;">
+          <div class="card-head" style="margin-bottom:0;">
+            <span style="font-size:13px; color:var(--ink);">${c.name} <span style="color:var(--ink-dim);">(rank ${cardRank[c.id]||1}, ${c.cost}pt/rk)</span></span>
+            <span class="checkbox ${checked?'checked':''}" data-toggle-plan-card="${c.id}">${checked?'✓':''}</span>
+          </div>
+        </div>`;
+    });
+    cardPicker += `</div>`;
+  });
+  if (!cardPicker) cardPicker = `<div class="empty-state">You haven’t marked any cards as owned yet — do that in the S.P.E.C.I.A.L. tab first.</div>`;
+
+  return `
+    <div class="form-panel">
+      <div class="form-row">
+        <label class="field-label">Plan Name</label>
+        <input type="text" id="plan-name" value="${plan.name.replace(/"/g,'&quot;')}" placeholder="e.g. Stealth Commando, Heavy Gunner Tank" style="width:100%;">
+      </div>
+      <div class="form-row">
+        <label class="field-label">S.P.E.C.I.A.L. Allocation</label>
+        <div class="form-grid7">${specInputs}</div>
+      </div>
+      <div class="form-row">
+        <label class="field-label">Equipped Perk Cards (from your owned cards)</label>
+        ${cardPicker}
+      </div>
+      <div class="form-row">
+        <label class="field-label">CAMP / Build Notes</label>
+        <textarea id="plan-notes" placeholder="Weapon & armor choices, mutations, CAMP layout, workshop locations, budget notes…">${plan.notes.replace(/</g,'&lt;')}</textarea>
+      </div>
+      <div class="card-actions">
+        <button class="btn primary" id="save-plan-btn" data-plan-id="${plan.id}">Save Plan</button>
+        <button class="btn" id="cancel-plan-btn">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+let planDraft = null;
+
+function wireBuildsHandlers(){
+  const newBtn = document.getElementById('new-plan-btn');
+  if (newBtn) newBtn.addEventListener('click', () => { editingPlanId = 'new'; planDraft = emptyPlan(); renderBuilds(); });
+
+  document.querySelectorAll('[data-edit-plan]').forEach(el => {
+    el.addEventListener('click', () => {
+      editingPlanId = el.dataset.editPlan;
+      planDraft = JSON.parse(JSON.stringify(plans.find(p => p.id === editingPlanId)));
+      renderBuilds();
+    });
+  });
+  document.querySelectorAll('[data-delete-plan]').forEach(el => {
+    el.addEventListener('click', () => {
+      plans = plans.filter(p => p.id !== el.dataset.deletePlan);
+      saveProgress(); renderBuilds();
+    });
+  });
+
+  if (!editingPlanId) return;
+  if (!planDraft) planDraft = editingPlanId === 'new' ? emptyPlan() : JSON.parse(JSON.stringify(plans.find(p => p.id === editingPlanId)));
+
+  document.querySelectorAll('[data-spec-input]').forEach(el => {
+    el.addEventListener('input', () => {
+      const v = Math.max(1, Math.min(15, parseInt(el.value)||1));
+      planDraft.special[el.dataset.specInput] = v;
+      renderBuildsPreservingDraft();
+    });
+  });
+  document.querySelectorAll('[data-toggle-plan-card]').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.togglePlanCard;
+      const i = planDraft.cards.indexOf(id);
+      if (i === -1) planDraft.cards.push(id); else planDraft.cards.splice(i,1);
+      renderBuildsPreservingDraft();
+    });
+  });
+  const nameEl = document.getElementById('plan-name');
+  if (nameEl) nameEl.addEventListener('input', () => { planDraft.name = nameEl.value; });
+  const notesEl = document.getElementById('plan-notes');
+  if (notesEl) notesEl.addEventListener('input', () => { planDraft.notes = notesEl.value; });
+
+  const saveBtn = document.getElementById('save-plan-btn');
+  if (saveBtn) saveBtn.addEventListener('click', () => {
+    planDraft.updatedAt = Date.now();
+    const idx = plans.findIndex(p => p.id === planDraft.id);
+    if (idx === -1) plans.push(planDraft); else plans[idx] = planDraft;
+    editingPlanId = null; planDraft = null;
+    saveProgress(); renderBuilds();
+  });
+  const cancelBtn = document.getElementById('cancel-plan-btn');
+  if (cancelBtn) cancelBtn.addEventListener('click', () => { editingPlanId = null; planDraft = null; renderBuilds(); });
+}
+
+// Re-renders the form using the in-memory draft (not yet saved) so number/checkbox edits
+// don't get clobbered by re-reading from the saved `plans` array.
+function renderBuildsPreservingDraft(){
+  document.getElementById('content').innerHTML = renderPlanForm(planDraft);
+  wireBuildsHandlers();
+}
+
+/* ============================================================
+   RENDER: JUNK STOCKPILE
+   ============================================================ */
+
+function renderStockpile(){
+  document.getElementById('page-title').textContent = 'Junk Stockpile';
+  document.getElementById('page-subtitle').textContent = '— track what you’re hoarding for crafting & mods —';
+  document.getElementById('search-row').style.display = 'none';
+
+  const starred = RESOURCES.filter(r => stockpile[r.id] && stockpile[r.id].starred);
+  const rest = RESOURCES.filter(r => !(stockpile[r.id] && stockpile[r.id].starred));
+
+  function resourceCard(r){
+    const s = stockpile[r.id] || { target:0, have:false, starred:false, note:'' };
+    return `
+      <div class="card ${s.have?'owned':''}">
+        <div class="card-head">
+          <span class="card-title">${r.icon} ${r.name}</span>
+          <button class="star-btn ${s.starred?'active':''}" data-star="${r.id}" title="Mark as a bottleneck resource">★</button>
+        </div>
+        ${r.note || s.note ? `<div class="card-desc">${s.note || r.note}</div>` : ''}
+        <div class="card-actions">
+          <span class="checkbox ${s.have?'checked':''}" data-have="${r.id}">${s.have?'✓':''}</span>
+          <span style="font-size:11px; color:var(--ink-dim);">Stocked enough</span>
+          <label class="field-label" style="margin:0 0 0 12px;">Target Qty</label>
+          <input type="number" min="0" value="${s.target}" data-target="${r.id}">
+        </div>
+      </div>`;
+  }
+
+  let html = '';
+  if (starred.length) {
+    html += `<div class="stat-group-head">★ Bottleneck Resources</div><div class="grid2 wide">${starred.map(resourceCard).join('')}</div>`;
+  }
+  html += `<div class="stat-group-head">All Other Junk</div><div class="grid2 wide">${rest.map(resourceCard).join('')}</div>`;
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-star]').forEach(el => {
+    el.addEventListener('click', () => {
+      const s = stockpile[el.dataset.star];
+      s.starred = !s.starred;
+      saveProgress(); renderStockpile();
+    });
+  });
+  document.querySelectorAll('[data-have]').forEach(el => {
+    el.addEventListener('click', () => {
+      const s = stockpile[el.dataset.have];
+      s.have = !s.have;
+      saveProgress(); renderStockpile();
+    });
+  });
+  document.querySelectorAll('[data-target]').forEach(el => {
+    el.addEventListener('change', () => {
+      const s = stockpile[el.dataset.target];
+      s.target = Math.max(0, parseInt(el.value)||0);
+      saveProgress();
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: FIELD LOG (personal notes)
+   ============================================================ */
+
+function renderNotes(){
+  document.getElementById('page-title').textContent = 'Field Log';
+  document.getElementById('page-subtitle').textContent = '— event timers, trade offers, workshop notes — whatever’s worth remembering —';
+  document.getElementById('search-row').style.display = 'none';
+
+  let html = '';
+  if (editingNoteId) {
+    const note = editingNoteId === 'new' ? { id: uid(), title:'', body:'', updatedAt: Date.now() } : notesList.find(n => n.id === editingNoteId);
+    html += `
+      <div class="form-panel">
+        <div class="form-row">
+          <label class="field-label">Title</label>
+          <input type="text" id="note-title" value="${note.title.replace(/"/g,'&quot;')}" style="width:100%;" placeholder="e.g. Fasnacht Day timers">
+        </div>
+        <div class="form-row">
+          <label class="field-label">Notes</label>
+          <textarea id="note-body" placeholder="Anything worth remembering…">${note.body.replace(/</g,'&lt;')}</textarea>
+        </div>
+        <div class="card-actions">
+          <button class="btn primary" id="save-note-btn" data-note-id="${note.id}">Save Entry</button>
+          <button class="btn" id="cancel-note-btn">Cancel</button>
+        </div>
+      </div>`;
+  } else {
+    html += `<div class="card-actions" style="margin-bottom:16px;"><button class="btn primary" id="new-note-btn">+ New Entry</button></div>`;
+    if (!notesList.length) {
+      html += `<div class="empty-state">No field log entries yet.</div>`;
+    } else {
+      const sorted = [...notesList].sort((a,b) => b.updatedAt - a.updatedAt);
+      html += `<div class="entries">` + sorted.map(n => `
+        <div class="note-card">
+          <div class="card-head">
+            <h3>${n.title || 'Untitled'}</h3>
+            <div class="card-actions">
+              <button class="btn small" data-edit-note="${n.id}">Edit</button>
+              <button class="btn small danger" data-delete-note="${n.id}">Delete</button>
+            </div>
+          </div>
+          <div class="note-date">${new Date(n.updatedAt).toLocaleString()}</div>
+          <div class="note-body">${n.body}</div>
+        </div>`).join('') + `</div>`;
+    }
+  }
+  document.getElementById('content').innerHTML = html;
+
+  const newBtn = document.getElementById('new-note-btn');
+  if (newBtn) newBtn.addEventListener('click', () => { editingNoteId = 'new'; renderNotes(); });
+  document.querySelectorAll('[data-edit-note]').forEach(el => el.addEventListener('click', () => { editingNoteId = el.dataset.editNote; renderNotes(); }));
+  document.querySelectorAll('[data-delete-note]').forEach(el => el.addEventListener('click', () => {
+    notesList = notesList.filter(n => n.id !== el.dataset.deleteNote);
+    saveProgress(); renderNotes();
+  }));
+  const saveBtn = document.getElementById('save-note-btn');
+  if (saveBtn) saveBtn.addEventListener('click', () => {
+    const id = saveBtn.dataset.noteId;
+    const title = document.getElementById('note-title').value;
+    const body = document.getElementById('note-body').value;
+    const idx = notesList.findIndex(n => n.id === id);
+    const entry = { id, title, body, updatedAt: Date.now() };
+    if (idx === -1) notesList.push(entry); else notesList[idx] = entry;
+    editingNoteId = null;
+    saveProgress(); renderNotes();
+  });
+  const cancelBtn = document.getElementById('cancel-note-btn');
+  if (cancelBtn) cancelBtn.addEventListener('click', () => { editingNoteId = null; renderNotes(); });
+}
+
+/* ============================================================
+   DISPATCH
+   ============================================================ */
+
+function renderAll(){
+  renderNav();
+  editingPlanId = activeSection === 'builds' ? editingPlanId : null;
+  editingNoteId = activeSection === 'notes' ? editingNoteId : null;
+  if (activeSection === 'overview') renderOverview();
+  else if (activeSection === 'special') renderLibrary();
+  else if (activeSection === 'builds') renderBuilds();
+  else if (activeSection === 'stockpile') renderStockpile();
+  else if (activeSection === 'notes') renderNotes();
+  window.scrollTo(0,0);
+}
+
+document.getElementById('search').addEventListener('input', (e) => { searchTerm = e.target.value; renderLibrary(); });
+document.querySelectorAll('.filter-pill[data-fav]').forEach(p => {
+  p.addEventListener('click', () => { ownedOnly = p.dataset.fav === 'owned'; renderLibrary(); });
+});
+
+const backToTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 600); });
+backToTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+loadNavState();
+loadProgress();
+renderAll();
+syncPullAndReconcile();
+</script>
+</body>
+</html>
