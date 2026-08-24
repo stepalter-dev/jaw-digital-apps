@@ -340,6 +340,7 @@ const SECTIONS = [
   { id: 'overview',  label: 'Overview',           icon: '📻' },
   { id: 'special',   label: 'S.P.E.C.I.A.L. Cards', icon: '🃏' },
   { id: 'builds',    label: 'CAMP & Builds',       icon: '🏕️' },
+  { id: 'story',     label: 'Story Quests',        icon: '📜' },
   { id: 'quests',    label: 'Repeatable Quests',   icon: '🔁' },
   { id: 'creatures', label: 'Creature POIs',       icon: '👹' },
   { id: 'stockpile', label: 'Junk Stockpile',      icon: '🔩' },
@@ -461,6 +462,36 @@ const RESOURCES = [
   { id:'wood',       name:'Wood',            icon:'🪵', starDefault:false, note:'' },
 ];
 
+// The one-time main story questlines, in order. Fallout 76 launched in Nov 2018 with NO
+// living human NPCs — the whole story was told through robots, terminals, and holotapes.
+// Wastelanders (Apr 2020) is the update that changed that: it added the game's first
+// living, voiced human NPCs and a new main quest, plus two new faction storylines
+// (Settlers at Foundation, Raiders at the Crater). Steel Dawn/Steel Reign later brought
+// the Brotherhood of Steel back as a third human faction. Later expansions (Skyline
+// Valley and beyond) exist but aren't detailed here yet — add them as custom entries.
+const STORYLINES = [
+  { id: 'launch',      label: 'Launch — The Overseer\'s Mission', icon: '🕳️', era: 'Nov 2018' },
+  { id: 'wastelanders', label: 'Wastelanders',                    icon: '🤝', era: 'Apr 2020' },
+  { id: 'brotherhood',  label: 'Brotherhood of Steel',             icon: '⚙️', era: 'Dec 2020 – Jul 2021' },
+];
+
+const STORY_QUESTS = [
+  { id:'story-reclamation', line:'launch', order:1, title:'Reclamation Day', npcs:[], addsNpcs:false,
+    desc:'Character creation & tutorial. You leave Vault 76 on Reclamation Day, 25 years after the bombs fell, to help reclaim Appalachia. No living people yet — just robots, terminals, and recordings.' },
+  { id:'story-overseer', line:'launch', order:2, title:'The Overseer\'s Mission', npcs:['Overseer Kim (voice/recordings only)'], addsNpcs:false,
+    desc:'The original main quest: follow the Overseer\'s recorded trail across Appalachia\'s regions as she searches for a way to save it, building toward a confrontation with the Scorched plague and, at endgame, the Scorchbeast Queen. She is heard throughout, never met in person — the game stayed fully NPC-free through this questline.' },
+  { id:'story-wastelanders-main', line:'wastelanders', order:3, title:'Wastelanders: Main Questline', npcs:['Rose (robot companion)','Duchess','assorted Foundation & Crater NPCs'], addsNpcs:true,
+    desc:'The watershed update. Living human NPCs return to Appalachia for the first time, fully voiced. The new main quest has you investigate the survivors\' arrival and get pulled into a hunt for Vault 79\'s gold alongside the enigmatic Duchess. This is the exact point the game stopped being NPC-free.' },
+  { id:'story-settlers', line:'wastelanders', order:4, title:'Settlers Questline (Foundation)', npcs:['Paige','Foundation settlers'], addsNpcs:true,
+    desc:'Faction storyline for the settlers rebuilding at Foundation under Paige — the cooperative, build-and-defend path through the Wastelanders plot.' },
+  { id:'story-raiders', line:'wastelanders', order:5, title:'Raiders Questline (Crater)', npcs:['Meg','Crater raiders'], addsNpcs:true,
+    desc:'Faction storyline for the raiders holed up at the Crater (a converted missile silo) under Meg — a rougher, more mercenary path through the same central plot.' },
+  { id:'story-steeldawn', line:'brotherhood', order:6, title:'Steel Dawn', npcs:['Paladin Rahmani','Knight Shin'], addsNpcs:true,
+    desc:'The Brotherhood of Steel returns to Appalachia in force as a third faction. You help a small outpost re-establish itself and start shaping how the chapter will operate.' },
+  { id:'story-steelreign', line:'brotherhood', order:7, title:'Steel Reign', npcs:['Paladin Rahmani','rival Elder-track NPCs'], addsNpcs:true,
+    desc:'Direct continuation of Steel Dawn — the Brotherhood\'s internal power struggle in Appalachia comes to a head, with your choices shaping who ends up leading the chapter.' },
+];
+
 // Repeatable content: Daily Ops (one rotating dungeon system), world Public Events
 // (many spawn the tough creature "infestations" the game is known for), and the
 // broader Seasonal/daily-quest systems. Exact rotations & rewards change with updates —
@@ -516,6 +547,7 @@ let stockpile = {};           // resourceId -> {target, have, starred, note}
 let notesList = [];           // [{id,title,body,updatedAt}]
 let questProgress = {};       // repeatable id -> {timesRun, favorite, note}
 let creatureProgress = {};    // creature POI id -> {hunted, favorite, note}
+let storyProgress = {};       // story quest id -> {done, note}
 
 let editingPlanId = null;     // plan currently open in the builder form, or 'new'
 let editingNoteId = null;
@@ -541,6 +573,7 @@ function loadProgress(){
       notesList = parsed.notesList || [];
       questProgress = parsed.questProgress || {};
       creatureProgress = parsed.creatureProgress || {};
+      storyProgress = parsed.storyProgress || {};
     }
   } catch (e) { /* start fresh */ }
   // seed default stars for resources not yet touched
@@ -552,6 +585,9 @@ function loadProgress(){
   });
   CREATURE_POIS.forEach(c => {
     if (!creatureProgress[c.id]) creatureProgress[c.id] = { hunted: false, favorite: false, note: '' };
+  });
+  STORY_QUESTS.forEach(q => {
+    if (!storyProgress[q.id]) storyProgress[q.id] = { done: false, note: '' };
   });
 }
 
@@ -565,6 +601,7 @@ function saveProgress(){
       notesList,
       questProgress,
       creatureProgress,
+      storyProgress,
       updatedAt: Date.now(),
     };
     const payload = JSON.stringify(state);
@@ -637,14 +674,16 @@ function renderOverview(){
   const starredIncomplete = RESOURCES.filter(r => stockpile[r.id] && stockpile[r.id].starred && !stockpile[r.id].have).length;
   const creaturesHunted = CREATURE_POIS.filter(c => creatureProgress[c.id] && creatureProgress[c.id].hunted).length;
   const questsFavorited = REPEATABLES.filter(q => questProgress[q.id] && questProgress[q.id].favorite).length;
+  const storyDone = STORY_QUESTS.filter(q => storyProgress[q.id] && storyProgress[q.id].done).length;
 
   document.getElementById('content').innerHTML = `
     <div class="overview-lede">
       Welcome back, Vault Dweller. This almanac tracks the S.P.E.C.I.A.L. perk cards you’ve found,
-      the CAMP & build plans you’re running, your go-to repeatable quests, the named creatures you’ve
-      hunted down, your junk stockpile, and a field log for anything worth remembering. Everything
-      syncs the same way as the other JAW Digital journals: it lives in this browser, and if you’ve
-      set up sync or signed in below, it follows you to other devices too.
+      the CAMP & build plans you’re running, your progress through the main story quests, your go-to
+      repeatable quests, the named creatures you’ve hunted down, your junk stockpile, and a field log
+      for anything worth remembering. Everything syncs the same way as the other JAW Digital journals:
+      it lives in this browser, and if you’ve set up sync or signed in below, it follows you to other
+      devices too.
       <br/><br/>
       Card levels, event details & creature spawn notes are all <code>approximate</code> —
       Bethesda rebalances and rotates content regularly. Use the star/note fields to correct
@@ -653,6 +692,7 @@ function renderOverview(){
     <div class="stat-tally-row">
       <div class="stat-tally"><div class="n">${ownedCount}</div><div class="l">Cards Owned</div></div>
       <div class="stat-tally"><div class="n">${plans.length}</div><div class="l">Build Plans</div></div>
+      <div class="stat-tally"><div class="n">${storyDone} / ${STORY_QUESTS.length}</div><div class="l">Story Quests Done</div></div>
       <div class="stat-tally"><div class="n">${questsFavorited}</div><div class="l">Farm-Priority Quests</div></div>
       <div class="stat-tally"><div class="n">${creaturesHunted} / ${CREATURE_POIS.length}</div><div class="l">Creatures Hunted</div></div>
       <div class="stat-tally"><div class="n">${starredIncomplete}</div><div class="l">Rare Junk Needed</div></div>
@@ -967,6 +1007,50 @@ function renderStockpile(){
 }
 
 /* ============================================================
+   RENDER: STORY QUESTS (the one-time main questlines)
+   ============================================================ */
+
+function renderStory(){
+  document.getElementById('page-title').textContent = 'Story Quests';
+  document.getElementById('page-subtitle').textContent = '— the main questlines, in order, from launch to the Brotherhood\'s return —';
+  document.getElementById('search-row').style.display = 'none';
+
+  let html = '';
+  STORYLINES.forEach(line => {
+    const quests = STORY_QUESTS.filter(q => q.line === line.id).sort((a,b) => a.order - b.order);
+    if (!quests.length) return;
+    const doneCount = quests.filter(q => storyProgress[q.id] && storyProgress[q.id].done).length;
+    html += `<div class="stat-group-head">${line.icon} ${line.label} <span class="stat-points">— ${line.era} — ${doneCount}/${quests.length} complete</span></div>`;
+    html += `<div class="entries">`;
+    quests.forEach(q => {
+      const p = storyProgress[q.id] || { done: false, note: '' };
+      html += `
+        <div class="card ${p.done?'owned':''}">
+          <div class="card-head">
+            <span class="card-title">${q.order}. ${q.title}</span>
+            <span class="checkbox ${p.done?'checked':''}" data-toggle-story="${q.id}">${p.done?'✓':''}</span>
+          </div>
+          <div class="card-desc">${q.desc}</div>
+          <div class="card-meta">
+            <span>${q.addsNpcs ? '🧑 Introduces living NPCs' : '🤖 Robots/terminals/recordings only'}</span>
+            ${q.npcs.length ? `<span>Key NPCs: ${q.npcs.join(', ')}</span>` : ''}
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-toggle-story]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = storyProgress[el.dataset.toggleStory];
+      p.done = !p.done;
+      saveProgress(); renderStory();
+    });
+  });
+}
+
+/* ============================================================
    RENDER: REPEATABLE QUESTS (Daily Ops, Public Events, Seasonal)
    ============================================================ */
 
@@ -1155,6 +1239,7 @@ function renderAll(){
   if (activeSection === 'overview') renderOverview();
   else if (activeSection === 'special') renderLibrary();
   else if (activeSection === 'builds') renderBuilds();
+  else if (activeSection === 'story') renderStory();
   else if (activeSection === 'quests') renderQuests();
   else if (activeSection === 'creatures') renderCreatures();
   else if (activeSection === 'stockpile') renderStockpile();
