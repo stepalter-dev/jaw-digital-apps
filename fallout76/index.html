@@ -340,6 +340,8 @@ const SECTIONS = [
   { id: 'overview',  label: 'Overview',           icon: '📻' },
   { id: 'special',   label: 'S.P.E.C.I.A.L. Cards', icon: '🃏' },
   { id: 'builds',    label: 'CAMP & Builds',       icon: '🏕️' },
+  { id: 'quests',    label: 'Repeatable Quests',   icon: '🔁' },
+  { id: 'creatures', label: 'Creature POIs',       icon: '👹' },
   { id: 'stockpile', label: 'Junk Stockpile',      icon: '🔩' },
   { id: 'notes',     label: 'Field Log',           icon: '📝' },
 ];
@@ -459,6 +461,46 @@ const RESOURCES = [
   { id:'wood',       name:'Wood',            icon:'🪵', starDefault:false, note:'' },
 ];
 
+// Repeatable content: Daily Ops (one rotating dungeon system), world Public Events
+// (many spawn the tough creature "infestations" the game is known for), and the
+// broader Seasonal/daily-quest systems. Exact rotations & rewards change with updates —
+// this is a reference/tracker, not a live schedule. Add anything missing via a custom entry.
+const REPEATABLES = [
+  { id:'q-dailyops', category:'Daily Ops', name:'Daily Ops (rotating vault)', reset:'Daily', desc:'One randomized vault assignment per day (Vault 79/94/96), with a modifier card and a boss room. Rewards Legendary Modules & score.' },
+
+  { id:'q-eviction',  category:'Public Event', name:'Eviction Notice', reset:'Timed spawn', desc:'Defend Fort Defiance from the Scorchbeast Queen — the toughest fixed boss fight in the base game.', creature:'Scorchbeast Queen' },
+  { id:'q-lineinsand', category:'Public Event', name:'Line in the Sand', reset:'Timed spawn', desc:'Defend an artillery position from waves of Scorched, capped by a Scorchbeast.', creature:'Scorchbeast' },
+  { id:'q-radrumble', category:'Public Event', name:'Radiation Rumble', reset:'Timed spawn', desc:'Defend generators at an irradiated mine from ghouls and other radiation-tolerant creatures.' },
+  { id:'q-colossal',  category:'Public Event', name:'A Colossal Problem', reset:'Timed spawn', desc:'Corral and take down a rampaging Mega Sloth before it destroys a settlement.', creature:'Mega Sloth' },
+  { id:'q-freerange', category:'Public Event', name:'Free Range', reset:'Timed spawn', desc:'Protect Grafton Farm’s Brahmin from a Feral Ghoul infestation.' },
+  { id:'q-guided',    category:'Public Event', name:'Guided Meditation', reset:'Timed spawn', desc:'Escort and protect a group of monks from raiders at a monastery.' },
+  { id:'q-distinguished', category:'Public Event', name:'Distinguished Guests', reset:'Timed spawn', desc:'Defend the Whitespring bunker entrance from a Super Mutant assault.' },
+  { id:'q-onwviolent', category:'Public Event', name:'One Violent Night', reset:'Timed spawn', desc:'Seasonal-flavored event at the Mothman Museum — defend against a horde while a Mothman looks on.', creature:'Mothman' },
+  { id:'q-swarm',     category:'Public Event', name:'Swarm of Suitors', reset:'Timed spawn', desc:'Protect a would-be groom from a swarm of giant insects crashing the wedding.' },
+  { id:'q-encryptid', category:'Public Event', name:'Encryptid', reset:'Timed spawn', desc:'Investigate cryptid sightings that culminate in a fight against a notable cryptid creature.', creature:'Varies (cryptid)' },
+  { id:'q-mostwanted', category:'Public Event', name:'Most Wanted', reset:'Timed spawn', desc:'Track and defeat a random wanted Scorched or raider target across a search zone.' },
+  { id:'q-moonshine', category:'Public Event', name:'Moonshine Jamboree', reset:'Timed spawn', desc:'Guard a moonshine still from a raider/ghoul assault while it brews.' },
+  { id:'q-safesound', category:'Public Event', name:'Safe and Sound', reset:'Timed spawn', desc:'Defend a settlement’s water purifier from an attacking horde.' },
+  { id:'q-fasnacht',  category:'Public Event', name:'Fasnacht Day', reset:'Seasonal (recurring)', desc:'Defend the Fasnacht parade in Helvetia from costumed "masked" enemies, capped by a unique masked boss.' },
+
+  { id:'q-score',     category:'Seasonal', name:'S.C.O.R.E. Season Board', reset:'Each Season', desc:'The current Season’s ranked reward track — challenges rotate every Season. Note current Season goals in the Field Log rather than here, since content changes each cycle.' },
+  { id:'q-dailyquest', category:'Daily/Weekly', name:'Daily & Weekly Quests', reset:'Daily/Weekly', desc:'Overseer / faction terminal bounties (kill & fetch quests) that refresh on a timer — check in-game terminals for the current rotation.' },
+];
+
+// Named/legendary creature spawns worth farming — West Virginia's classic cryptids plus
+// the game's marquee bosses. Region & spawn-trigger notes are approximate; treat this as
+// a hunting checklist, not a guaranteed spawn guide.
+const CREATURE_POIS = [
+  { id:'cr-scorchqueen', name:'Scorchbeast Queen', region:'Fort Defiance, Savage Divide', desc:'Endgame boss — spawns only via the "Eviction Notice" public event.', trigger:'Public Event' },
+  { id:'cr-scorchbeast', name:'Scorchbeast', region:'Savage Divide & Ash Heap Blast Zones', desc:'Flying irradiated bat-like beast; wanders near glowing Blast Zone craters, also spawns in "Line in the Sand".', trigger:'Wild spawn / Event' },
+  { id:'cr-mothman',     name:'Mothman', region:'Point Pleasant, The Forest', desc:'Rare, mostly passive cryptid sighting; tied to Mothman cultist camps and the "One Violent Night" event.', trigger:'Wild spawn / Event' },
+  { id:'cr-grafton',     name:'Grafton Monster', region:'Grafton & Grafton Dam, The Forest', desc:'Rare wandering cryptid near Grafton town.', trigger:'Wild spawn' },
+  { id:'cr-snallygaster', name:'Snallygaster', region:'Toxic Valley & Savage Divide', desc:'Flying cryptid with a corrosive bite; rare wandering spawn.', trigger:'Wild spawn' },
+  { id:'cr-sheepsquatch', name:'Sheepsquatch', region:'Cranberry Bog', desc:'Aggressive melee cryptid with bone spikes; rare wandering spawn, occasional unique variant.', trigger:'Wild spawn' },
+  { id:'cr-wendigo',     name:'Wendigo', region:'The Mire', desc:'Emaciated clawed cryptid found in caves and swamps; tougher unique/boss-tier variants exist in specific caves.', trigger:'Wild spawn' },
+  { id:'cr-megasloth',   name:'Mega Sloth', region:'Forest & Cranberry Bog', desc:'Large tanky beast; rare wild spawn, also the target of "A Colossal Problem".', trigger:'Wild spawn / Event' },
+];
+
 /* ============================================================
    STATE
    ============================================================ */
@@ -472,6 +514,8 @@ let cardRank = {};            // perk id -> current rank (>=1 once owned)
 let plans = [];               // [{id,name,special:{S..L},cards:[ids],notes,updatedAt}]
 let stockpile = {};           // resourceId -> {target, have, starred, note}
 let notesList = [];           // [{id,title,body,updatedAt}]
+let questProgress = {};       // repeatable id -> {timesRun, favorite, note}
+let creatureProgress = {};    // creature POI id -> {hunted, favorite, note}
 
 let editingPlanId = null;     // plan currently open in the builder form, or 'new'
 let editingNoteId = null;
@@ -495,11 +539,19 @@ function loadProgress(){
       plans = parsed.plans || [];
       stockpile = parsed.stockpile || {};
       notesList = parsed.notesList || [];
+      questProgress = parsed.questProgress || {};
+      creatureProgress = parsed.creatureProgress || {};
     }
   } catch (e) { /* start fresh */ }
   // seed default stars for resources not yet touched
   RESOURCES.forEach(r => {
     if (!stockpile[r.id]) stockpile[r.id] = { target: 0, have: false, starred: r.starDefault, note: '' };
+  });
+  REPEATABLES.forEach(q => {
+    if (!questProgress[q.id]) questProgress[q.id] = { timesRun: 0, favorite: false, note: '' };
+  });
+  CREATURE_POIS.forEach(c => {
+    if (!creatureProgress[c.id]) creatureProgress[c.id] = { hunted: false, favorite: false, note: '' };
   });
 }
 
@@ -511,6 +563,8 @@ function saveProgress(){
       plans,
       stockpile,
       notesList,
+      questProgress,
+      creatureProgress,
       updatedAt: Date.now(),
     };
     const payload = JSON.stringify(state);
@@ -581,21 +635,26 @@ function renderOverview(){
 
   const ownedCount = ownedCards.size;
   const starredIncomplete = RESOURCES.filter(r => stockpile[r.id] && stockpile[r.id].starred && !stockpile[r.id].have).length;
+  const creaturesHunted = CREATURE_POIS.filter(c => creatureProgress[c.id] && creatureProgress[c.id].hunted).length;
+  const questsFavorited = REPEATABLES.filter(q => questProgress[q.id] && questProgress[q.id].favorite).length;
 
   document.getElementById('content').innerHTML = `
     <div class="overview-lede">
       Welcome back, Vault Dweller. This almanac tracks the S.P.E.C.I.A.L. perk cards you’ve found,
-      the CAMP & build plans you’re running, your junk stockpile, and a field log for anything worth
-      remembering — event timers, workshop notes, trade offers. Everything syncs the same way as the
-      other JAW Digital journals: it lives in this browser, and if you’ve set up sync or signed in
-      below, it follows you to other devices too.
+      the CAMP & build plans you’re running, your go-to repeatable quests, the named creatures you’ve
+      hunted down, your junk stockpile, and a field log for anything worth remembering. Everything
+      syncs the same way as the other JAW Digital journals: it lives in this browser, and if you’ve
+      set up sync or signed in below, it follows you to other devices too.
       <br/><br/>
-      Card levels & point costs are <code>approximate</code> — Bethesda rebalances these over time.
-      Use <code>+ Add Card</code> in the S.P.E.C.I.A.L. tab for anything that’s missing or changed.
+      Card levels, event details & creature spawn notes are all <code>approximate</code> —
+      Bethesda rebalances and rotates content regularly. Use the star/note fields to correct
+      anything that’s drifted from what you see in-game.
     </div>
     <div class="stat-tally-row">
       <div class="stat-tally"><div class="n">${ownedCount}</div><div class="l">Cards Owned</div></div>
       <div class="stat-tally"><div class="n">${plans.length}</div><div class="l">Build Plans</div></div>
+      <div class="stat-tally"><div class="n">${questsFavorited}</div><div class="l">Farm-Priority Quests</div></div>
+      <div class="stat-tally"><div class="n">${creaturesHunted} / ${CREATURE_POIS.length}</div><div class="l">Creatures Hunted</div></div>
       <div class="stat-tally"><div class="n">${starredIncomplete}</div><div class="l">Rare Junk Needed</div></div>
       <div class="stat-tally"><div class="n">${notesList.length}</div><div class="l">Field Log Entries</div></div>
     </div>
@@ -908,6 +967,113 @@ function renderStockpile(){
 }
 
 /* ============================================================
+   RENDER: REPEATABLE QUESTS (Daily Ops, Public Events, Seasonal)
+   ============================================================ */
+
+function renderQuests(){
+  document.getElementById('page-title').textContent = 'Repeatable Quests';
+  document.getElementById('page-subtitle').textContent = '— Daily Ops, world Public Events & the seasonal grind — track what’s worth farming —';
+  document.getElementById('search-row').style.display = 'none';
+
+  const categories = ['Daily Ops', 'Public Event', 'Seasonal', 'Daily/Weekly'];
+  let html = '';
+  categories.forEach(cat => {
+    const items = REPEATABLES.filter(q => q.category === cat);
+    if (!items.length) return;
+    html += `<div class="stat-group-head">${cat}</div><div class="grid2 wide">`;
+    items.forEach(q => {
+      const p = questProgress[q.id] || { timesRun: 0, favorite: false, note: '' };
+      html += `
+        <div class="card ${p.favorite?'owned':''}">
+          <div class="card-head">
+            <span class="card-title">${q.name}</span>
+            <button class="star-btn ${p.favorite?'active':''}" data-star-quest="${q.id}" title="Mark as a go-to farm">★</button>
+          </div>
+          <div class="card-desc">${q.desc}${q.creature?`<br/><em>Notable creature: ${q.creature}</em>`:''}</div>
+          <div class="card-meta"><span>Resets: ${q.reset}</span></div>
+          <div class="card-actions">
+            <div class="rank-stepper">
+              Times Run
+              <button data-run-down="${q.id}">−</button>
+              <span>${p.timesRun}</span>
+              <button data-run-up="${q.id}">+</button>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-star-quest]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = questProgress[el.dataset.starQuest];
+      p.favorite = !p.favorite;
+      saveProgress(); renderQuests();
+    });
+  });
+  document.querySelectorAll('[data-run-up]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = questProgress[el.dataset.runUp];
+      p.timesRun = (p.timesRun||0) + 1;
+      saveProgress(); renderQuests();
+    });
+  });
+  document.querySelectorAll('[data-run-down]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = questProgress[el.dataset.runDown];
+      p.timesRun = Math.max(0, (p.timesRun||0) - 1);
+      saveProgress(); renderQuests();
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: CREATURE POIs (named/legendary spawns)
+   ============================================================ */
+
+function renderCreatures(){
+  document.getElementById('page-title').textContent = 'Creature POIs';
+  document.getElementById('page-subtitle').textContent = '— named cryptids & bosses worth hunting down —';
+  document.getElementById('search-row').style.display = 'none';
+
+  let html = `<div class="grid2 wide">`;
+  CREATURE_POIS.forEach(c => {
+    const p = creatureProgress[c.id] || { hunted: false, favorite: false, note: '' };
+    html += `
+      <div class="card ${p.hunted?'owned':''}">
+        <div class="card-head">
+          <span class="card-title">${c.name}</span>
+          <button class="star-btn ${p.favorite?'active':''}" data-star-creature="${c.id}" title="Mark as a priority hunt">★</button>
+        </div>
+        <div class="card-desc">${c.desc}</div>
+        <div class="card-meta"><span>${c.region}</span><span>Trigger: ${c.trigger}</span></div>
+        <div class="card-actions">
+          <span class="checkbox ${p.hunted?'checked':''}" data-hunted="${c.id}">${p.hunted?'✓':''}</span>
+          <span style="font-size:11px; color:var(--ink-dim);">Hunted</span>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-star-creature]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = creatureProgress[el.dataset.starCreature];
+      p.favorite = !p.favorite;
+      saveProgress(); renderCreatures();
+    });
+  });
+  document.querySelectorAll('[data-hunted]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = creatureProgress[el.dataset.hunted];
+      p.hunted = !p.hunted;
+      saveProgress(); renderCreatures();
+    });
+  });
+}
+
+/* ============================================================
    RENDER: FIELD LOG (personal notes)
    ============================================================ */
 
@@ -989,6 +1155,8 @@ function renderAll(){
   if (activeSection === 'overview') renderOverview();
   else if (activeSection === 'special') renderLibrary();
   else if (activeSection === 'builds') renderBuilds();
+  else if (activeSection === 'quests') renderQuests();
+  else if (activeSection === 'creatures') renderCreatures();
   else if (activeSection === 'stockpile') renderStockpile();
   else if (activeSection === 'notes') renderNotes();
   window.scrollTo(0,0);
