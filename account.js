@@ -21,7 +21,7 @@
   // Games where cloud sync is the paid feature (free codes / purchase required).
   // Anything not listed here stays free for everyone, signed in or not — add a
   // game once its monetization is actually live.
-  const GATED_GAMES = new Set(['oblivion']);
+  const GATED_GAMES = new Set(['oblivion', 'skyrim', 'fallout4', 'newvegas']);
   function requiresEntitlement(game) { return GATED_GAMES.has(game); }
 
   function loadSupabaseJs() {
