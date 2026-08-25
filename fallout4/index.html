@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Sole Survivor's Logbook — Fallout 4 Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Pip-Boy 3000 Mark IV, blue-monochrome mode — Fallout 4's own accessibility Pip-Boy
+       color option, kept distinct from 76's green and New Vegas's amber */
+    --void: #050b10;
+    --stone-1: #0a141c;
+    --stone-2: #0e1f2c;
+    --stone-3: #132a3c;
+    --stone-4: #19364c;
+    --stone-5: #20455e;
+    --panel: rgba(14, 31, 44, 0.68);
+    --panel-hi: rgba(160, 224, 255, 0.05);
+    --iron: #1f4a68;
+    --iron-light: #3f8fc0;
+    /* amber — secondary Pip-Boy mode color, used for warnings/rare accents */
+    --frost: #ffb000;
+    --frost-dim: #b37c00;
+    /* cyan — key highlights */
+    --gold: #4fd8ff;
+    --gold-bright: #b8f0ff;
+    --gold-dim: #1f8fb3;
+    --heading: #e2f6ff;
+    --ink: #bfe6f7;
+    --ink-soft: #6fa8c2;
+    --ink-dim: #3d6f80;
+    --blood: #ff5555;
+    --sage-ok: #6dffa0;
+    --moss: #4f9ecc;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(79,216,255,0.06), transparent 40%),
+      radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.65) 100%),
+      repeating-linear-gradient(180deg, rgba(0,0,0,0.16) 0px, transparent 1px, transparent 3px);
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .tome {
+    width: min(95vw, 1520px);
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(31,74,104,0.7), 0 0 40px rgba(79,216,255,0.05);
+    overflow: hidden;
+  }
+
+  /* ---------- SIDE NAV ---------- */
+  .nav {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
+    padding: 28px 0 20px;
+    min-width: 220px;
+    flex-shrink: 0;
+    position: relative;
+    border-right: 1px solid var(--iron);
+  }
+  .nav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
+    pointer-events: none;
+  }
+  .nav-brand {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 0.08em;
+    padding: 0 16px 20px;
+    border-bottom: 1px solid var(--iron);
+    margin-bottom: 10px;
+    text-shadow: 0 0 8px rgba(79,216,255,0.35);
+  }
+
+  .nav-btn {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 18px;
+    margin: 1px 8px;
+    color: var(--ink-soft);
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 500;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background .15s ease, color .15s ease;
+    border-left: 2px solid transparent;
+  }
+  .nav-btn .icon { font-size: 15px; filter: saturate(0.8); flex-shrink: 0; width: 18px; text-align: center; }
+  .nav-btn:hover { background: rgba(79,216,255,0.06); color: var(--heading); }
+  .nav-btn.active {
+    background: rgba(79,216,255,0.1);
+    color: var(--gold-bright);
+    border-left-color: var(--gold);
+    text-shadow: 0 0 6px rgba(79,216,255,0.4);
+  }
+
+  .nav-mobile { display: none; }
+
+  /* ---------- MAIN PAGE ---------- */
+  .page {
+    flex: 1;
+    min-width: 0;
+    padding: 34px clamp(24px, 3.4vw, 54px) 50px;
+    background: linear-gradient(180deg, var(--stone-1), var(--void) 60%);
+    position: relative;
+    min-height: 680px;
+  }
+
+  header.title-block {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 20px;
+    margin-bottom: 2px; flex-wrap: wrap; position: relative; z-index: 1;
+  }
+  h1 {
+    font-family: 'VT323', monospace;
+    font-size: clamp(26px, 4vw, 38px);
+    color: var(--heading);
+    margin: 0;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 10px rgba(79,216,255,0.3);
+  }
+  .subtitle { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--ink-soft); letter-spacing: 0.03em; margin-top: 5px; }
+  .seal {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--frost);
+    background: radial-gradient(circle at 35% 30%, #0e1f2c, #050b10 75%);
+    border: 2px solid var(--gold-dim);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(79,216,255,0.2);
+    border-radius: 50%;
+    width: 62px; height: 62px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.1; letter-spacing: 0.03em;
+    transform: rotate(-6deg); opacity: 0.9; flex-shrink: 0; text-transform: uppercase;
+  }
+
+  .rune-divider { position: relative; height: 15px; margin: 6px 0 20px; }
+  .rune-divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, var(--iron) 12%, var(--iron) 88%, transparent 100%); }
+  .rune-divider::after { content: "☢"; position: absolute; left: 50%; top: 52%; transform: translate(-50%,-50%); color: var(--gold-dim); font-size: 11px; background: var(--stone-1); padding: 0 10px; line-height: 1; }
+
+  .search-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; position: relative; z-index: 1; }
+  .search-plate { display: flex; align-items: center; gap: 8px; background: var(--panel); color: var(--ink); padding: 9px 14px; border: 1px solid var(--iron); flex: 1; min-width: 220px; }
+  .search-plate input { background: transparent; border: none; outline: none; color: var(--ink); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 100%; letter-spacing: 0.02em; }
+  .search-plate input::placeholder { color: var(--ink-dim); }
+
+  .back-to-top {
+    position: fixed; left: 22px; bottom: 22px; z-index: 20;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel); backdrop-filter: blur(4px); border: 1px solid var(--iron);
+    box-shadow: inset 0 1px 0 var(--panel-hi), 0 4px 14px rgba(0,0,0,0.45);
+    color: var(--gold-bright); font-size: 18px; cursor: pointer;
+    opacity: 0; pointer-events: none; transform: translateY(8px);
+    transition: opacity .2s ease, transform .2s ease, border-color .15s ease, color .15s ease;
+  }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  .filter-pill {
+    font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft);
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    padding: 7px 10px 6px; cursor: pointer; user-select: none; text-transform: uppercase;
+    transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-pill:hover { color: var(--heading); border-bottom-color: rgba(79,216,255,0.5); text-shadow: 0 0 10px rgba(79,216,255,0.3); }
+  .filter-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(79,216,255,0.5); }
+  .filter-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(79,216,255,0.25); }
+
+  .sub-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 18px; position: relative; z-index: 1; }
+  .sub-pill {
+    font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-soft);
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    padding: 7px 12px 6px; cursor: pointer; text-transform: uppercase;
+    transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sub-pill:hover { color: var(--heading); border-bottom-color: rgba(79,216,255,0.5); }
+  .sub-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(79,216,255,0.25); }
+  .sub-pill .n { opacity:0.65; font-size:9px; margin-left:2px; }
+  .sub-pill .n::before { content: '[ '; }
+  .sub-pill .n::after { content: ' ]'; }
+
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; position: relative; z-index: 1; }
+  .dash-card { background: var(--panel); border: 1px solid var(--iron); border-left: 3px solid var(--frost-dim); padding: 16px; cursor: pointer; box-shadow: inset 0 1px 0 var(--panel-hi); transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+  .dash-card:hover { transform: translateY(-2px); border-color: var(--gold-dim); box-shadow: 2px 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 var(--panel-hi), 0 0 12px rgba(79,216,255,0.12); }
+  .dash-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .dash-icon { font-size: 18px; }
+  .dash-label { font-family: 'VT323', monospace; font-size: 15px; color: var(--heading); letter-spacing: 0.06em; text-transform: uppercase; }
+  .dash-bar-track { background: rgba(0,0,0,0.25); border: 1px solid var(--iron); height: 7px; overflow: hidden; margin-bottom: 8px; }
+  .dash-bar-fill { background: var(--frost); height: 100%; transition: width .3s ease; }
+  .dash-count { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--ink-soft); }
+
+  .overview-hero { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi); padding: 22px 26px; margin-bottom: 16px; position: relative; z-index: 1; }
+  .completion-ring-wrap { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
+  .completion-ring { width: 104px; height: 104px; transform: rotate(-90deg); }
+  .completion-ring-track { fill: none; stroke: rgba(0,0,0,0.3); stroke-width: 9; }
+  .completion-ring-fill { fill: none; stroke: var(--frost); stroke-width: 9; stroke-linecap: butt; transition: stroke-dashoffset .6s ease; }
+  .completion-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'VT323', monospace; font-size: 26px; font-weight: 600; color: var(--heading); }
+  .overview-hero-info { flex: 1; min-width: 220px; }
+  .overview-hero-title { font-family: 'VT323', monospace; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 4px; }
+  .overview-hero-count { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
+  .points-total-badge { display: inline-flex; align-items: center; gap: 7px; font-family: 'Share Tech Mono', monospace; font-size: 12.5px; letter-spacing: 0.02em; color: var(--gold-bright); background: rgba(79,216,255,0.1); border: 1px solid rgba(79,216,255,0.35); padding: 6px 13px; }
+
+  .reset-zone { margin-top: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+  .reset-btn { all: unset; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--blood); border: 1px solid var(--blood); padding: 8px 14px; text-transform: uppercase; }
+  .reset-btn:hover { background: rgba(255,85,85,0.12); }
+  .reset-btn.armed { background: var(--blood); color: var(--stone-1); }
+  .reset-hint { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
+
+  .entries { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
+
+  .quest { background: var(--panel); border: 1px solid var(--iron); border-left: 3px solid var(--gold-dim); padding: 16px 18px 14px; position: relative; box-shadow: 0 3px 16px rgba(0,0,0,0.4), inset 0 1px 0 var(--panel-hi); }
+  .quest.done { border-left-color: var(--sage-ok); }
+  .quest-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+  .quest-title-wrap { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .quest h3 { font-family: 'VT323', monospace; font-weight: 600; font-size: 19px; margin: 0; color: var(--heading); letter-spacing: 0.01em; line-height: 1.3; }
+
+  .fav-btn, .track-btn { all: unset; cursor: pointer; }
+  .fav-btn { font-size: 16px; line-height: 1; flex-shrink: 0; color: var(--ink-dim); opacity: 0.7; transition: color .15s ease, opacity .15s ease, transform .15s ease; }
+  .fav-btn:hover { color: var(--gold-dim); opacity: 1; }
+  .fav-btn.active { color: var(--gold-bright); opacity: 1; transform: scale(1.12); text-shadow: 0 0 8px rgba(184,240,255,0.45); }
+
+  .quest-meta { font-family: 'Share Tech Mono', monospace; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
+  .quest-meta span { margin-right: 12px; }
+  .quest-meta b { color: var(--heading); font-weight: 600; }
+
+  .quest-steps { margin: 0 0 10px; padding-left: 20px; font-size: 12.8px; line-height: 1.55; color: var(--ink); }
+  .quest-steps li { margin-bottom: 4px; }
+
+  .rewards-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .reward-chip { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gold-bright); background: rgba(79,216,255,0.1); border: 1px solid rgba(79,216,255,0.4); padding: 3px 9px; margin: 0; }
+
+  .quest-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .track-btn { display: flex; align-items: center; gap: 6px; color: var(--ink-soft); font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+  .track-btn .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); display: inline-block; }
+  .quest.done .track-btn .box { background: var(--sage-ok); border-color: var(--sage-ok); }
+  .quest.done .track-btn { color: var(--sage-ok); opacity: 1; }
+
+  .empty-state { font-family: 'VT323', monospace; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); padding: 46px 10px; text-align: center; opacity: 0.8; position: relative; z-index: 1; }
+
+  .search-result-card { cursor: pointer; transition: border-left-color .15s ease, background .15s ease; }
+  .search-result-card:hover { border-left-color: var(--frost); background: rgba(255,176,0,0.05); }
+  .search-result-card .ach-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .ach-desc { font-size: 12.8px; line-height: 1.55; color: var(--ink); margin: 0 0 10px; }
+  .search-section-note { font-size: 12px; color: var(--ink-soft); margin: 0 0 14px; }
+
+  @keyframes flashHighlight { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,176,0,0); } 20% { box-shadow: 0 0 0 4px rgba(255,176,0,0.55); } }
+  .quest.flash-highlight { animation: flashHighlight 2.2s ease-out; }
+
+  footer.note { margin-top: 32px; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.6; position: relative; z-index: 1; }
+
+  @media (min-width: 1180px) {
+    .entries { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px; align-items: start; }
+    .dash-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  }
+  @media (min-width: 1680px) { .entries { grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); } }
+
+  @media (max-width: 780px) {
+    .tome { flex-direction: column; width: 100%; }
+    .nav { display: none; }
+    .nav-mobile { display: flex; overflow-x: auto; gap: 6px; padding: 12px; background: var(--stone-1); }
+    .nav-mobile .nav-btn { margin: 0; flex-shrink: 0; }
+    .page { padding: 24px 18px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tome">
+  <nav class="nav" id="nav-desktop"></nav>
+
+  <main class="page">
+    <nav class="nav-mobile" id="nav-mobile"></nav>
+
+    <header class="title-block">
+      <div>
+        <h1 id="page-title">The Sole Survivor's Logbook</h1>
+        <div class="subtitle" id="page-subtitle">— field notes from the Commonwealth —</div>
+      </div>
+      <div class="seal">VAULT<br/>111</div>
+    </header>
+    <div class="rune-divider"></div>
+
+    <div class="search-row" id="search-row">
+      <div class="search-plate">
+        <span>🔎</span>
+        <input id="search" type="text" placeholder="Search the logbook…" />
+      </div>
+      <span class="filter-pill active" data-fav="all">All entries</span>
+      <span class="filter-pill" data-fav="favorites">★ Favorites only</span>
+      <span class="filter-pill" data-hide-done="true">✓ Hide completed</span>
+      <span id="progress-tally" style="display:none; font-family:'Share Tech Mono', monospace; font-size:11px; color: var(--sage-ok);"></span>
+    </div>
+
+    <div class="sub-row" id="sub-row" style="display:none;"></div>
+
+    <section class="entries" id="entries"></section>
+
+    <footer class="note">Field notes kept by one Sole Survivor of Vault 111, for JAW Digital</footer>
+  </main>
+</div>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<script>window.JAW_GAME = 'fallout4';</script>
+<script src="../sync.js"></script>
+<script src="../account.js"></script>
+<script>
+/* ============================= DATA ============================= */
+
+const SECTIONS = [
+  { id: 'overview',    label: 'Overview',           icon: '📖' },
+  { id: 'quests',      label: 'Main Quest',        icon: '☢️' },
+  { id: 'factions',    label: 'Factions',          icon: '🏴' },
+  { id: 'companions',  label: 'Companions',        icon: '🤝' },
+  { id: 'perks',       label: 'S.P.E.C.I.A.L. Perks', icon: '⭐' },
+  { id: 'gear',        label: 'Unique Gear',       icon: '🔫' },
+  { id: 'settlements', label: 'Settlements',       icon: '🏘️' },
+  { id: 'locations',   label: 'Places & POIs',     icon: '🗺️' },
+  { id: 'collectibles',label: 'Bobbleheads & Magazines', icon: '📻' },
+];
+
+const TABS = {
+  quests: [
+    { id: 'prologue', label: 'Prologue & Vault 111', icon: '🧊' },
+    { id: 'early', label: 'Finding Shaun', icon: '🕵️' },
+    { id: 'minutemen', label: 'Minutemen Path', icon: '🐎' },
+    { id: 'railroad', label: 'Railroad Path', icon: '🚃' },
+    { id: 'brotherhood', label: 'Brotherhood of Steel Path', icon: '⚙️' },
+    { id: 'institute', label: 'Institute Path', icon: '🧪' },
+    { id: 'notable-side', label: 'Notable Side Quests', icon: '📋' },
+    { id: 'automatron', label: 'Automatron', icon: '🤖' },
+    { id: 'far-harbor', label: 'Far Harbor', icon: '🌫️' },
+    { id: 'nuka-world', label: 'Nuka-World', icon: '🎢' },
+  ],
+  factions: [
+    { id: 'minutemen', label: 'Minutemen', icon: '🐎' },
+    { id: 'railroad', label: 'Railroad', icon: '🚃' },
+    { id: 'brotherhood', label: 'Brotherhood of Steel', icon: '⚙️' },
+    { id: 'institute', label: 'The Institute', icon: '🧪' },
+    { id: 'wasteland', label: 'Other Commonwealth Factions', icon: '🏚️' },
+  ],
+  gear: [
+    { id: 'unique-weapons', label: 'Unique Weapons', icon: '🔫' },
+    { id: 'unique-armor', label: 'Unique Armor & Outfits', icon: '🛡️' },
+    { id: 'power-armor', label: 'Power Armor', icon: '🦾' },
+  ],
+  settlements: [
+    { id: 'base-game', label: 'Base Game Settlements', icon: '🏘️' },
+    { id: 'dlc-settlements', label: 'DLC Settlements', icon: '🌫️' },
+  ],
+  locations: [
+    { id: 'commonwealth', label: 'The Commonwealth', icon: '🏚️' },
+    { id: 'diamond-goodneighbor', label: 'Diamond City & Goodneighbor', icon: '🏙️' },
+    { id: 'institute-prydwen', label: 'Institute & the Prydwen', icon: '🧪' },
+    { id: 'dlc-locations', label: 'DLC Locations', icon: '🗺️' },
+  ],
+  collectibles: [
+    { id: 'bobbleheads', label: 'Bobbleheads', icon: '🎎' },
+    { id: 'magazines', label: 'Perk Magazines', icon: '📖' },
+  ],
+  perks: [
+    { id: 'strength', label: 'Strength', icon: '💪' },
+    { id: 'perception', label: 'Perception', icon: '👁️' },
+    { id: 'endurance', label: 'Endurance', icon: '🫀' },
+    { id: 'charisma', label: 'Charisma', icon: '🗣️' },
+    { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
+    { id: 'agility', label: 'Agility', icon: '🏃' },
+    { id: 'luck', label: 'Luck', icon: '🍀' },
+  ],
+};
+
+const ENTRIES = [];
+let _id = 1;
+function add(sec, sub, e) { ENTRIES.push(Object.assign({ id: _id++, sec, sub, trackable: true }, e)); }
+
+/* ======================= MAIN QUEST — PROLOGUE ======================= */
+add('quests','prologue',{ title:'War Never Changes', meta:{Giver:'Automatic', Location:'Sanctuary Hills, pre-War'},
+  desc:['Character creation as a Sanctuary Hills resident (and veteran, if male) on the morning of the Great War, moments before the bombs fall.','A Vault-Tec representative offers a spot in nearby Vault 111 just as the sirens sound.'], rewards:[] });
+add('quests','prologue',{ title:'Out of Time', meta:{Giver:'Automatic', Location:'Vault 111'},
+  desc:['Wake decades later from cryogenic stasis to witness a stranger and Institute agents kidnap your infant son, Shaun, and kill your spouse.','Emerge from the vault to a Commonwealth transformed into an irradiated wasteland.'], rewards:['Establishes the search for Shaun as the main plot thread'] });
+add('quests','prologue',{ title:'Jewel of the Commonwealth', meta:{Giver:'Codsworth', Location:'Sanctuary Hills to Concord'},
+  desc:['Reunite with your Mister Handy robot, Codsworth, still tending the ruined house after 210 years.','Follow the trail of your ex-neighbor Sturges to Concord in search of information.'], rewards:[] });
+add('quests','prologue',{ title:'When Freedom Calls', meta:{Giver:'Preston Garvey', Location:'Concord — Museum of Freedom'},
+  desc:['Rescue Preston Garvey and the last surviving Minutemen from raiders at the Museum of Freedom.','Pilot a suit of power armor to fend off a deathclaw and claim a mounted minigun turret.'], rewards:['Founds a new Minutemen settlement at Sanctuary Hills'] });
+
+/* ======================= FINDING SHAUN (SHARED EARLY GAME) ======================= */
+add('quests','early',{ title:'Getting a Clue', meta:{Giver:'Preston Garvey / automatic', Location:'Diamond City'},
+  desc:['Travel to Diamond City, the Commonwealth\'s largest settlement, to hire detective Nick Valentine for help finding Shaun.'], rewards:[] });
+add('quests','early',{ title:'Unlikely Valentine', meta:{Giver:'Ellie Perkins', Location:'Vault 114'},
+  desc:['Rescue Nick Valentine, a synth private investigator, from raiders holding him captive in Vault 114.'], rewards:['Nick Valentine joins as a companion'] });
+add('quests','early',{ title:'Dangerous Minds', meta:{Giver:'Nick Valentine', Location:'Diamond City / Kellogg\'s house'},
+  desc:['Investigate Conrad Kellogg, the mercenary who took Shaun, tracing him back to his old house in Diamond City.'], rewards:[] });
+add('quests','early',{ title:'Reunions', meta:{Giver:'Automatic', Location:'Fort Hagen'},
+  desc:['Track Kellogg to Fort Hagen and confront him directly — a fight that reveals Shaun has been raised by the Institute for decades.'], rewards:['Kellogg\'s cybernetic implant, usable to view his memories'] });
+add('quests','early',{ title:'Institutionalized', meta:{Giver:'Dr. Amari', Location:'Goodneighbor — the Memory Den'},
+  desc:['Use the Memory Den\'s tech to relive Kellogg\'s memories and learn how the Institute travels using teleportation.'], rewards:['Opens paths to all four major factions'] });
+
+/* ======================= MINUTEMEN PATH ======================= */
+add('quests','minutemen',{ title:'Taking Point', meta:{Giver:'Preston Garvey', Location:'The Castle'},
+  desc:['Help the Minutemen retake their historic fortress, the Castle, from a Mirelurk infestation.'], rewards:['The Castle as a major settlement/HQ'] });
+add('quests','minutemen',{ title:'Old Guns', meta:{Giver:'Ronnie Shaw', Location:'The Castle'},
+  desc:['Restore an old artillery piece at the Castle, unlocking Minutemen artillery strikes at any settlement.'], rewards:['Artillery smoke-signal calldowns'] });
+add('quests','minutemen',{ title:'The Nuclear Option (Minutemen)', meta:{Giver:'Preston Garvey', Location:'The Institute'},
+  desc:['Rally the Minutemen to storm and destroy the Institute from within, in the Minutemen-aligned ending.'], rewards:['Minutemen-aligned ending slides'] });
+
+/* ======================= RAILROAD PATH ======================= */
+add('quests','railroad',{ title:'Tradecraft', meta:{Giver:'Deacon', Location:'Old North Church'},
+  desc:['Prove yourself to the Railroad, an underground group dedicated to freeing synths from the Institute.'], rewards:['Railroad membership'] });
+add('quests','railroad',{ title:'Underground Undercover', meta:{Giver:'Desdemona', Location:'Railroad HQ'},
+  desc:['Infiltrate the Institute directly by posing as a recovered courser, using tech provided by the Railroad.'], rewards:['Institute access'] });
+add('quests','railroad',{ title:'Precipice of War', meta:{Giver:'Desdemona', Location:'Railroad HQ'},
+  desc:['The Railroad decides the Institute must be destroyed before it destroys them, setting the endgame in motion.'], rewards:[] });
+add('quests','railroad',{ title:'Rockets\' Red Glare', meta:{Giver:'Desdemona', Location:'The Prydwen'},
+  desc:['Sabotage the Brotherhood of Steel\'s airship, the Prydwen, to remove it as a threat before the final assault.'], rewards:[] });
+add('quests','railroad',{ title:'The Nuclear Option (Railroad)', meta:{Giver:'Desdemona', Location:'The Institute'},
+  desc:['Lead the Railroad in destroying the Institute from within, freeing its synths, in the Railroad-aligned ending.'], rewards:['Railroad-aligned ending slides'] });
+
+/* ======================= BROTHERHOOD OF STEEL PATH ======================= */
+add('quests','brotherhood',{ title:'Call to Arms', meta:{Giver:'Paladin Danse', Location:'The Prydwen'},
+  desc:['Board the Brotherhood\'s airship, the Prydwen, and enlist to help them battle a rogue Vertibird crash-site threat.'], rewards:['Brotherhood of Steel membership'] });
+add('quests','brotherhood',{ title:'Fire Support', meta:{Giver:'Proctor Ingram', Location:'The Prydwen'},
+  desc:['Help repair and defend Brotherhood assets around the Commonwealth as trust in you grows.'], rewards:[] });
+add('quests','brotherhood',{ title:'Blind Betrayal', meta:{Giver:'Elder Maxson', Location:'Listening Post Bravo'},
+  desc:['Learn Paladin Danse is secretly a synth and must decide his fate per Brotherhood doctrine.'], rewards:[] });
+add('quests','brotherhood',{ title:'Institutionalized (Brotherhood route)', meta:{Giver:'Elder Maxson', Location:'The Institute'},
+  desc:['Infiltrate the Institute as a Brotherhood agent to gather intelligence for its eventual destruction.'], rewards:[] });
+add('quests','brotherhood',{ title:'Airship Down / Nuclear Option (Brotherhood)', meta:{Giver:'Elder Maxson', Location:'The Institute'},
+  desc:['Lead the Brotherhood\'s assault to destroy the Institute and secure Commonwealth technology under Brotherhood control, in the Brotherhood-aligned ending.'], rewards:['Brotherhood-aligned ending slides'] });
+
+/* ======================= INSTITUTE PATH ======================= */
+add('quests','institute',{ title:'Institutionalized (join)', meta:{Giver:'Father (Shaun)', Location:'The Institute'},
+  desc:['Reunite with Shaun — now an elderly man leading the Institute as "Father" — and choose to join rather than oppose it.'], rewards:['Institute membership'] });
+add('quests','institute',{ title:'Synth Retention', meta:{Giver:'The Institute', Location:'The Commonwealth'},
+  desc:['Track down and "retrieve" escaped synths on the Institute\'s behalf.'], rewards:[] });
+add('quests','institute',{ title:'The Molecular Level', meta:{Giver:'The Institute', Location:'The Commonwealth'},
+  desc:['Help the Institute build technology to counter the other factions\' growing threat.'], rewards:[] });
+add('quests','institute',{ title:'Mass Fusion', meta:{Giver:'The Institute', Location:'Mass Fusion Building'},
+  desc:['Secure advanced fusion reactor technology from the ruined Mass Fusion corporate building.'], rewards:[] });
+add('quests','institute',{ title:'Nuclear Family / The Nuclear Option (Institute)', meta:{Giver:'Father (Shaun)', Location:'The Institute'},
+  desc:['Defend the Institute from the combined assault of the other factions in the Institute-aligned ending.'], rewards:['Institute-aligned ending slides'] });
+
+/* ======================= NOTABLE SIDE QUESTS ======================= */
+add('quests','notable-side',{ title:'The Silver Shroud', meta:{Giver:'Kent Connolly', Location:'Goodneighbor'},
+  desc:['Don the costume of a beloved pre-War radio hero to take down a gang terrorizing Goodneighbor.'], rewards:['Silver Shroud costume & unique weapon'] });
+add('quests','notable-side',{ title:'Confidence Man', meta:{Giver:'Automatic', Location:'Diamond City'},
+  desc:['Expose a con man swindling Diamond City residents.'], rewards:[] });
+add('quests','notable-side',{ title:'Kid in a Fridge', meta:{Giver:'Billy Peabody / Vault-Tec rep', Location:'Wasteland location'},
+  desc:['Free a boy trapped in a refrigerator since before the war, an infamous nod to a real-world fridge-nuke myth.'], rewards:[] });
+add('quests','notable-side',{ title:'Human Error', meta:{Giver:'Various NPCs', Location:'Diamond City / the Institute'},
+  desc:['A branching questline exploring synth conspiracy theories in Diamond City.'], rewards:[] });
+add('quests','notable-side',{ title:'The Big Dig', meta:{Giver:'Bobbi No-Nose', Location:'Boston'},
+  desc:['Help (or double-cross) a group of criminals tunneling into a vault beneath Boston.'], rewards:[] });
+add('quests','notable-side',{ title:'Devil\'s Due', meta:{Giver:'Kessler', Location:'Reformed Church of the Devout'},
+  desc:['Investigate a cult that believes a giant mutated creature is a god, at Anne Hathaway... err, the Devout Church.'], rewards:[] });
+add('quests','notable-side',{ title:'Curtain Call', meta:{Giver:'Curie', Location:'Vault 81'},
+  desc:['Help Curie, a Miss Nanny robot, transfer her mind into a synth body — part of her companion arc.'], rewards:[] });
+add('quests','notable-side',{ title:'Emergent Behavior', meta:{Giver:'Ada / DiMA (Far Harbor tie-in)', Location:'Various'},
+  desc:['Help a robot companion, Ada, build and personalize her own robotic chassis at a robot workbench.'], rewards:[] });
+add('quests','notable-side',{ title:'The Molecular Level side-content', meta:{Giver:'Various', Location:'Commonwealth'},
+  desc:['Numerous settlement and radiant quests tie into building up the Minutemen network alongside the main quest.'], rewards:[] });
+
+/* ======================= AUTOMATRON ======================= */
+add('quests','automatron',{ title:'Mechanical Menace', meta:{Giver:'Distress signal', Location:'The Commonwealth'},
+  desc:['Respond to a distress call about the "Mechanist," a mysterious figure unleashing robots against Commonwealth settlements.'], rewards:['Opens the Automatron DLC quest chain'] });
+add('quests','automatron',{ title:'Restoring Order', meta:{Giver:'Automatic', Location:'Robotics Disposal Ground'},
+  desc:['Track the source of the rogue robots to their factory of origin.'], rewards:[] });
+add('quests','automatron',{ title:'A New Threat', meta:{Giver:'Automatic', Location:'Fort Hagen Satellite Array'},
+  desc:['Confront the Mechanist directly and decide their fate.'], rewards:['Robot workbench unlocked for building custom robot companions'] });
+
+/* ======================= FAR HARBOR ======================= */
+add('quests','far-harbor',{ title:'Far From Home', meta:{Giver:'Valentine Detective Agency case', Location:'Diamond City to Far Harbor'},
+  desc:['Take a case searching for a missing girl, Kasumi Nakano, leading to the fog-shrouded island of Far Harbor.'], rewards:['Opens the Far Harbor DLC'] });
+add('quests','far-harbor',{ title:'Walk in the Park', meta:{Giver:'Automatic', Location:'Far Harbor'},
+  desc:['Navigate the tense standoff between the town of Far Harbor, the synth refuge of Acadia, and the fanatical Children of Atom.'], rewards:[] });
+add('quests','far-harbor',{ title:'Cleansing the Land', meta:{Giver:'Various factions', Location:'The Nucleus'},
+  desc:['Choose which faction — Far Harbor, Acadia, or the Children of Atom — should control the island going forward.'], rewards:['Ends Far Harbor with major branching outcomes'] });
+
+/* ======================= NUKA-WORLD ======================= */
+add('quests','nuka-world',{ title:'Welcome to Nuka-World', meta:{Giver:'Radio signal', Location:'Nuka-World transit'},
+  desc:['Answer a radio ad and get ambushed by raiders at the gates of the abandoned Nuka-World amusement park.'], rewards:['Opens the Nuka-World DLC'] });
+add('quests','nuka-world',{ title:'Power Play', meta:{Giver:'Shank / Mason / Nisha', Location:'Nuka-World'},
+  desc:['Clear the park\'s themed zones of hostile creatures and become the Overboss, ruling three raider gangs.'], rewards:['Overboss authority over Nuka-World raiders'] });
+add('quests','nuka-world',{ title:'Open Season', meta:{Giver:'The raider gangs', Location:'The Commonwealth'},
+  desc:['Choose whether to lead the raider gangs in conquering Commonwealth settlements, or turn against them to protect the wasteland instead.'], rewards:['Major branching outcome for the Commonwealth'] });
+
+/* ======================= FACTIONS ======================= */
+add('factions','minutemen',{ title:'The Minutemen', meta:{Type:'Major faction', Leader:'The Sole Survivor (as General)'},
+  desc:['A once-collapsed militia of Commonwealth settlers, rebuilt from Concord outward; focused on defending and connecting settlements rather than conquest.'], rewards:[] });
+add('factions','minutemen',{ title:'Preston Garvey', meta:{Type:'Minutemen leadership'}, desc:['The last loyal Minuteman at the story\'s start, and the faction\'s heart throughout its rebuilding.'], rewards:[] });
+add('factions','minutemen',{ title:'Settlement supply lines & radiant quests', meta:{Type:'Faction mechanic'}, desc:['The Minutemen\'s core gameplay loop is building and defending settlements, linked by supply lines for shared resources.'], rewards:[] });
+
+add('factions','railroad',{ title:'The Railroad', meta:{Type:'Major faction', Leader:'Desdemona'},
+  desc:['A secretive resistance movement dedicated to freeing synths from Institute control and helping them start new lives.'], rewards:[] });
+add('factions','railroad',{ title:'Deacon', meta:{Type:'Railroad agent'}, desc:['A charismatic, unreliable-narrator Railroad spy who recruits the Sole Survivor and can become a companion.'], rewards:[] });
+
+add('factions','brotherhood',{ title:'Brotherhood of Steel (Commonwealth chapter)', meta:{Type:'Major faction', Leader:'Elder Arthur Maxson'},
+  desc:['A militaristic tech-hoarding order arriving in force aboard the airship Prydwen, viewing synths and unchecked technology as threats to be controlled or destroyed.'], rewards:[] });
+add('factions','brotherhood',{ title:'Paladin Danse', meta:{Type:'Brotherhood officer'}, desc:['A devoted Brotherhood paladin and potential companion, whose own secret synth nature drives a major questline.'], rewards:[] });
+
+add('factions','institute',{ title:'The Institute', meta:{Type:'Major faction', Leader:'Father (Shaun)'},
+  desc:['A secretive, technologically advanced organization operating from a hidden underground facility, responsible for creating advanced synths — including the Sole Survivor\'s own son as its leader.'], rewards:[] });
+add('factions','institute',{ title:'Synths (Gen 1-3)', meta:{Type:'Institute creation'}, desc:['The Institute\'s signature creation: synthetic humans of escalating sophistication, some passing entirely as human — the moral core of the whole Commonwealth conflict.'], rewards:[] });
+
+add('factions','wasteland',{ title:'The Children of Atom', meta:{Type:'Commonwealth faction'}, desc:['A radiation-worshipping cult centered on the Nucleus in Far Harbor and Nordhagen Beach in the base game.'], rewards:[] });
+add('factions','wasteland',{ title:'The Gunners', meta:{Type:'Commonwealth faction'}, desc:['A ruthless, well-equipped mercenary army operating out of the ruined Gunners Plaza.'], rewards:[] });
+add('factions','wasteland',{ title:'Diamond City Security / the Mayor\'s office', meta:{Type:'Commonwealth faction'}, desc:['Diamond City\'s local government under Mayor McDonough, dealing with synth paranoia and city politics.'], rewards:[] });
+add('factions','wasteland',{ title:'Nuka-World raider gangs (Disciples, Operators, Pack)', meta:{Type:'Nuka-World faction'}, desc:['Three rival raider gangs the Sole Survivor can lead as Overboss in the Nuka-World DLC.'], rewards:[] });
+add('factions','wasteland',{ title:'Acadia', meta:{Type:'Far Harbor faction'}, desc:['A hidden synth refuge on Far Harbor led by the rogue synth DiMA, caught between the island\'s human town and the Children of Atom.'], rewards:[] });
+
+/* ======================= COMPANIONS ======================= */
+[
+ ['Codsworth','Robot','The Sole Survivor\'s own pre-War Mister Handy, found still tending Sanctuary Hills 210 years later.'],
+ ['Dogmeat','Dog','A loyal German Shepherd found near Red Rocket Truck Stop, always available and never permanently lost.'],
+ ['Preston Garvey','Human','The last loyal Minuteman, rescued in Concord; central to the Minutemen faction storyline.'],
+ ['Piper Wright','Human','Diamond City\'s muckraking newspaper publisher; personal quest: "Story of the Century."'],
+ ['Nick Valentine','Synth','A Gen-2 synth private detective in Diamond City; personal quest: "Long Time Coming."'],
+ ['Cait','Human','An Irish caged brawler at the Combat Zone struggling with chem addiction; personal quest: "Benign Intervention."'],
+ ['Curie','Robot/Synth','A Miss Nanny research assistant in Vault 81, later transferable into a synth body; personal quest: "Emergent Behavior."'],
+ ['Paladin Danse','Synth','A devoted Brotherhood of Steel paladin unaware of his own synth nature; personal quest: "Blind Betrayal."'],
+ ['MacCready','Human','A sardonic mercenary sniper found in Goodneighbor; personal quest: "Long Road Ahead."'],
+ ['Deacon','Human','A master-of-disguise Railroad agent; personal quest: "Tradecraft" ties into his recruitment.'],
+ ['Hancock','Ghoul','Goodneighbor\'s anarchist ghoul mayor; personal quest: "The Big Dig" / "Rise Again."'],
+ ['Strong','Super Mutant','A super mutant obsessed with finding "the milk of human kindness"; personal quest: "Story of the Century" ties, and "Concord Errr..." content specific to Strong.'],
+ ['X6-88','Synth','An elite Institute courser, recruitable only after joining the Institute; personal quest: "Synth Retention."'],
+ ['Old Longfellow','Human (Far Harbor)','A grizzled Far Harbor trapper and guide, recruitable during the Far Harbor DLC.'],
+].forEach(([name, type, desc]) => add('companions', null, { title:name, meta:{Type:type}, desc:[desc], rewards:[] }));
+
+/* ======================= S.P.E.C.I.A.L. PERKS ======================= */
+[
+ ['Iron Fist','Unarmed attacks deal increasing extra damage per rank, with special finishing moves at higher ranks.'],
+ ['Big Leagues','Melee weapon attacks deal increasing extra damage, with special finishing moves at higher ranks.'],
+ ['Armorer','Unlocks higher-tier armor mod crafting at armor workbenches.'],
+ ['Blacksmith','Unlocks higher-tier melee weapon mod crafting.'],
+ ['Heavy Gunner','Increases damage with heavy weapons like miniguns and missile launchers.'],
+ ['Strong Back','Increases carry weight and allows running while overencumbered at higher ranks.'],
+ ['Steady Aim','Reduces hip-fire spread with automatic weapons.'],
+ ['Basher','Bashing with a weapon deals more damage and can stagger enemies.'],
+].forEach(([name, desc]) => add('perks','strength',{ title:name, meta:{'S.P.E.C.I.A.L.':'Strength'}, desc:[desc], rewards:[] }));
+
+[
+ ['Rifleman','Increases damage with non-automatic rifles and pistols.'],
+ ['Sniper','Improves accuracy and reduces sway when aiming non-automatic rifles.'],
+ ['Locksmith','Unlocks the ability to pick higher-difficulty locks.'],
+ ['Awareness','Reveals a target\'s damage resistances in V.A.T.S.'],
+ ['Demolition Expert','Increases explosive weapon damage.'],
+ ['Gun Nut','Unlocks higher-tier gun mod crafting.'],
+ ['Penetrator','Allows V.A.T.S. to target enemies through cover at higher ranks.'],
+ ['Refractor','Increases energy resistance.'],
+].forEach(([name, desc]) => add('perks','perception',{ title:name, meta:{'S.P.E.C.I.A.L.':'Perception'}, desc:[desc], rewards:[] }));
+
+[
+ ['Toughness','Increases damage resistance.'],
+ ['Lead Belly','Reduces radiation from eating/drinking irradiated food and water.'],
+ ['Life Giver','Increases max health, with slow passive regeneration at higher ranks.'],
+ ['Radiation Resistant','Reduces radiation damage taken.'],
+ ['Aquaboy/Aquagirl','Removes underwater radiation damage and allows breathing underwater.'],
+ ['Solar Powered','Grants passive Strength and health regen bonuses while in sunlight.'],
+ ['Rad Resistant','Further reduces radiation damage at higher ranks.'],
+ ['Cannibal','Allows eating human corpses for a health/hunger benefit (with a reputation cost).'],
+].forEach(([name, desc]) => add('perks','endurance',{ title:name, meta:{'S.P.E.C.I.A.L.':'Endurance'}, desc:[desc], rewards:[] }));
+
+[
+ ['Lady Killer/Black Widow','Unlocks extra dialogue options and bonus damage against the opposite/same sex depending on variant.'],
+ ['Local Leader','Allows building supply lines and trading posts/stores at settlements.'],
+ ['Cap Collector','Improves prices when buying/selling with merchants.'],
+ ['Party Boy/Girl','Removes the negative effects of alcohol, with bonus buffs at higher ranks.'],
+ ['Attack Dog','Improves Dogmeat\'s combat abilities and lets him hold enemies in place.'],
+ ['Animal Friend','Pacifies wild animals and can turn them into fighting allies at higher ranks.'],
+ ['Wasteland Whisperer','The mutant/creature equivalent of Animal Friend, for ferals and mutants.'],
+ ['Inspirational','Boosts companion damage and damage resistance while they travel with you.'],
+].forEach(([name, desc]) => add('perks','charisma',{ title:name, meta:{'S.P.E.C.I.A.L.':'Charisma'}, desc:[desc], rewards:[] }));
+
+[
+ ['Hacker','Unlocks the ability to hack higher-difficulty terminals.'],
+ ['Science!','Unlocks higher-tier energy weapon, robot, and power armor mod crafting.'],
+ ['Medic','Increases the healing from Stimpaks and RadAway.'],
+ ['Gun Nut / Armorer overlap note','Several crafting perks (Gun Nut, Armorer, Science!) gate progressively higher weapon/armor mod tiers.'],
+ ['Nuclear Physicist','Extends power armor fusion core life and boosts radiation weapon damage.'],
+ ['Robotics Expert','Allows hacking robots to help in combat, or instantly disabling/destroying them at higher ranks.'],
+ ['Chemist','Improves chem duration and unlocks stronger chem crafting recipes.'],
+ ['Chem Resistant','Reduces the chance of chem addiction.'],
+].forEach(([name, desc]) => add('perks','intelligence',{ title:name, meta:{'S.P.E.C.I.A.L.':'Intelligence'}, desc:[desc], rewards:[] }));
+
+[
+ ['Gunslinger','Increases damage with non-automatic pistols.'],
+ ['Commando','Increases damage with automatic weapons.'],
+ ['Sneak','Reduces detection chance while sneaking.'],
+ ['Mister Sandman','Bonus sneak-attack damage against sleeping targets, with an instant-kill chance at higher ranks.'],
+ ['Ninja','Massively increases sneak attack damage with melee and ranged weapons.'],
+ ['Moving Target','Increases evasion while sprinting.'],
+ ['Action Boy/Girl','Increases Action Point regeneration rate.'],
+ ['Gun Fu / Blitz','Improves V.A.T.S. targeting between multiple enemies (Gun Fu) or melee gap-closing in V.A.T.S. (Blitz).'],
+].forEach(([name, desc]) => add('perks','agility',{ title:name, meta:{'S.P.E.C.I.A.L.':'Agility'}, desc:[desc], rewards:[] }));
+
+[
+ ['Idiot Savant','A chance for a large bonus to XP earned, more frequent at low Intelligence.'],
+ ['Mysterious Stranger','A chance for an ally to appear in V.A.T.S. and finish off an enemy.'],
+ ['Critical Banker / Critical Savvy','Improves control over V.A.T.S. critical hits — banking them and/or filling the meter faster.'],
+ ['Four Leaf Clover','Increases the chance of a critical hit filling the crit meter instantly.'],
+ ['Bloody Mess','Increases overall damage dealt and causes explosive gory death animations.'],
+ ['Scrounger','Finds more ammunition when searching containers.'],
+ ['Fortune Finder','Finds more bottle caps when searching containers.'],
+ ['Grim Reaper\'s Sprint','Fully restores Action Points after a V.A.T.S. kill.'],
+].forEach(([name, desc]) => add('perks','luck',{ title:name, meta:{'S.P.E.C.I.A.L.':'Luck'}, desc:[desc], rewards:[] }));
+
+/* ======================= UNIQUE WEAPONS ======================= */
+[
+ ['Deliverer','A unique suppressed 10mm pistol with a stability boost, given by the Railroad during "Tradecraft."'],
+ ['Kellogg\'s Pistol','Conrad Kellogg\'s unique .44 pistol, obtained after "Reunions."'],
+ ["Le Fusil Terrible",'A unique automatic combat rifle found in a Nuka-World location, referencing a French phrase for "the terrible gun."'],
+ ["Kremvh's Tooth",'A unique ritual machete dealing bonus poison and bleed damage, found in Dunwich Borers.'],
+ ['Justice','A unique combat shotgun with bonus damage against robots, tied to a Diamond City side story.'],
+ ['Spray n\' Pray','A unique explosive-rounds submachine gun found on a Gunner boss.'],
+ ['Overseer\'s Guardian','A unique double-barrel-style combat shotgun found in Vault 81.'],
+ ['Big Boy','A unique mini nuke launcher variant found in the Museum of Witchcraft.'],
+ ['Furious Power Fist','A unique power fist that builds bonus damage with consecutive hits.'],
+ ['Reba II','A unique hunting rifle reward from the Silver Shroud questline.'],
+ ["Grognak's Axe",'A unique two-handed axe obtained by completing the Grognak the Barbarian side quest in Hubris Comics.'],
+ ['Wazer Wifle','A unique, joke-named laser rifle with bonus critical damage.'],
+ ['Experiment 18-A / Zeta Gun / Alien Blaster','Notable rare/unique energy weapons scattered around the Commonwealth as easter eggs.'],
+].forEach(([name, desc]) => add('gear','unique-weapons',{ title:name, meta:{Type:'Unique Weapon'}, desc:[desc], rewards:[] }));
+
+/* ======================= UNIQUE ARMOR ======================= */
+[
+ ['Silver Shroud Costume','A unique outfit obtained from the "The Silver Shroud" quest in Goodneighbor.'],
+ ["Grognak the Barbarian Costume",'A unique loincloth-and-mantle outfit found in Hubris Comics, granting a melee damage bonus.'],
+ ['Reginald\'s Coat / Mechanist\'s Armor','Unique costume-armor tied to the Mechanist storyline in Automatron.'],
+ ["Institute lab coats & synth armor",'Distinctive Institute faction outfits and armor sets earned by aligning with them.'],
+ ["Brotherhood of Steel uniforms",'Distinctive officer/paladin uniforms and Brotherhood combat armor earned by rank.'],
+ ["Railroad heavy leather / duster armor",'Distinctive Railroad-aligned outfits and armor.'],
+ ["Captain Ironsides' Coat / Nuka-World gang outfits",'Unique raider-gang leader outfits obtainable in the Nuka-World DLC.'],
+ ["Vault 111 Vault Suit",'The Sole Survivor\'s starting outfit, iconic but low-protection.'],
+].forEach(([name, desc]) => add('gear','unique-armor',{ title:name, meta:{Type:'Unique Armor / Outfit'}, desc:[desc], rewards:[] }));
+
+/* ======================= POWER ARMOR ======================= */
+[
+ ['T-45 Power Armor','The oldest, weakest power armor frame, found early at the Concord Museum of Freedom.'],
+ ['T-51 Power Armor','A mid-tier power armor frame with improved protection over the T-45.'],
+ ['T-60 Power Armor','The Brotherhood of Steel\'s standard-issue frame, common once allied with them.'],
+ ['X-01 Power Armor','A rare, high-tier Enclave-derived frame found later in the game, offering the best base protection.'],
+ ['Fusion Cores','The power source every suit requires — depletes over time and must be swapped or found.'],
+ ['Power armor paint jobs & faction skins','Cosmetic paint schemes tied to factions (Brotherhood, Minutemen, Railroad, Atom Cats) craftable at a power armor station.'],
+].forEach(([name, desc]) => add('gear','power-armor',{ title:name, meta:{Type:'Power Armor'}, desc:[desc], rewards:[] }));
+
+/* ======================= SETTLEMENTS — BASE GAME ======================= */
+[
+ ['Sanctuary Hills','The Sole Survivor\'s pre-War home, the first settlement reclaimed in the story.'],
+ ['Red Rocket Truck Stop','A small settlement just south of Sanctuary, and where Dogmeat is first found.'],
+ ['The Castle','A ruined historic fortress reclaimed as the Minutemen\'s headquarters.'],
+ ['Starlight Drive-In','A former drive-in movie theater, popular for its open, buildable space.'],
+ ['Abernathy Farm','A small farming settlement run by the Abernathy family.'],
+ ['Sunshine Tidings Co-op','A settlement built around a pre-War agricultural co-op.'],
+ ['Hangman\'s Alley','A cramped but centrally located Boston settlement.'],
+ ['Spectacle Island','A large, isolated island settlement reachable only by boat or fast travel.'],
+ ['Nordhagen Beach','A coastal settlement, sometimes contested with the Children of Atom.'],
+ ['County Crossing / Graygarden / Oberland Station','Additional Commonwealth settlements tied to Minutemen supply-line quests.'],
+].forEach(([name, desc]) => add('settlements','base-game',{ title:name, meta:{Type:'Settlement'}, desc:[desc], rewards:[] }));
+
+/* ======================= SETTLEMENTS — DLC ======================= */
+[
+ ['Vault 88 (Vault-Tec Workshop)','A never-finished vault the Sole Survivor can design and populate from scratch.'],
+ ['The Nucleus / Acadia settlement options (Far Harbor)','Far Harbor introduces new settlement plots on the fog-covered island.'],
+ ['The Nuka-World Overboss settlements','Nuka-World lets the Sole Survivor claim Commonwealth settlements for the raider gangs as Overboss.'],
+].forEach(([name, desc]) => add('settlements','dlc-settlements',{ title:name, meta:{Type:'DLC Settlement'}, desc:[desc], rewards:[] }));
+
+/* ======================= LOCATIONS — COMMONWEALTH ======================= */
+[
+ ['Concord','The small town where the Minutemen make their last stand at the Museum of Freedom.'],
+ ['Lexington','A ruined town notable for the Corvega assembly plant and a raider stronghold.'],
+ ['Fort Hagen','A former military installation where Kellogg is confronted.'],
+ ['Dunwich Borers','A Lovecraft-referencing quarry riddled with cultists and a unique weapon.'],
+ ['Gunners Plaza','The Gunners mercenary faction\'s heavily defended headquarters.'],
+ ['Vault 81','A still-sealed, functioning vault running secret medical experiments.'],
+ ['Vault 111','The cryogenic vault where the story begins.'],
+ ['Vault 114','A vault overrun by raiders, where Nick Valentine is found.'],
+].forEach(([name, desc]) => add('locations','commonwealth',{ title:name, meta:{Type:'Point of Interest'}, desc:[desc], rewards:[] }));
+
+/* ======================= LOCATIONS — DIAMOND CITY & GOODNEIGHBOR ======================= */
+[
+ ['Diamond City','The Commonwealth\'s largest settlement, built inside old Fenway Park.'],
+ ['Goodneighbor','A lawless but welcoming town run by the ghoul mayor Hancock.'],
+ ['The Memory Den','A Goodneighbor establishment offering memory-viewing services via Dr. Amari.'],
+ ['The Combat Zone','A ruined pit-fighting arena in Boston where Cait is found.'],
+].forEach(([name, desc]) => add('locations','diamond-goodneighbor',{ title:name, meta:{Type:'Point of Interest'}, desc:[desc], rewards:[] }));
+
+/* ======================= LOCATIONS — INSTITUTE & PRYDWEN ======================= */
+[
+ ['The Institute','A hidden, technologically advanced underground facility accessible only via teleportation.'],
+ ['The Prydwen','The Brotherhood of Steel\'s massive airship, serving as their Commonwealth headquarters.'],
+ ['The Boston Airport / Brotherhood ground base','The Brotherhood\'s ground staging area beneath the Prydwen.'],
+].forEach(([name, desc]) => add('locations','institute-prydwen',{ title:name, meta:{Type:'Point of Interest'}, desc:[desc], rewards:[] }));
+
+/* ======================= LOCATIONS — DLC ======================= */
+[
+ ['Far Harbor (town)','A fog-shrouded fishing town caught between humans, synths, and the Children of Atom.'],
+ ['Acadia','A hidden synth refuge on Far Harbor island, led by the synth DiMA.'],
+ ['The Nucleus','The Children of Atom\'s island headquarters in Far Harbor.'],
+ ['Nuka-World','An abandoned pre-War amusement park turned raider territory.'],
+ ['The Nuka-World Marketplace / Gauntlet','The park\'s central hub and the gladiatorial trial to become Overboss.'],
+].forEach(([name, desc]) => add('locations','dlc-locations',{ title:name, meta:{Type:'DLC Location'}, desc:[desc], rewards:[] }));
+
+/* ======================= BOBBLEHEADS ======================= */
+[
+ ['Strength','Vault 95'],['Perception','Nuka-Cola Plant'],['Endurance','Vault 111 (overseer\'s office)'],
+ ['Charisma','Boston Public Library'],['Intelligence','Vault 75'],['Agility','Federal Ration Stockpile'],
+ ['Luck','Hubris Comics'],['Barter','Country Crossing'],['Big Guns','Gwinnett Brewery'],
+ ['Energy Weapons','Fort Hagen'],['Explosives','Saugus Ironworks'],['Lockpick','The Institute'],
+ ['Medicine','Med-Tek Research'],['Melee Weapons','Corvega Assembly Plant'],['Repair','The Castle'],
+ ['Science','University Point'],['Small Guns','National Guard Training Yard'],['Sneak','Vault 114'],
+ ['Speech','Trinity Tower'],['Unarmed','Atom Cats Garage'],
+].forEach(([name, loc]) => add('collectibles','bobbleheads',{ title:`Bobblehead: ${name}`, meta:{Type:'Collectible', Found:loc}, desc:[`One of the 20 Vault-Tec bobbleheads, each granting a small permanent stat or skill bonus once collected.`], rewards:[] }));
+
+/* ======================= PERK MAGAZINES ======================= */
+[
+ ["Grognak the Barbarian","Melee damage bonus issues, scattered across the Commonwealth."],
+ ["Astoundingly Awesome Tales","A sci-fi pulp magazine series with issues granting various combat/utility bonuses."],
+ ["Live & Love","A romance magazine series granting Charisma-related bonuses."],
+ ["Tales from the Commonwealth","A local pulp series with scattered narrative-flavored bonuses."],
+ ["U.S. Covert Operations Manual","A military-themed series boosting V.A.T.S. and combat stats."],
+ ["Guns and Bullets","A firearms magazine series improving weapon-related stats."],
+ ["Massachusetts Surgical Journal","A medical magazine series improving Stimpak/healing effectiveness."],
+ ["Robco Fun","A gaming/robotics magazine series with hacking and robotics bonuses."],
+ ["Total Hack","A hacking-themed series improving terminal hacking odds."],
+ ["Wasteland Survival Guide","A survival series improving radiation resistance and crafting yields."],
+].forEach(name => add('collectibles','magazines',{ title:name, meta:{Type:'Perk Magazine series'}, desc:[`A multi-issue magazine series scattered around the Commonwealth; reading each numbered issue grants an escalating temporary or permanent bonus.`], rewards:[] }));
+
+/* ============================= SEARCH INDEX ============================= */
+function buildSearchIndex(){
+  return ENTRIES.map(e => ({
+    itemId: e.id, title: e.title,
+    sectionLabel: (SECTIONS.find(s=>s.id===e.sec)||{}).label + (TABS[e.sec] ? ' › ' + ((TABS[e.sec].find(t=>t.id===e.sub)||{}).label||'') : ''),
+    icon: (SECTIONS.find(s=>s.id===e.sec)||{}).icon || '📄',
+    snippet: (e.desc && e.desc[0]) || Object.values(e.meta||{}).join(' · '),
+    searchText: [e.title, JSON.stringify(e.meta||{}), (e.desc||[]).join(' ')].join(' ').toLowerCase(),
+    nav: { section: e.sec, sub: e.sub },
+  }));
+}
+const SEARCH_INDEX = buildSearchIndex();
+
+/* ============================= STATE ============================= */
+let activeSection = 'overview';
+let activeSub = null;
+let favOnly = false;
+let hideCompleted = false;
+let query = '';
+let favorites = new Set();
+let tracked = new Set();
+
+function storageKey(){ return 'fallout4-journal-progress'; }
+function navStateKey(){ return 'fallout4-journal-lastview'; }
+
+function syncFilterPills(){
+  document.querySelectorAll('.filter-pill[data-fav]').forEach(p => p.classList.toggle('active', p.dataset.fav === (favOnly ? 'favorites' : 'all')));
+  const hideBtn = document.querySelector('.filter-pill[data-hide-done]');
+  if (hideBtn) hideBtn.classList.toggle('active', hideCompleted);
+}
+
+function loadProgress(){
+  try {
+    const raw = localStorage.getItem(storageKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      favorites = new Set(parsed.favorites || []);
+      tracked = new Set(parsed.tracked || []);
+    }
+  } catch (e) { /* start fresh */ }
+}
+function saveProgress(){
+  try {
+    const state = { favorites: Array.from(favorites), tracked: Array.from(tracked), updatedAt: Date.now() };
+    const payload = JSON.stringify(state);
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
+    if (window.JawAccount && window.JawAccount.isSignedIn()) window.JawAccount.save('fallout4', state);
+  } catch (e) { console.error('Could not save progress', e); }
+}
+
+async function syncPullAndReconcile(){
+  if (!window.JawSync) return;
+  try {
+    const remote = await window.JawSync.pull(storageKey());
+    if (!remote) return;
+    const remoteParsed = JSON.parse(remote);
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remoteParsed.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remoteParsed.favorites || []);
+      tracked = new Set(remoteParsed.tracked || []);
+      localStorage.setItem(storageKey(), remote);
+      renderAll();
+    }
+  } catch (e) { console.error('Sync pull failed', e); }
+}
+async function syncAccountPullAndReconcile(){
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const remote = await window.JawAccount.load('fallout4');
+    if (!remote) return;
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remote.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remote.favorites || []);
+      tracked = new Set(remote.tracked || []);
+      localStorage.setItem(storageKey(), JSON.stringify(remote));
+      renderAll();
+    }
+  } catch (e) { console.error('Account sync pull failed', e); }
+}
+
+function saveNavState(){
+  try { localStorage.setItem(navStateKey(), JSON.stringify({ activeSection, activeSub })); } catch (e) {}
+}
+function loadNavState(){
+  try {
+    const raw = localStorage.getItem(navStateKey());
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s && SECTIONS.some(sec => sec.id === s.activeSection)) activeSection = s.activeSection;
+    if (s && 'activeSub' in s) activeSub = s.activeSub;
+  } catch (e) {}
+}
+
+function entriesFor(sec, sub){ return ENTRIES.filter(e => e.sec === sec && (!sub || e.sub === sub)); }
+function statFor(sec, sub){
+  const scoped = entriesFor(sec, sub).filter(e => e.trackable);
+  const done = scoped.filter(e => tracked.has(e.id)).length;
+  return { done, total: scoped.length };
+}
+function sectionStat(sec){
+  if (!TABS[sec]) return statFor(sec, null);
+  let done = 0, total = 0;
+  TABS[sec].forEach(t => { const s = statFor(sec, t.id); done += s.done; total += s.total; });
+  return { done, total };
+}
+function overallStat(){
+  let done = 0, total = 0;
+  SECTIONS.filter(s => s.id !== 'overview').forEach(s => { const st = sectionStat(s.id); done += st.done; total += st.total; });
+  return { done, total };
+}
+
+/* ============================= NAV ============================= */
+function renderNav(){
+  const btns = SECTIONS.map(s => `<button class="nav-btn ${activeSection===s.id?'active':''}" data-section="${s.id}">
+      <span class="icon">${s.icon}</span> ${s.label}
+    </button>`).join('');
+  document.getElementById('nav-desktop').innerHTML = btns;
+  document.getElementById('nav-mobile').innerHTML = btns;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSection = btn.dataset.section;
+      activeSub = TABS[activeSection] ? TABS[activeSection][0].id : null;
+      favOnly = false; hideCompleted = false; query = '';
+      const si = document.getElementById('search'); if (si) si.value = '';
+      syncFilterPills();
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ============================= SUB TABS ============================= */
+function renderSubRow(){
+  const row = document.getElementById('sub-row');
+  const tabs = TABS[activeSection];
+  if (!tabs) { row.style.display = 'none'; row.innerHTML = ''; return; }
+  if (!activeSub) activeSub = tabs[0].id;
+  row.style.display = 'flex';
+  row.innerHTML = tabs.map(t => {
+    const s = statFor(activeSection, t.id);
+    return `<button class="sub-pill ${activeSub===t.id?'active':''}" data-sub="${t.id}">${t.icon||''} ${t.label} <span class="n">${s.done}/${s.total}</span></button>`;
+  }).join('');
+  row.querySelectorAll('.sub-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSub = btn.dataset.sub;
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ============================= HEADER ============================= */
+function renderHeader(){
+  const titles = {
+    overview: ['The Sole Survivor\'s Logbook', '— field notes from the Commonwealth —'],
+    quests: ['Main Quest', '— from Vault 111 to the fate of the Institute —'],
+    factions: ['Factions', '— Minutemen, Railroad, Brotherhood, Institute, and everyone caught between —'],
+    companions: ['Companions', '— the people, synths, and robots who travel with you —'],
+    perks: ['S.P.E.C.I.A.L. Perks', '— the perk chart, one S.P.E.C.I.A.L. stat at a time —'],
+    gear: ['Unique Gear', '— named weapons, armor, and power armor worth tracking down —'],
+    settlements: ['Settlements', '— every plot of land worth building on —'],
+    locations: ['Places & Points of Interest', '— the Commonwealth, its cities, and its secrets —'],
+    collectibles: ['Bobbleheads & Perk Magazines', '— the Commonwealth\'s collectible bonuses —'],
+  };
+  const [t, sub] = titles[activeSection] || titles.overview;
+  document.getElementById('page-title').textContent = t;
+  document.getElementById('page-subtitle').textContent = sub;
+}
+
+/* ============================= CARD RENDER ============================= */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderCard(e){
+  const isFav = favorites.has(e.id);
+  const isDone = tracked.has(e.id);
+  const metaHtml = e.meta ? Object.entries(e.meta).filter(([,v])=>v).map(([k,v]) => `<span><b>${escapeHtml(k)}:</b> ${escapeHtml(v)}</span>`).join('') : '';
+  const stepsHtml = (e.desc && e.desc.length) ? `<ul class="quest-steps">${e.desc.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : '';
+  const rewardsHtml = (e.rewards && e.rewards.length) ? `<div class="rewards-row">${e.rewards.map(r => `<span class="reward-chip">${escapeHtml(r)}</span>`).join('')}</div>` : '';
+  return `<div class="quest ${isDone?'done':''}" data-id="${e.id}">
+    <div class="quest-top">
+      <div class="quest-title-wrap"><h3>${escapeHtml(e.title)}</h3></div>
+      <button class="fav-btn ${isFav?'active':''}" data-fav-id="${e.id}" title="Favorite">★</button>
+    </div>
+    <div class="quest-meta">${metaHtml}</div>
+    ${stepsHtml}
+    ${rewardsHtml}
+    <div class="quest-foot">
+      <label class="track-btn" data-track-id="${e.id}"><span class="box"></span> ${isDone ? 'Completed / Obtained' : 'Mark complete'}</label>
+    </div>
+  </div>`;
+}
+
+function wireCards(container){
+  container.querySelectorAll('[data-fav-id]').forEach(btn => {
+    btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const id = Number(btn.dataset.favId);
+      if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+      saveProgress();
+      renderAll();
+    });
+  });
+  container.querySelectorAll('[data-track-id]').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const id = Number(el.dataset.trackId);
+      if (tracked.has(id)) tracked.delete(id); else tracked.add(id);
+      saveProgress();
+      renderAll();
+    });
+  });
+}
+
+/* ============================= SECTION RENDERERS ============================= */
+function renderOverview(){
+  const overall = overallStat();
+  const pct = overall.total ? Math.round((overall.done/overall.total)*100) : 0;
+  const circumference = 2 * Math.PI * 43;
+  const offset = circumference * (1 - pct/100);
+  let html = `<div class="overview-hero">
+    <div class="completion-ring-wrap">
+      <svg class="completion-ring" viewBox="0 0 104 104">
+        <circle class="completion-ring-track" cx="52" cy="52" r="43"></circle>
+        <circle class="completion-ring-fill" cx="52" cy="52" r="43" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+      </svg>
+      <div class="completion-ring-pct">${pct}%</div>
+    </div>
+    <div class="overview-hero-info">
+      <div class="overview-hero-title">Overall progress</div>
+      <div class="overview-hero-count">${overall.done} of ${overall.total} entries tracked across every section</div>
+      <span class="points-total-badge">☢ ${favorites.size} favorited</span>
+    </div>
+  </div>
+  <div class="dash-grid">`;
+  SECTIONS.filter(s => s.id !== 'overview').forEach(s => {
+    const st = sectionStat(s.id);
+    const p = st.total ? Math.round((st.done/st.total)*100) : 0;
+    html += `<div class="dash-card" data-jump="${s.id}">
+      <div class="dash-card-top"><span class="dash-icon">${s.icon}</span><span class="dash-label">${s.label}</span></div>
+      <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${p}%"></div></div>
+      <div class="dash-count">${st.done} / ${st.total} tracked</div>
+    </div>`;
+  });
+  html += `</div>
+  <div class="reset-zone" style="margin-top:24px;">
+    <button class="reset-btn" id="reset-btn">Reset all progress</button>
+    <span class="reset-hint">Clears every favorite and completion mark. Click twice to confirm.</span>
+  </div>`;
+  document.getElementById('entries').innerHTML = html;
+  document.querySelectorAll('[data-jump]').forEach(card => {
+    card.addEventListener('click', () => {
+      activeSection = card.dataset.jump;
+      activeSub = TABS[activeSection] ? TABS[activeSection][0].id : null;
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+  const resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) {
+    let armed = false;
+    resetBtn.addEventListener('click', () => {
+      if (!armed) { armed = true; resetBtn.classList.add('armed'); resetBtn.textContent = 'Click again to confirm'; return; }
+      favorites = new Set(); tracked = new Set();
+      saveProgress();
+      renderAll();
+    });
+  }
+}
+
+function renderSearchResults(){
+  const q = query.toLowerCase();
+  const results = SEARCH_INDEX.filter(r => r.searchText.includes(q));
+  let html = `<p class="search-section-note">${results.length} result${results.length===1?'':'s'} for "${escapeHtml(query)}"</p>`;
+  if (!results.length) { html += `<div class="empty-state">No entries found</div>`; document.getElementById('entries').innerHTML = html; return; }
+  html += results.map(r => `<div class="quest search-result-card" data-jump-nav='${JSON.stringify(r.nav)}'>
+    <div class="quest-top"><div class="quest-title-wrap"><span class="result-icon">${r.icon}</span><h3>${escapeHtml(r.title)}</h3></div></div>
+    <div class="quest-meta"><span>${escapeHtml(r.sectionLabel)}</span></div>
+    <p class="ach-desc">${escapeHtml(r.snippet||'')}</p>
+  </div>`).join('');
+  document.getElementById('entries').innerHTML = html;
+  document.querySelectorAll('[data-jump-nav]').forEach(card => {
+    card.addEventListener('click', () => {
+      const nav = JSON.parse(card.dataset.jumpNav);
+      activeSection = nav.section; activeSub = nav.sub;
+      query = ''; const si = document.getElementById('search'); if (si) si.value = '';
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function renderEntriesSection(){
+  let list = entriesFor(activeSection, TABS[activeSection] ? activeSub : null);
+  if (favOnly) list = list.filter(e => favorites.has(e.id));
+  if (hideCompleted) list = list.filter(e => !tracked.has(e.id));
+  const container = document.getElementById('entries');
+  if (!list.length) { container.innerHTML = `<div class="empty-state">No entries here yet</div>`; return; }
+  container.innerHTML = list.map(renderCard).join('');
+  wireCards(container);
+}
+
+/* ============================= MASTER RENDER ============================= */
+function renderAll(){
+  renderNav();
+  renderHeader();
+  document.getElementById('search-row').style.display = 'flex';
+  syncFilterPills();
+  if (activeSection === 'overview') {
+    document.getElementById('sub-row').style.display = 'none';
+    if (query.trim()) renderSearchResults(); else renderOverview();
+  } else if (query.trim()) {
+    document.getElementById('sub-row').style.display = 'none';
+    renderSearchResults();
+  } else {
+    renderSubRow();
+    renderEntriesSection();
+  }
+  const tally = document.getElementById('progress-tally');
+  if (activeSection !== 'overview' && (TABS[activeSection] || entriesFor(activeSection,null).length)) {
+    const s = TABS[activeSection] ? statFor(activeSection, activeSub) : statFor(activeSection, null);
+    tally.style.display = 'inline';
+    tally.textContent = `${s.done} / ${s.total} complete`;
+  } else { tally.style.display = 'none'; }
+  saveNavState();
+}
+
+/* ============================= FILTER / SEARCH WIRING ============================= */
+document.getElementById('search').addEventListener('input', (e) => { query = e.target.value; renderAll(); });
+document.querySelectorAll('.filter-pill[data-fav]').forEach(p => {
+  p.addEventListener('click', () => { favOnly = p.dataset.fav === 'favorites'; syncFilterPills(); renderAll(); });
+});
+document.querySelector('.filter-pill[data-hide-done]').addEventListener('click', (e) => {
+  hideCompleted = !hideCompleted; syncFilterPills(); renderAll();
+});
+
+/* ============================= BACK TO TOP ============================= */
+const backToTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => { backToTop.classList.toggle('visible', window.scrollY > 600); });
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ============================= INIT ============================= */
+loadProgress();
+loadNavState();
+if (!TABS[activeSection] && activeSection !== 'overview' && activeSection !== 'companions') activeSection = 'overview';
+if (TABS[activeSection] && !activeSub) activeSub = TABS[activeSection][0].id;
+renderAll();
+syncPullAndReconcile();
+if (window.JawAccount) {
+  window.__jawSyncOnConfigured = () => { syncPullAndReconcile(); };
+  window.addEventListener('jaw-account-ready', syncAccountPullAndReconcile);
+  syncAccountPullAndReconcile();
+}
+</script>
+</body>
+</html>
