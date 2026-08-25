@@ -3,34 +3,355 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>JAW Digital — Companion Apps</title>
+<title>JAW Digital — Companion Journals</title>
 <style>
-  body { margin:0; background:#151515; color:#e8e0d0; font-family: Georgia, serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
-  .wrap { max-width:520px; width:100%; }
-  h1 { font-size: 22px; letter-spacing:0.04em; margin-bottom: 6px; }
-  p.sub { color:#a89b7f; margin-top:0; margin-bottom:28px; font-size:14px; }
-  ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:12px; }
-  a.app { display:block; padding:16px 18px; border:1px solid #3a3226; text-decoration:none; color:#e8e0d0; background:#1c1812; transition: border-color .15s ease, background .15s ease; }
-  a.app:hover { border-color:#c9a227; background:#241d14; }
-  a.app .name { font-size:16px; font-weight:bold; }
-  a.app .desc { font-size:12.5px; color:#a89b7f; margin-top:4px; }
-  footer { margin-top:28px; text-align:center; font-size:11px; color:#786b4e; }
+  :root {
+    --bg: #131110;
+    --bg-raised: #1a1712;
+    --panel: #1e1a14;
+    --border: #3a3226;
+    --border-soft: #2a251c;
+    --ink: #e8e0d0;
+    --ink-soft: #a89b7f;
+    --ink-dim: #786b4e;
+    --gold: #c9a227;
+    --gold-bright: #e2c158;
+    --green: #6dbf6d;
+    --red: #d9635e;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse at 50% -10%, rgba(201,162,39,0.06), transparent 45%);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- NAV ---------- */
+  header.site-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(19, 17, 16, 0.9);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  header.site-nav .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; padding-bottom: 16px; }
+  .brand { font-size: 17px; font-weight: bold; letter-spacing: 0.06em; color: var(--gold-bright); text-decoration: none; }
+  .brand span { color: var(--ink-soft); font-weight: normal; letter-spacing: 0.03em; }
+  nav.links { display: flex; gap: 24px; font-size: 13px; letter-spacing: 0.03em; }
+  nav.links a { text-decoration: none; color: var(--ink-soft); transition: color .15s ease; }
+  nav.links a:hover { color: var(--gold-bright); }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 72px 0 56px; text-align: center; }
+  .hero h1 { font-size: clamp(28px, 4.5vw, 42px); letter-spacing: 0.02em; margin: 0 0 16px; color: var(--ink); }
+  .hero h1 em { font-style: normal; color: var(--gold-bright); }
+  .hero p.sub { max-width: 620px; margin: 0 auto 30px; color: var(--ink-soft); font-size: 15.5px; }
+  .hero .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 12px 22px; border-radius: 3px; text-decoration: none;
+    font-size: 13.5px; letter-spacing: 0.04em; border: 1px solid var(--border); transition: border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--gold); color: #17130c; border-color: var(--gold); font-weight: bold; }
+  .btn.primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+  .btn.ghost { color: var(--ink); background: transparent; }
+  .btn.ghost:hover { border-color: var(--gold-dim, var(--gold)); color: var(--gold-bright); }
+
+  .stat-row { display: flex; justify-content: center; gap: 40px; margin-top: 48px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .n { font-size: 26px; color: var(--gold-bright); font-weight: bold; }
+  .stat .l { font-size: 11.5px; color: var(--ink-dim); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+
+  /* ---------- SECTION HEADERS ---------- */
+  section { padding: 64px 0; border-top: 1px solid var(--border-soft); }
+  section#hero-section { border-top: none; }
+  .section-head { text-align: center; margin-bottom: 44px; }
+  .section-head .eyebrow { font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .section-head h2 { font-size: clamp(22px, 3vw, 28px); margin: 0 0 10px; }
+  .section-head p { color: var(--ink-soft); font-size: 14px; max-width: 560px; margin: 0 auto; }
+
+  /* ---------- PROJECT GRID ---------- */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 5px; overflow: hidden;
+    display: flex; flex-direction: column; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 12px 28px rgba(0,0,0,0.4); }
+  .card .thumb-link { display: block; }
+  .card img {
+    width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: top;
+    display: block; border-bottom: 1px solid var(--border);
+    background: #0c0a08;
+  }
+  .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+  .card-body .name { font-size: 16px; font-weight: bold; color: var(--ink); margin-bottom: 4px; }
+  .card-body .desc { font-size: 12.5px; color: var(--ink-soft); flex: 1; margin-bottom: 14px; line-height: 1.55; }
+  .card-body .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .card-body a.view { font-size: 12px; letter-spacing: 0.03em; color: var(--gold-bright); text-decoration: none; font-weight: bold; }
+  .card-body a.view:hover { text-decoration: underline; }
+  .badge { font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; border: 1px solid var(--border); color: var(--ink-dim); }
+
+  /* ---------- PRICING ---------- */
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 760px; margin: 0 auto; }
+  .price-card { background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 28px 26px; }
+  .price-card.featured { border-color: var(--gold); position: relative; }
+  .price-card .plan { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .price-card .price { font-size: 26px; font-weight: bold; margin-bottom: 4px; }
+  .price-card .price small { font-size: 12px; color: var(--ink-dim); font-weight: normal; }
+  .price-card ul { list-style: none; padding: 0; margin: 18px 0 22px; font-size: 13px; color: var(--ink-soft); }
+  .price-card li { padding: 6px 0; border-bottom: 1px solid var(--border-soft); }
+  .price-card li:last-child { border-bottom: none; }
+  .price-card li::before { content: "✓ "; color: var(--green); }
+  .price-card .btn { width: 100%; text-align: center; }
+  .btn.disabled { opacity: 0.55; cursor: default; pointer-events: none; }
+  .coming-soon-tag { position: absolute; top: -11px; right: 18px; background: var(--bg); padding: 0 8px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); }
+
+  /* ---------- CONTACT ---------- */
+  .contact-wrap { max-width: 480px; margin: 0 auto; }
+  form.contact-form { display: flex; flex-direction: column; gap: 14px; }
+  form.contact-form label { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 5px; display: block; }
+  form.contact-form input, form.contact-form textarea {
+    width: 100%; background: var(--bg-raised); border: 1px solid var(--border); color: var(--ink);
+    padding: 11px 12px; font-family: inherit; font-size: 14px; border-radius: 3px; outline: none;
+    transition: border-color .15s ease;
+  }
+  form.contact-form input:focus, form.contact-form textarea:focus { border-color: var(--gold); }
+  form.contact-form textarea { min-height: 110px; resize: vertical; }
+  form.contact-form button { align-self: flex-start; cursor: pointer; font-family: inherit; }
+  #contact-status { font-size: 12.5px; margin-top: 4px; min-height: 16px; }
+  #contact-status.ok { color: var(--green); }
+  #contact-status.err { color: var(--red); }
+
+  /* ---------- FOOTER ---------- */
+  footer.site-foot { border-top: 1px solid var(--border-soft); padding: 32px 0; text-align: center; }
+  footer.site-foot .brand { display: block; margin-bottom: 6px; }
+  footer.site-foot p { font-size: 11.5px; color: var(--ink-dim); margin: 0; }
+
+  @media (max-width: 640px) {
+    nav.links { display: none; }
+    .stat-row { gap: 26px; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>JAW Digital — Companion Apps</h1>
-  <p class="sub">Field journals & progress trackers for open-world games.</p>
-  <ul>
-    <li><a class="app" href="skyrim/"><div class="name">🐉 Dragonborn's Field Journal</div><div class="desc">Skyrim companion — quests, achievements, builds, crafting & more</div></a></li>
-    <li><a class="app" href="rdr2/"><div class="name">🤠 RDR2 Field Journal</div><div class="desc">Red Dead Redemption 2 companion</div></a></li>
-    <li><a class="app" href="oblivion/"><div class="name">🏛️ The Champion's Codex</div><div class="desc">Oblivion companion — Main Quest, guilds, Daedric shrines & more</div></a></li>
-    <li><a class="app" href="fallout76/"><div class="name">📻 Vault Dweller's Almanac</div><div class="desc">Fallout 76 survival guide — perk cards, CAMP builds, junk stockpile & field log</div></a></li>
-    <li><a class="app" href="witcher3/"><div class="name">🐺 The White Wolf's Journal</div><div class="desc">Witcher 3 companion — main quest, contracts, alchemy, gear, places & Gwent</div></a></li>
-    <li><a class="app" href="newvegas/"><div class="name">🎰 The Courier's Log</div><div class="desc">Fallout: New Vegas companion — main quest paths, factions, companions, perks, unique gear & more</div></a></li>
-    <li><a class="app" href="fallout4/"><div class="name">🧊 The Sole Survivor's Logbook</div><div class="desc">Fallout 4 companion — main quest paths, factions, companions, perks, settlements, gear & collectibles</div></a></li>
-  </ul>
-  <footer>JAW Digital</footer>
-</div>
+
+<header class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="#hero-section">JAW DIGITAL <span>· companion journals</span></a>
+    <nav class="links">
+      <a href="#journals">Journals</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section id="hero-section">
+  <div class="wrap hero">
+    <h1>Field journals for <em>open-world games</em>, built to last longer than your save file.</h1>
+    <p class="sub">
+      Quest checklists, gear trackers, and collectible logs for seven open-world games —
+      browsable free in any browser, with optional cloud sync so your progress
+      follows you from your desktop to your phone.
+    </p>
+    <div class="cta-row">
+      <a class="btn primary" href="#journals">Browse the journals</a>
+      <a class="btn ghost" href="#contact">Get in touch</a>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="n">7</div><div class="l">Journals live</div></div>
+      <div class="stat"><div class="n">1,900+</div><div class="l">Tracked entries</div></div>
+      <div class="stat"><div class="n">$0</div><div class="l">To browse & track</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="journals">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The Lineup</div>
+      <h2>Seven games, seven journals</h2>
+      <p>Each one is a full single-page app: searchable, favoritable, and organized the way that game's own systems work — not a generic checklist template.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card">
+        <a class="thumb-link" href="skyrim/" target="_blank" rel="noopener"><img src="screenshots/skyrim.jpg" alt="Dragonborn's Field Journal screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">🐉 Dragonborn's Field Journal</div>
+          <div class="desc">Skyrim companion — quests &amp; factions, achievements, character builds, crafting, bestiary, and locations.</div>
+          <div class="row"><a class="view" href="skyrim/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <a class="thumb-link" href="oblivion/" target="_blank" rel="noopener"><img src="screenshots/oblivion.jpg" alt="The Champion's Codex screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">🏛️ The Champion's Codex</div>
+          <div class="desc">Oblivion companion — Main Quest, every guild questline, Daedric shrines, achievements, and alchemy.</div>
+          <div class="row"><a class="view" href="oblivion/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <a class="thumb-link" href="rdr2/" target="_blank" rel="noopener"><img src="screenshots/rdr2.jpg" alt="Molly's Field Journal screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">🤠 Molly's Field Journal</div>
+          <div class="desc">Red Dead Redemption 2 companion — compendium, challenges, 100% mission tips, treasure maps, and an Arthur/John toggle.</div>
+          <div class="row"><a class="view" href="rdr2/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <a class="thumb-link" href="fallout76/" target="_blank" rel="noopener"><img src="screenshots/fallout76.jpg" alt="Vault Dweller's Almanac screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">📻 Vault Dweller's Almanac</div>
+          <div class="desc">Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile.</div>
+          <div class="row"><a class="view" href="fallout76/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <a class="thumb-link" href="witcher3/" target="_blank" rel="noopener"><img src="screenshots/witcher3.jpg" alt="The White Wolf's Journal screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">🐺 The White Wolf's Journal</div>
+          <div class="desc">Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent.</div>
+          <div class="row"><a class="view" href="witcher3/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <a class="thumb-link" href="newvegas/" target="_blank" rel="noopener"><img src="screenshots/newvegas.jpg" alt="The Courier's Log screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">🎰 The Courier's Log</div>
+          <div class="desc">Fallout: New Vegas companion — all four ending paths, factions, companions, perks, unique gear, and snow globes.</div>
+          <div class="row"><a class="view" href="newvegas/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <a class="thumb-link" href="fallout4/" target="_blank" rel="noopener"><img src="screenshots/fallout4.jpg" alt="The Sole Survivor's Logbook screenshot" loading="lazy" /></a>
+        <div class="card-body">
+          <div class="name">🧊 The Sole Survivor's Logbook</div>
+          <div class="desc">Fallout 4 companion — all four faction endings, companions, the full S.P.E.C.I.A.L. perk chart, settlements, and gear.</div>
+          <div class="row"><a class="view" href="fallout4/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Pricing</div>
+      <h2>Free to browse. Pro to sync.</h2>
+      <p>Every journal works fully offline in your browser at no cost. Cloud sync — so progress follows you across devices — is being rolled out journal by journal.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="plan">Free</div>
+        <div class="price">$0</div>
+        <ul>
+          <li>All 7 journals, fully browsable</li>
+          <li>Quest, gear &amp; collectible tracking</li>
+          <li>Progress saved in your browser</li>
+          <li>Optional personal GitHub-Gist backup</li>
+        </ul>
+        <a class="btn ghost" href="#journals" style="text-align:center;">Start browsing</a>
+      </div>
+      <div class="price-card featured">
+        <span class="coming-soon-tag">Coming soon</span>
+        <div class="plan">Pro sync</div>
+        <div class="price">TBD <small>/ per journal</small></div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Account-based cloud sync</li>
+          <li>Progress follows you across devices</li>
+          <li>Priority for new journal requests</li>
+        </ul>
+        <button class="btn primary disabled" disabled>Coming soon</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Get In Touch</div>
+      <h2>Questions, feedback, or a game request?</h2>
+      <p>Send a note and I'll get back to you.</p>
+    </div>
+    <div class="contact-wrap">
+      <!--
+        Setup note: this form posts to Formspree (https://formspree.io). Create a free
+        account there, make a new form, and replace YOUR_FORM_ID below with the ID it
+        gives you (looks like https://formspree.io/f/abcdwxyz). Until then this will
+        show an error if someone submits it.
+      -->
+      <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" id="contact-form">
+        <div>
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" required />
+        </div>
+        <div>
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="_replyto" type="email" required />
+        </div>
+        <div>
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="btn primary">Send message</button>
+        <div id="contact-status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span class="brand">JAW DIGITAL</span>
+    <p>Independently built companion journals for open-world games.</p>
+  </div>
+</footer>
+
+<script>
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('contact-status');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.textContent = 'Sending…';
+    status.className = '';
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' },
+      });
+      if (res.ok) {
+        status.textContent = 'Sent — thanks! I\'ll get back to you soon.';
+        status.className = 'ok';
+        form.reset();
+      } else {
+        status.textContent = 'Could not send — the contact form isn\'t fully set up yet.';
+        status.className = 'err';
+      }
+    } catch (err) {
+      status.textContent = 'Could not send — the contact form isn\'t fully set up yet.';
+      status.className = 'err';
+    }
+  });
+</script>
+
 </body>
 </html>
