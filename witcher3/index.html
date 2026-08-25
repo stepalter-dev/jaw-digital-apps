@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The White Wolf's Journal — Witcher 3 Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral+SC:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* canvas — oiled steel & wet leather, not warm like the Imperial/Nordic journals */
+    --void: #0A0C0F;
+    --stone-1: #10141A;
+    --stone-2: #161B22;
+    --stone-3: #1D242C;
+    --stone-4: #262F39;
+    --stone-5: #313D49;
+    --panel: rgba(22, 27, 34, 0.80);
+    --panel-hi: rgba(255, 255, 255, 0.05);
+    --iron: #37424E;
+    --iron-light: #7C8CA0;
+    /* frost — Quen-shimmer icy blue, secondary interactive accent */
+    --frost: #6FB8D9;
+    --frost-dim: #3E7A93;
+    /* worn bronze/leather-strap gold — muted, not royal gold */
+    --gold: #B0824A;
+    --gold-bright: #D9AE6D;
+    --gold-dim: #7A5A32;
+    --heading: #ECEAE4;
+    --ink: #D6D3C8;
+    --ink-soft: #9CA0A8;
+    --ink-dim: #656B74;
+    --blood: #A22A2A;
+    --sage-ok: #6FA35C;
+    --moss: #8A6A46;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(111,184,217,0.05), transparent 40%),
+      radial-gradient(ellipse at 12% 0%, rgba(176,130,74,0.05), transparent 50%),
+      radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.65) 100%);
+    font-family: 'Spectral', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .tome {
+    width: min(95vw, 1520px);
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(55,66,78,0.7);
+    overflow: hidden;
+  }
+
+  /* ---------- SIDE NAV ---------- */
+  .nav {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
+    padding: 28px 0 20px;
+    min-width: 210px;
+    flex-shrink: 0;
+    position: relative;
+    border-right: 1px solid var(--iron);
+  }
+  .nav::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
+    pointer-events: none;
+  }
+  .nav-brand {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 15px;
+    color: var(--frost);
+    text-align: center;
+    letter-spacing: 0.1em;
+    padding: 0 16px 20px;
+    border-bottom: 1px solid var(--iron);
+    margin-bottom: 10px;
+  }
+
+  .nav-btn {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 18px;
+    margin: 1px 8px;
+    color: var(--ink-soft);
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background .15s ease, color .15s ease;
+    border-left: 2px solid transparent;
+  }
+  .nav-btn .icon { font-size: 15px; filter: saturate(0.7); flex-shrink: 0; width: 18px; text-align: center; }
+  .nav-btn:hover { background: rgba(111,184,217,0.06); color: var(--heading); }
+  .nav-btn.active {
+    background: rgba(176,130,74,0.09);
+    color: var(--gold-bright);
+    border-left-color: var(--gold);
+    text-shadow: 0 0 10px rgba(176,130,74,0.25);
+  }
+
+  .nav-mobile { display: none; }
+
+  /* ---------- PAGE — worn parchment, journal cover stays dark & steel ---------- */
+  .page {
+    --stone-2: #E8DEC8;
+    --panel: rgba(255, 250, 235, 0.55);
+    --panel-hi: rgba(255, 255, 255, 0.6);
+    --ink: #362C1E;
+    --ink-soft: #6B5F4C;
+    --ink-dim: #8C7F66;
+    --heading: #241C11;
+    --gold-bright: #8C6423;
+    flex: 1;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(176,130,74,0.08), transparent 45%),
+      radial-gradient(ellipse at 100% 100%, rgba(60,90,100,0.10), transparent 55%),
+      linear-gradient(165deg, #F2E7CC, #E8DEC8 60%, #DBC99C);
+    background-color: #E8DEC8;
+    padding: 34px clamp(24px, 3.4vw, 54px) 50px;
+    position: relative;
+    min-height: 680px;
+    min-width: 0;
+  }
+  .page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(90,75,50,0.08) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  header.title-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(20px, 3vw, 30px);
+    color: var(--heading);
+    margin: 0;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+  .subtitle {
+    font-family: 'Spectral SC', serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+    margin-top: 5px;
+  }
+  .seal {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: #E8C766;
+    background: radial-gradient(circle at 35% 30%, #3A4552, #12151A 75%);
+    border: 2px solid var(--frost-dim);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(111,184,217,0.25);
+    border-radius: 50%;
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.15;
+    letter-spacing: 0.04em;
+    transform: rotate(-6deg);
+    opacity: 0.9;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .rune-divider {
+    position: relative;
+    height: 15px;
+    margin: 6px 0 20px;
+  }
+  .rune-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--iron) 12%, var(--iron) 88%, transparent 100%);
+  }
+  .rune-divider::after {
+    content: "⚜";
+    position: absolute;
+    left: 50%; top: 52%;
+    transform: translate(-50%,-50%);
+    color: var(--gold-dim);
+    font-size: 9px;
+    background: var(--stone-2);
+    padding: 0 10px;
+    line-height: 1;
+  }
+
+  .search-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; position: relative; z-index: 1; }
+  .search-plate {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,0.06); color: var(--ink); padding: 9px 14px;
+    border: 1px solid var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi);
+    flex: 1; min-width: 220px;
+  }
+  .search-plate input {
+    background: transparent; border: none; outline: none; color: var(--ink);
+    font-family: 'Spectral', serif; font-size: 13px; width: 100%; letter-spacing: 0.02em;
+  }
+  .search-plate input::placeholder { color: var(--ink-dim); }
+
+  .back-to-top {
+    position: fixed; left: 22px; bottom: 22px; z-index: 20;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel); backdrop-filter: blur(4px); border: 1px solid var(--iron);
+    box-shadow: inset 0 1px 0 var(--panel-hi), 0 4px 14px rgba(0,0,0,0.45);
+    color: var(--gold-bright); font-size: 18px; cursor: pointer;
+    opacity: 0; pointer-events: none; transform: translateY(8px);
+    transition: opacity .2s ease, transform .2s ease, border-color .15s ease, color .15s ease;
+  }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  .filter-pill {
+    font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft);
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    padding: 7px 10px 6px; cursor: pointer; user-select: none; text-transform: uppercase;
+    transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-pill:hover { color: var(--heading); border-bottom-color: rgba(111,184,217,0.5); text-shadow: 0 0 10px rgba(111,184,217,0.3); }
+  .filter-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(111,184,217,0.5); }
+  .filter-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(176,130,74,0.25); }
+
+  .sub-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 18px; position: relative; z-index: 1; }
+  .sub-pill {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-soft);
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    padding: 7px 12px 6px; cursor: pointer; text-transform: uppercase;
+    transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sub-pill:hover { color: var(--heading); border-bottom-color: rgba(111,184,217,0.5); }
+  .sub-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(176,130,74,0.25); }
+  .sub-pill .n { opacity:0.65; font-size:9px; margin-left:2px; }
+  .sub-pill .n::before { content: '[ '; }
+  .sub-pill .n::after { content: ' ]'; }
+
+  .branch-banner {
+    background: rgba(162,42,42,0.08); border: 1px solid var(--blood);
+    padding: 12px 16px; margin-bottom: 18px; font-size: 12.5px; color: var(--ink-soft);
+    line-height: 1.5; position: relative; z-index: 1;
+  }
+  .branch-banner b { color: var(--blood); font-family:'Cinzel', serif; font-size: 11px; letter-spacing:0.06em; text-transform: uppercase; }
+
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; position: relative; z-index: 1; }
+  .dash-card {
+    background: var(--panel); border: 1px solid var(--iron); border-left: 3px solid var(--frost-dim);
+    padding: 16px; cursor: pointer; box-shadow: inset 0 1px 0 var(--panel-hi);
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .dash-card:hover { transform: translateY(-2px); border-color: var(--gold-dim); box-shadow: 2px 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 var(--panel-hi), 0 0 12px rgba(176,130,74,0.12); }
+  .dash-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .dash-icon { font-size: 18px; }
+  .dash-label { font-family: 'Cinzel', serif; font-size: 12px; color: var(--heading); letter-spacing: 0.08em; text-transform: uppercase; }
+  .dash-bar-track { background: rgba(0,0,0,0.08); border: 1px solid var(--iron); height: 7px; overflow: hidden; margin-bottom: 8px; }
+  .dash-bar-fill { background: var(--frost); height: 100%; transition: width .3s ease; }
+  .dash-count { font-family: 'Spectral', serif; font-size: 11px; color: var(--ink-soft); }
+
+  .overview-hero {
+    display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi);
+    padding: 22px 26px; margin-bottom: 16px; position: relative; z-index: 1;
+  }
+  .completion-ring-wrap { position: relative; width: 104px; height: 104px; flex-shrink: 0; }
+  .completion-ring { width: 104px; height: 104px; transform: rotate(-90deg); }
+  .completion-ring-track { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 9; }
+  .completion-ring-fill { fill: none; stroke: var(--frost); stroke-width: 9; stroke-linecap: butt; transition: stroke-dashoffset .6s ease; }
+  .completion-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 21px; font-weight: 600; color: var(--heading); }
+  .overview-hero-info { flex: 1; min-width: 220px; }
+  .overview-hero-title { font-family: 'Cinzel', serif; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 4px; }
+  .overview-hero-count { font-family: 'Spectral', serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
+  .points-total-badge {
+    display: inline-flex; align-items: center; gap: 7px; font-family: 'Spectral SC', serif; font-size: 12.5px;
+    color: var(--gold-bright); background: rgba(176,130,74,0.1); border: 1px solid rgba(176,130,74,0.35); padding: 6px 13px;
+  }
+
+  .io-btn { all: unset; cursor: pointer; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.06em; color: var(--frost); border: 1px solid var(--frost-dim); padding: 8px 14px; text-transform: uppercase; }
+  .io-btn:hover { background: rgba(111,184,217,0.1); }
+  .io-status { font-family: 'Spectral', serif; font-size: 11.5px; opacity: 0.9; }
+  .io-status.ok { color: var(--sage-ok); }
+  .io-status.err { color: var(--blood); }
+
+  .reset-zone { margin-top: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+  .reset-btn { all: unset; cursor: pointer; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.06em; color: var(--blood); border: 1px solid var(--blood); padding: 8px 14px; text-transform: uppercase; }
+  .reset-btn:hover { background: rgba(162,42,42,0.12); }
+  .reset-btn.armed { background: var(--blood); color: var(--stone-1); }
+  .reset-hint { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
+
+  .entries { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
+
+  .quest {
+    background: var(--panel); border: 1px solid var(--iron); border-left: 3px solid var(--gold-dim);
+    padding: 16px 18px 14px; position: relative; box-shadow: 0 3px 16px rgba(0,0,0,0.4), inset 0 1px 0 var(--panel-hi);
+  }
+  .quest.done { border-left-color: var(--sage-ok); }
+  .quest.optional { border-left-color: var(--frost-dim); }
+
+  .quest-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+  .quest-title-wrap { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .quest h3 { font-family: 'Cinzel', serif; font-weight: 600; font-size: 14.5px; margin: 0; color: var(--heading); letter-spacing: 0.02em; line-height: 1.35; }
+  .tag-chip { font-family: 'Spectral SC', serif; font-size: 9.5px; letter-spacing: 0.03em; padding: 2px 7px; text-transform: uppercase; }
+  .tag-optional { background: rgba(111,184,217,0.14); color: var(--frost); }
+  .tag-rare { background: rgba(111,184,217,0.14); color: var(--frost); }
+  .tag-uncommon { background: rgba(176,130,74,0.18); color: var(--moss); }
+  .tag-common { background: rgba(142,148,153,0.14); color: var(--ink-soft); }
+  .tag-dlc { background: rgba(162,42,42,0.16); color: var(--blood); }
+
+  .fav-btn, .track-btn { all: unset; cursor: pointer; }
+  .fav-btn { font-size: 16px; line-height: 1; flex-shrink: 0; color: var(--ink-dim); opacity: 0.7; transition: color .15s ease, opacity .15s ease, transform .15s ease; }
+  .fav-btn:hover { color: var(--gold-dim); opacity: 1; }
+  .fav-btn.active { color: var(--gold-bright); opacity: 1; transform: scale(1.12); text-shadow: 0 0 8px rgba(217,174,109,0.45); }
+
+  .quest-meta { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
+  .quest-meta span { margin-right: 12px; }
+  .quest-meta b { color: var(--heading); font-weight: 600; }
+
+  .quest-steps { margin: 0 0 10px; padding-left: 20px; font-size: 12.8px; line-height: 1.55; color: var(--ink); }
+  .quest-steps li { margin-bottom: 4px; }
+
+  .rewards-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .reward-chip { font-family: 'Spectral', serif; font-size: 11px; color: var(--gold-bright); background: rgba(176,130,74,0.14); border: 1px solid rgba(176,130,74,0.45); padding: 3px 9px; margin: 0; }
+
+  .quest-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .track-btn { display: flex; align-items: center; gap: 6px; color: var(--ink-soft); font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+  .track-btn .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); display: inline-block; }
+  .quest.done .track-btn .box { background: var(--sage-ok); border-color: var(--sage-ok); }
+  .quest.done .track-btn { color: var(--sage-ok); opacity: 1; }
+
+  .empty-state { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); padding: 46px 10px; text-align: center; opacity: 0.8; position: relative; z-index: 1; }
+
+  .search-result-card { cursor: pointer; transition: border-left-color .15s ease, background .15s ease; }
+  .search-result-card:hover { border-left-color: var(--frost); background: rgba(111,184,217,0.05); }
+  .search-result-card .ach-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .ach-desc { font-size: 12.8px; line-height: 1.55; color: var(--ink); margin: 0 0 10px; }
+  .search-section-note { font-size: 12px; color: var(--ink-soft); margin: 0 0 14px; }
+
+  @keyframes flashHighlight { 0%, 100% { box-shadow: 0 0 0 0 rgba(111,184,217,0); } 20% { box-shadow: 0 0 0 4px rgba(111,184,217,0.55); } }
+  .quest.flash-highlight { animation: flashHighlight 2.2s ease-out; }
+
+  footer.note { margin-top: 32px; text-align: center; font-family: 'Spectral SC', serif; font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.6; position: relative; z-index: 1; }
+
+  @media (min-width: 1180px) {
+    .entries { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px; align-items: start; }
+    .dash-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  }
+  @media (min-width: 1680px) { .entries { grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); } }
+
+  @media (max-width: 780px) {
+    .tome { flex-direction: column; width: 100%; }
+    .nav { display: none; }
+    .nav-mobile { display: flex; overflow-x: auto; gap: 6px; padding: 12px; background: var(--stone-1); }
+    .nav-mobile .nav-btn { margin: 0; flex-shrink: 0; }
+    .page { padding: 24px 18px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tome">
+  <nav class="nav" id="nav-desktop"></nav>
+
+  <main class="page">
+    <nav class="nav-mobile" id="nav-mobile"></nav>
+
+    <header class="title-block">
+      <div>
+        <h1 id="page-title">The White Wolf's Journal</h1>
+        <div class="subtitle" id="page-subtitle">— a witcher's field notes, drawn up on the Path —</div>
+      </div>
+      <div class="seal">WITCHER<br/>JOURNAL</div>
+    </header>
+    <div class="rune-divider"></div>
+
+    <div class="search-row" id="search-row">
+      <div class="search-plate">
+        <span>🔎</span>
+        <input id="search" type="text" placeholder="Search the journal…" />
+      </div>
+      <span class="filter-pill active" data-fav="all">All entries</span>
+      <span class="filter-pill" data-fav="favorites">★ Favorites only</span>
+      <span class="filter-pill" data-hide-done="true">✓ Hide completed</span>
+      <span id="progress-tally" style="display:none; font-family:'Spectral SC', serif; font-size:11px; color: var(--sage-ok);"></span>
+    </div>
+
+    <div class="sub-row" id="sub-row" style="display:none;"></div>
+    <div class="branch-banner" id="branch-banner" style="display:none;"></div>
+
+    <section class="entries" id="entries"></section>
+
+    <footer class="note">Field notes kept by one witcher of the School of the Wolf, for JAW Digital</footer>
+  </main>
+</div>
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<script>window.JAW_GAME = 'witcher3';</script>
+<script src="../sync.js"></script>
+<script src="../account.js"></script>
+<script>
+/* ============================= DATA ============================= */
+
+const SECTIONS = [
+  { id: 'overview',  label: 'Overview',           icon: '📖' },
+  { id: 'quests',    label: 'Main Quest',         icon: '⚜️' },
+  { id: 'contracts', label: 'Witcher Contracts',  icon: '📜' },
+  { id: 'alchemy',   label: 'Alchemy',            icon: '⚗️' },
+  { id: 'gear',      label: 'Witcher Gear',       icon: '🗡️' },
+  { id: 'locations', label: 'Places & POIs',      icon: '🗺️' },
+  { id: 'treasure',  label: 'Treasure Hunts',     icon: '💰' },
+  { id: 'gwent',     label: 'Gwent Collection',   icon: '🃏' },
+];
+
+const TABS = {
+  quests: [
+    { id: 'prologue', label: 'White Orchard', icon: '🌾' },
+    { id: 'velen-novigrad', label: 'Velen & Novigrad', icon: '🏚️' },
+    { id: 'skellige', label: 'Skellige', icon: '🌊' },
+    { id: 'endgame', label: 'Kaer Morhen & Finale', icon: '🏔️' },
+    { id: 'notable-side', label: 'Notable Side Quests', icon: '📋' },
+    { id: 'hos', label: 'Hearts of Stone', icon: '🖤' },
+    { id: 'bw', label: 'Blood and Wine', icon: '🍷' },
+  ],
+  contracts: [
+    { id: 'white-orchard', label: 'White Orchard', icon: '🌾' },
+    { id: 'velen', label: 'Velen', icon: '🌫️' },
+    { id: 'novigrad', label: 'Novigrad', icon: '⛪' },
+    { id: 'skellige', label: 'Skellige', icon: '🌊' },
+    { id: 'kaer-morhen', label: 'Kaer Morhen', icon: '🏔️' },
+    { id: 'toussaint', label: 'Toussaint', icon: '🍇' },
+  ],
+  alchemy: [
+    { id: 'potions', label: 'Potions', icon: '🧪' },
+    { id: 'oils', label: 'Oils', icon: '🛢️' },
+    { id: 'decoctions', label: 'Decoctions', icon: '🩸' },
+    { id: 'bombs', label: 'Bombs', icon: '💣' },
+  ],
+  gear: [
+    { id: 'wolf', label: 'Wolf School', icon: '🐺' },
+    { id: 'griffin', label: 'Griffin School', icon: '🦅' },
+    { id: 'bear', label: 'Ursine (Bear) School', icon: '🐻' },
+    { id: 'cat', label: 'Feline (Cat) School', icon: '🐈' },
+    { id: 'manticore', label: 'Manticore School', icon: '🦂' },
+    { id: 'viper', label: 'Viper School', icon: '🐍' },
+    { id: 'tesham', label: 'Tesham Mutna', icon: '👑' },
+    { id: 'toussaint-gear', label: 'Toussaint Knightly Armor', icon: '🛡️' },
+  ],
+  locations: [
+    { id: 'power', label: 'Places of Power', icon: '✨' },
+    { id: 'velen-poi', label: 'Velen & Novigrad POIs', icon: '🏚️' },
+    { id: 'skellige-poi', label: 'Skellige POIs', icon: '🌊' },
+    { id: 'toussaint-poi', label: 'Toussaint POIs', icon: '🍇' },
+  ],
+  treasure: [
+    { id: 'scavenger', label: 'Gear Scavenger Hunts', icon: '🗺️' },
+    { id: 'caches', label: 'Notable Treasure Hunts', icon: '💰' },
+    { id: 'hos-treasure', label: 'Hearts of Stone', icon: '🖤' },
+    { id: 'bw-treasure', label: 'Blood and Wine', icon: '🍷' },
+  ],
+  gwent: [
+    { id: 'northern-realms', label: 'Northern Realms', icon: '🦁' },
+    { id: 'nilfgaard', label: 'Nilfgaard', icon: '☀️' },
+    { id: 'scoiatael', label: "Scoia'tael", icon: '🏹' },
+    { id: 'monsters', label: 'Monsters', icon: '👹' },
+    { id: 'skellige-gwent', label: 'Skellige', icon: '🌊' },
+    { id: 'merchants', label: 'Card Merchants & Quests', icon: '🛒' },
+  ],
+};
+
+/* Each entry: { id, sec, sub, title, tags:[], meta:{...}, desc:[...] or "", rewards:[...], trackable:true } */
+const ENTRIES = [];
+let _id = 1;
+function add(sec, sub, e) { ENTRIES.push(Object.assign({ id: _id++, sec, sub, trackable: true }, e)); }
+
+/* ======================= MAIN QUEST — WHITE ORCHARD ======================= */
+add('quests','prologue',{ title:'The Nilfgaardian Rose', meta:{Giver:'Automatic', Location:'White Orchard'},
+  desc:['Arrive in White Orchard tracking Yennefer, who is tracking Ciri.','Meet Vesemir at an abandoned mill and help investigate a griffin terrorizing the village.'], rewards:['Griffin contract lead'] });
+add('quests','prologue',{ title:"Ciri's Room", meta:{Giver:'Automatic', Location:'White Orchard — the ruined keep'},
+  desc:['Search the ruined keep where Ciri once stayed for clues to where she went.','Recall shared memories with Ciri through the Witcher senses.'], rewards:[] });
+add('quests','prologue',{ title:'A Towerful of Mice', meta:{Giver:'Automatic', Location:'White Orchard'},
+  desc:['Investigate a tower overrun by mice, and the noonwraith haunting a nearby field, as leads on Ciri fold into local monster hunts.'], rewards:[] });
+add('quests','prologue',{ title:'Family Matters (begins)', meta:{Giver:'Automatic', Location:'Velen — Crow\'s Perch'},
+  desc:['Yennefer directs Geralt to Crow\'s Perch, seat of the Bloody Baron, to pick up Ciri\'s trail — opening the Velen questline.'], rewards:[] });
+
+/* ======================= MAIN QUEST — VELEN & NOVIGRAD ======================= */
+add('quests','velen-novigrad',{ title:'Bloody Baron', meta:{Giver:'Automatic', Location:'Crow\'s Perch'},
+  desc:['Strike a bargain with the Bloody Baron: help find his missing wife and daughter in exchange for what he knows of Ciri.'], rewards:[] });
+add('quests','velen-novigrad',{ title:'The Whispering Hillock', meta:{Giver:'The Baron / village rumor', Location:'Downwarren'},
+  desc:['Track a curse afflicting the Baron\'s wife to a spriggan-like tree spirit bound in a hillock, and negotiate with it.'], rewards:[] });
+add('quests','velen-novigrad',{ title:'Ladies of the Wood', meta:{Giver:'Automatic', Location:'Crookback Bog'},
+  desc:['Confront the Crones of Crookback Bog, who rule Velen\'s swamp villages through fear and tribute, for the truth about the Baron\'s daughter.'], rewards:[] });
+add('quests','velen-novigrad',{ title:'Family Matters (conclusion)', meta:{Giver:'Automatic', Location:'Crow\'s Perch / Crookback Bog'},
+  desc:['Resolve the Baron\'s fate one way or another and learn Ciri passed through Velen toward Novigrad.'], rewards:['Points toward Novigrad'] });
+add('quests','velen-novigrad',{ title:'A Poet Under Pressure', meta:{Giver:'Automatic', Location:'Novigrad'},
+  desc:['Reunite with Dandelion in Novigrad, who is hiding from the Eternal Fire\'s witch hunters and owes coin to the wrong people.'], rewards:['Dandelion as an ally'] });
+add('quests','velen-novigrad',{ title:'Get Junior', meta:{Giver:'Dandelion', Location:'Novigrad'},
+  desc:['Track down the gangster "Junior," head of the Novigrad underworld\'s Cleaver crew, to recover Dandelion\'s debts and safety.'], rewards:[] });
+add('quests','velen-novigrad',{ title:"Count Reuven's Treasure", meta:{Giver:'Dandelion', Location:'Novigrad'},
+  desc:['Chase leads on Ciri through Novigrad\'s spy network, including the mysterious "Reuven."'], rewards:[] });
+add('quests','velen-novigrad',{ title:'A Matter of Life and Death', meta:{Giver:'Automatic', Location:'Novigrad'},
+  desc:['Reunite with Yennefer in Novigrad to pool what each of you has learned of Ciri\'s trail.'], rewards:[] });
+add('quests','velen-novigrad',{ title:'Wandering in the Dark', meta:{Giver:'Yennefer / Triss', Location:'Novigrad sewers, Kaer Morhen (vision)'},
+  desc:['Use a Elder Blood ritual to walk one of Ciri\'s own memories, revealing the mage Avallac\'h and the Wild Hunt\'s pursuit of her.'], rewards:[] });
+add('quests','velen-novigrad',{ title:'Novigrad Dreaming', meta:{Giver:'Triss / Dijkstra', Location:'Novigrad'},
+  desc:['Track a mage named Dandelion once vouched for, tangled with Novigrad\'s spymasters Dijkstra and Sigismund Djkstra\'s network.'], rewards:[] });
+add('quests','velen-novigrad',{ title:"Redania's Most Wanted", meta:{Giver:'Dijkstra', Location:'Novigrad / Oxenfurt'},
+  desc:['Do Dijkstra a favor investigating a Redanian spy ring in exchange for his help finding Ciri.'], rewards:[] });
+add('quests','velen-novigrad',{ title:'Reason of State', meta:{Giver:'Dijkstra', Location:'Novigrad'},
+  desc:['Learn Dijkstra\'s price for his help is Geralt\'s aid in a coup against King Radovid.'], rewards:['Branches the "Brothers in Arms" political thread'] });
+add('quests','velen-novigrad',{ title:"King's Gambit", meta:{Giver:'Automatic', Location:'Novigrad'},
+  desc:['The political thread with Dijkstra, Radovid, and Roche comes to a head — choices here affect the epilogue slides.'], rewards:[] });
+
+/* ======================= MAIN QUEST — SKELLIGE ======================= */
+add('quests','skellige',{ title:'Through Time and Space', meta:{Giver:'Automatic', Location:'Skellige (Kaer Trolde)'},
+  desc:['Follow Ciri\'s trail to the Skellige Isles, where she has ties to the royal family through her upbringing at Kaer Morhen and Cintra.'], rewards:[] });
+add('quests','skellige',{ title:'The Calm Before the Storm', meta:{Giver:'Automatic', Location:'Kaer Trolde, Ard Skellig'},
+  desc:['Get drawn into the succession crisis for the Skellige throne while chasing word of Ciri.'], rewards:[] });
+add('quests','skellige',{ title:'King\'s Gambit (Skellige thread)', meta:{Giver:'Various jarls', Location:'Skellige'},
+  desc:['Back a claimant for the Skellige crown — Cerys, Hjalmar, or another — through a string of trials and favors.'], rewards:[] });
+add('quests','skellige',{ title:'On Thin Ice', meta:{Giver:'Automatic', Location:'Undvik / Fyresdal'},
+  desc:['Chase a solid lead on Ciri\'s whereabouts to the frozen, monster-haunted island of Undvik.'], rewards:[] });
+add('quests','skellige',{ title:'The Isle of Mists', meta:{Giver:'Automatic', Location:'Undvik'},
+  desc:['Confront the Wild Hunt directly for the first time as they close in on Ciri.'], rewards:[] });
+add('quests','skellige',{ title:'Brothers in Arms: Skellige', meta:{Giver:'Automatic', Location:'Skellige'},
+  desc:['Rally Skellige\'s fleet to fight alongside you at Kaer Morhen against the Wild Hunt.'], rewards:['Skellige reinforcements at Kaer Morhen'] });
+
+/* ======================= MAIN QUEST — KAER MORHEN & FINALE ======================= */
+add('quests','endgame',{ title:'Ugly Baby', meta:{Giver:'Automatic', Location:'Kaer Morhen'},
+  desc:['Ciri finally reaches Kaer Morhen on her own, reuniting with Geralt and the witchers who raised her.'], rewards:['Ciri joins as a companion'] });
+add('quests','endgame',{ title:'Brothers in Arms: Novigrad', meta:{Giver:'Zoltan / Triss / Roche', Location:'Novigrad'},
+  desc:['Recruit allies from Novigrad — Zoltan\'s crew, mages, or Blue Stripes — to stand with you at Kaer Morhen.'], rewards:[] });
+add('quests','endgame',{ title:'The Battle of Kaer Morhen', meta:{Giver:'Automatic', Location:'Kaer Morhen'},
+  desc:['Defend Kaer Morhen against the Wild Hunt\'s full assault alongside every ally rallied across the previous acts.'], rewards:[] });
+add('quests','endgame',{ title:'Blood on the Battlefield', meta:{Giver:'Automatic', Location:'Kaer Morhen'},
+  desc:['In the battle\'s aftermath, decide how to pursue the Wild Hunt\'s leader, Eredin, into his own realm.'], rewards:[] });
+add('quests','endgame',{ title:'Something Ends, Something Begins', meta:{Giver:'Automatic', Location:'Skellige / the Islands of Mists'},
+  desc:['The final confrontation with the Wild Hunt and Eredin — the outcome and Ciri\'s fate depend on choices made across the whole game.'], rewards:['Ends the main story; triggers the epilogue'] });
+
+/* ======================= NOTABLE SIDE QUESTS ======================= */
+add('quests','notable-side',{ title:'Carnal Sins', meta:{Giver:'Novigrad city guard / investigation', Location:'Novigrad'},
+  desc:['Investigate a string of gruesome ritual murders in Novigrad — one of the game\'s standout detective-style quests.'], rewards:[] });
+add('quests','notable-side',{ title:"The Play's the Thing", meta:{Giver:'Priscilla / the Rosemary and Thyme troupe', Location:'Novigrad'},
+  desc:['Help stage a scandalous play satirizing Novigrad\'s elite, casting NPCs met throughout the game.'], rewards:[] });
+add('quests','notable-side',{ title:'Scenes from a Marriage', meta:{Giver:'Automatic (Triss romance thread)', Location:'Novigrad'},
+  desc:['A quiet, character-driven quest for players pursuing the Triss romance route.'], rewards:[] });
+add('quests','notable-side',{ title:'Va Fail, Elaine!', meta:{Giver:'Skellige villagers', Location:'Skellige'},
+  desc:['Help settle a rowdy Skellige wedding that spirals out of control.'], rewards:[] });
+add('quests','notable-side',{ title:'Master Master Master', meta:{Giver:'Hattori', Location:'Novigrad'},
+  desc:['Find and recruit rival smith Hattori\'s missing katana-crafting master, unlocking Novigrad\'s best weapon crafting.'], rewards:['Access to master weapon crafting'] });
+add('quests','notable-side',{ title:"Contract: Skellige's Most Wanted", meta:{Giver:'Notice board', Location:'Skellige'},
+  desc:['Track a wanted criminal across Skellige — a longer, multi-part investigation contract.'], rewards:[] });
+add('quests','notable-side',{ title:'An Eye for an Eye', meta:{Giver:'Notice board / Baron thread', Location:'Velen'},
+  desc:['A grim, morally ambiguous quest exploring the aftermath of Velen\'s war-torn villages.'], rewards:[] });
+add('quests','notable-side',{ title:'Broken Flowers', meta:{Giver:'Automatic (Yennefer or Triss route)', Location:'Various'},
+  desc:['A late-game emotional confrontation quest whose content shifts depending on the chosen romance.'], rewards:[] });
+
+/* ======================= HEARTS OF STONE ======================= */
+add('quests','hos',{ title:'Evil\'s Soft First Touches', meta:{Giver:'Shani / Olgierd von Everec', Location:'Oxenfurt / Von Everec estate'},
+  desc:['Meet Shani again in Oxenfurt and take a contract from the mysterious, seemingly invincible Olgierd von Everec.'], rewards:[] });
+add('quests','hos',{ title:'Dead Man\'s Party', meta:{Giver:'Olgierd von Everec', Location:'Von Everec estate'},
+  desc:['Crash a ghostly re-enactment of Olgierd\'s own wedding day to unravel the curse Gaunter O\'Dimm placed on him.'], rewards:[] });
+add('quests','hos',{ title:'Open Sesame!', meta:{Giver:'Olgierd von Everec', Location:'The Nameless Tower'},
+  desc:['Break into a bandit-held tower to recover a treasure Olgierd wants back.'], rewards:['The Ofieri sword'] });
+add('quests','hos',{ title:'Little Red - Following the Thread', meta:{Giver:'Olgierd von Everec', Location:'Oxenfurt / Velen'},
+  desc:['Track down Olgierd\'s runaway brother-in-arms, wound up in a Little-Red-Riding-Hood-flavoured horror story.'], rewards:[] });
+add('quests','hos',{ title:'Whatsoever a Man Soweth...', meta:{Giver:'Olgierd von Everec', Location:'The Von Everec family crypt'},
+  desc:['Descend into the Von Everec crypt to learn the truth behind Olgierd\'s pact and immortality.'], rewards:[] });
+add('quests','hos',{ title:'Now or Never', meta:{Giver:'Automatic', Location:'Von Everec estate'},
+  desc:['Confront Gaunter O\'Dimm directly to settle Olgierd\'s debt — the expansion\'s climax, with major branching outcomes.'], rewards:['Ends Hearts of Stone'] });
+add('quests','hos',{ title:'The Man from Cintra', meta:{Giver:'Optional, tied to Shani romance', Location:'Oxenfurt'},
+  desc:['An optional emotional side-thread for players who romance Shani during Hearts of Stone.'], rewards:[] });
+
+/* ======================= BLOOD AND WINE ======================= */
+add('quests','bw',{ title:'Envoys, Wineboys', meta:{Giver:'Automatic', Location:'Toussaint border / Beauclair'},
+  desc:['Arrive in Toussaint as a knight-errant investigating a monster attack on the Duchess\'s court.'], rewards:['Unlocks Toussaint'] });
+add('quests','bw',{ title:'A Knight\'s Tales', meta:{Giver:'Duchess Anna Henrietta', Location:'Beauclair'},
+  desc:['Meet the Duchess and take on the mystery of the "Beast of Toussaint," a serial-killer monster stalking the duchy.'], rewards:[] });
+add('quests','bw',{ title:'Blood Simple', meta:{Giver:'Automatic', Location:'Beauclair'},
+  desc:['Investigate the scene of the Beast\'s latest attack using Witcher senses.'], rewards:[] });
+add('quests','bw',{ title:'Beyond Hill and Dale...', meta:{Giver:'Automatic', Location:'Toussaint countryside'},
+  desc:['Track the Beast\'s trail across Toussaint\'s vineyards and villages.'], rewards:[] });
+add('quests','bw',{ title:'La Cage au Fou', meta:{Giver:'Automatic', Location:'Beauclair'},
+  desc:['A major mid-expansion twist quest confronting the truth behind the Beast of Toussaint.'], rewards:[] });
+add('quests','bw',{ title:'Equine Phantoms', meta:{Giver:'Automatic', Location:'Toussaint'},
+  desc:['A ghost-story detour investigating a phantom horse haunting the region.'], rewards:[] });
+add('quests','bw',{ title:'Pomp and Circumstance', meta:{Giver:'Automatic', Location:'Beauclair Palace'},
+  desc:['Attend a lavish Toussaint knighting ceremony as Geralt is formally made a knight of the realm.'], rewards:['Knight of Toussaint title'] });
+add('quests','bw',{ title:'The Beast of Toussaint', meta:{Giver:'Automatic', Location:'Beauclair'},
+  desc:['The main investigation converges on the true identity and motive of the Beast.'], rewards:[] });
+add('quests','bw',{ title:'Feet as Cold as Ice / Turn and Face the Strange', meta:{Giver:'Automatic', Location:'Toussaint'},
+  desc:['Late-expansion quests unraveling the vampiric conspiracy at the heart of Toussaint\'s court.'], rewards:[] });
+add('quests','bw',{ title:'No Place Like Home', meta:{Giver:'Automatic', Location:'Corvo Bianco'},
+  desc:['Take ownership of the Corvo Bianco vineyard, Geralt\'s own estate, gifted by the Duchess.'], rewards:['Corvo Bianco vineyard & housing upgrades'] });
+add('quests','bw',{ title:'Tesham Mutna', meta:{Giver:'Automatic', Location:'Tesham Mutna ruins'},
+  desc:['Explore the ruined elven fortress of Tesham Mutna, tied to Regis and Dettlaff\'s shared, tragic history.'], rewards:['Tesham Mutna gear diagrams'] });
+add('quests','bw',{ title:'Mummer\'s Dance / Beyond Good and Evil', meta:{Giver:'Automatic', Location:'Beauclair'},
+  desc:['The expansion\'s finale — a confrontation forcing a choice between Anna Henrietta, Syanna, and Dettlaff with major branching outcomes.'], rewards:['Ends Blood and Wine'] });
+
+/* ======================= WITCHER CONTRACTS ======================= */
+add('contracts','white-orchard',{ title:'Devil by the Well', meta:{Monster:'Botchling', Giver:'Notice board', Location:'White Orchard'},
+  desc:['A village blames a "devil" for stillbirths and bad luck — investigate a botchling born of an unburied, unwanted child.'], rewards:['Moral choice on how to lay it to rest'] });
+add('contracts','white-orchard',{ title:'The Griffin From The Highlands', meta:{Monster:'Griffin', Giver:'Automatic (main quest)', Location:'White Orchard'},
+  desc:['Track and kill the griffin terrorizing White Orchard\'s farmland.'], rewards:[] });
+
+add('contracts','velen',{ title:'The Ballad of Caleb Menge', meta:{Monster:'Human — witch hunter', Giver:'Notice board', Location:'Velen'},
+  desc:['Hunt down a sadistic witch-hunter commander responsible for atrocities against mages and non-humans.'], rewards:[] });
+add('contracts','velen',{ title:'Deadly Delights', meta:{Monster:'Foglet / hidden killer', Giver:'Notice board', Location:'Downwarren'},
+  desc:['Investigate a butcher whose meat pies have a horrifying secret ingredient.'], rewards:[] });
+add('contracts','velen',{ title:'The Beast of White Orchard (Velen echo)', meta:{Monster:'Werewolf', Giver:'Notice board', Location:'Velen'},
+  desc:['Track a werewolf blamed for livestock and traveler deaths near a border village.'], rewards:[] });
+add('contracts','velen',{ title:'Swamp Thing', meta:{Monster:'Ekimmara / Fiend', Giver:'Notice board', Location:'Crookback Bog'},
+  desc:['A rare, dangerous Fiend contract deep in the bog — one of the tougher early monster fights.'], rewards:[] });
+add('contracts','velen',{ title:'Wandering in the Dark: Ghosts of the Past', meta:{Monster:'Various undead', Giver:'Notice board', Location:'Velen ruins'},
+  desc:['Clear a haunted ruin of restless spirits tied to the region\'s war dead.'], rewards:[] });
+
+add('contracts','novigrad',{ title:'Hunting a Witch', meta:{Monster:'Human (framed as a "witch")', Giver:'Notice board', Location:'Novigrad'},
+  desc:['A woman is accused of witchcraft by the Eternal Fire — determine whether she\'s truly a threat or a scapegoat.'], rewards:['Moral choice on her fate'] });
+add('contracts','novigrad',{ title:'The Apiarian Phantom', meta:{Monster:'Noonwraith/wraith variant', Giver:'Notice board', Location:'Near Novigrad'},
+  desc:['Investigate a spectral haunting at an abandoned apiary.'], rewards:[] });
+add('contracts','novigrad',{ title:'Doors Slamming Shut', meta:{Monster:'Ghost / poltergeist', Giver:'Notice board', Location:'Oxenfurt'},
+  desc:['A haunted house in Oxenfurt terrorizes its tenants — uncover the tragedy behind the haunting.'], rewards:[] });
+add('contracts','novigrad',{ title:'The Oxenfurt Drunk', meta:{Monster:'Doppler', Giver:'Notice board', Location:'Oxenfurt'},
+  desc:['A shapeshifting doppler causes chaos impersonating townsfolk.'], rewards:[] });
+
+add('contracts','skellige',{ title:'Missing in Action', meta:{Monster:'Various / investigation', Giver:'Notice board', Location:'Skellige'},
+  desc:['Track down soldiers who vanished during Skellige\'s internal conflicts.'], rewards:[] });
+add('contracts','skellige',{ title:'The Lord of Undvik', meta:{Monster:'Cyclops', Giver:'Automatic (main quest)', Location:'Undvik'},
+  desc:['A giant cyclops holds Skellige prisoners captive in its lair.'], rewards:[] });
+add('contracts','skellige',{ title:'Cruel Fate', meta:{Monster:'Foglet', Giver:'Notice board', Location:'Undvik'},
+  desc:['A "cursed" island claims a fisherman\'s daughter — investigate a foglet feeding on fear.'], rewards:[] });
+add('contracts','skellige',{ title:'In Wolf\'s Clothing', meta:{Monster:'Werewolf', Giver:'Notice board', Location:'Ard Skellig'},
+  desc:['A druid-adjacent contract involving a cursed werewolf and a moral choice on lifting the curse.'], rewards:[] });
+add('contracts','skellige',{ title:'Ghosts of the Past', meta:{Monster:'Wraith', Giver:'Notice board', Location:'Kaer Trolde'},
+  desc:['A restless spirit haunts the royal seat of Kaer Trolde, tied to Crach an Craite\'s family history.'], rewards:[] });
+
+add('contracts','kaer-morhen',{ title:'A Towerful of Mice (echo)', meta:{Monster:'Various', Giver:'Automatic', Location:'Kaer Morhen approaches'},
+  desc:['Clear monster nests threatening the road to Kaer Morhen ahead of the Wild Hunt\'s assault.'], rewards:[] });
+
+add('contracts','toussaint',{ title:'The Warble of a Smitten Knight', meta:{Monster:'Basilisk', Giver:'Guillaume the Grape', Location:'Toussaint'},
+  desc:['A hapless "knight" hires Geralt to secretly slay a basilisk on his behalf so he can claim the glory.'], rewards:['Comic quest chain, multiple follow-ups'] });
+add('contracts','toussaint',{ title:'Wine Wars: Dead Man\'s Party', meta:{Monster:'Human/monster (varies)', Giver:'Notice board', Location:'Toussaint vineyards'},
+  desc:['Investigate sabotage between Toussaint\'s two great rival vineyards, Coronata and Vermentino.'], rewards:[] });
+add('contracts','toussaint',{ title:'Grave Matters', meta:{Monster:'Various undead', Giver:'Notice board', Location:'Toussaint'},
+  desc:['A graveyard disturbance contract tied to Toussaint\'s aristocratic families.'], rewards:[] });
+add('contracts','toussaint',{ title:'Nithing', meta:{Monster:'Nithing (curse)', Giver:'Notice board', Location:'Toussaint border'},
+  desc:['Investigate a magical pole-curse ("nithing") planted to bring ruin on its target.'], rewards:[] });
+
+/* ======================= ALCHEMY — POTIONS ======================= */
+[
+ ['Swallow','Restores vitality steadily over time.'],
+ ['Thunderbolt','Boosts attack power for a short time.'],
+ ['Tawny Owl','Restores stamina/Adrenaline regeneration.'],
+ ['Cat','Grants night vision, highlighting enemies in the dark.'],
+ ['Blizzard','Slows time perception after landing a critical hit; boosts reflexes.'],
+ ['Golden Oriole','Neutralizes poison and reduces poison damage from monsters.'],
+ ['Petri\'s Philter','Extends the duration of other potions and increases toxicity threshold.'],
+ ['White Raffard\'s Decoction','Restores vitality instantly and continues healing from wounds.'],
+ ['Full Moon','Increases max Adrenaline Point capacity.'],
+ ['Maribor Forest','Reduces stamina cost of Signs.'],
+ ['Killer Whale','Allows breathing underwater and improves swimming.'],
+ ['Rook','Reduces incoming damage while stunning nearby foes when the drinker is stunned.'],
+ ['Superior Wolf School potions (various)','Enhanced versions of school-tied potions with stronger, longer effects; require Enhanced/Superior formulae.'],
+ ['Ekhidna Decoction (mutagenic)','Mutagen-tier potion — see Decoctions.'],
+ ['Water Hag Decoction (mutagenic)','Mutagen-tier potion — see Decoctions.'],
+ ['Bear School / other Grandmaster-tied potions','High-tier potions tied to New Game+ / Grandmaster gear unlocks.'],
+].forEach(([name, effect]) => add('alchemy','potions',{ title:name, meta:{Type:'Potion'}, desc:[effect], rewards:[] }));
+
+/* ======================= ALCHEMY — OILS ======================= */
+[
+ ['Hybrid Oil','General bonus damage vs. most monster types; craftable early.'],
+ ['Necrophage Oil','Bonus damage vs. ghouls, drowners, rotfiends and other necrophages.'],
+ ['Specter Oil','Bonus damage vs. wraiths, noonwraiths and other specters.'],
+ ['Beast Oil','Bonus damage vs. wolves, bears, and other beasts.'],
+ ['Insectoid Oil','Bonus damage vs. arachas, endrega and other insectoids.'],
+ ['Relict Oil','Bonus damage vs. ghosts and elementals.'],
+ ['Draconid Oil','Bonus damage vs. wyverns, basilisks and other draconids.'],
+ ['Ogroid Oil','Bonus damage vs. cyclopes, ogres and trolls.'],
+ ['Human Oil','Bonus damage vs. human opponents.'],
+ ['Elementa Oil','Bonus damage vs. golems and elementals.'],
+ ['Cursed Oil','Bonus damage vs. cursed ones (werewolves, botchlings, etc.).'],
+ ['Hanged Man\'s Venom','Applies poison to enemies struck by an oiled blade.'],
+ ['Grapeshot','Applies bleeding to enemies struck by an oiled blade.'],
+ ['Superior/Enhanced/Grandmaster oils','Upgraded versions of the above with higher damage bonuses, needing better formulae.'],
+].forEach(([name, effect]) => add('alchemy','oils',{ title:name, meta:{Type:'Oil'}, desc:[effect], rewards:[] }));
+
+/* ======================= ALCHEMY — DECOCTIONS ======================= */
+[
+ ['Ekhidna Decoction','Regenerates Adrenaline Points passively over time.'],
+ ['Ekimmara Decoction','Restores vitality when landing hits, scaling with toxicity.'],
+ ['Water Hag Decoction','Increases vitality regeneration outside combat.'],
+ ['Fiend Decoction','Restores Adrenaline Points when using fast attacks.'],
+ ['Wraith Decoction','Reflects a portion of incoming damage back at melee attackers.'],
+ ['Leshen Decoction','Increases sign intensity for a time after use.'],
+ ['Katakan Decoction','Restores vitality after killing an enemy.'],
+ ['Djinn Decoction','Reduces cooldown of Signs.'],
+ ['Ancient Leshen Decoction','A stronger variant tied to the "Blood and Wine" leshen encounter.'],
+ ['Grave Hag Decoction','Restores toxicity offset, allowing more potions to be active at once.'],
+ ['Noonwraith / Nightwraith / Bruxa / other bestiary decoctions','Additional decoctions unlocked by completing the relevant bestiary entries via monster contracts and hunts.'],
+].forEach(([name, effect]) => add('alchemy','decoctions',{ title:name, meta:{Type:'Decoction'}, desc:[effect + ' Requires a completed bestiary entry for the source creature and a mutagen from it to brew.'], rewards:[] }));
+
+/* ======================= ALCHEMY — BOMBS ======================= */
+[
+ ['Grapeshot','Anti-personnel shrapnel bomb dealing bleeding damage.'],
+ ['Dancing Star','A phosphorus bomb that ignites on contact and continues burning.'],
+ ['Northern Wind','Freezes the ground and enemies in the blast radius, slowing them.'],
+ ['Samum','Blinds and disorients enemies caught in the cloud.'],
+ ['Devil\'s Puffball','Releases a toxic gas cloud that poisons enemies over time.'],
+ ['Moon Dust','Damages and staggers spectral and magic-using enemies; strips illusions.'],
+ ['Dimeritium Bomb','Temporarily strips magic-using enemies of their spells and shields.'],
+ ['Superior/Enhanced/Grandmaster bombs','Upgraded versions of the above with larger radius or stronger effects.'],
+].forEach(([name, effect]) => add('alchemy','bombs',{ title:name, meta:{Type:'Bomb'}, desc:[effect], rewards:[] }));
+
+/* ======================= WITCHER GEAR — SCHOOLS ======================= */
+function gearSet(sub, school, pieces, sourceNote) {
+  pieces.forEach(p => add('gear', sub, { title:`${school} ${p}`, meta:{School:school, Piece:p, Source:sourceNote}, desc:[`Part of the ${school} witcher gear set.`], rewards:[] }));
+}
+gearSet('wolf','Wolf School',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Diagrams found via a scavenger-hunt quest chain starting near Blackbough, Velen (base set); Enhanced/Superior/Mastercrafted/Grandmaster tiers found or bought across Velen, Novigrad and Skellige, and (Grandmaster) Toussaint in Blood and Wine.');
+gearSet('griffin','Griffin School',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Diagrams found via a scavenger hunt starting in Kaer Almhult / Fyresdal, Skellige; higher tiers scattered across Skellige and Novigrad, Grandmaster added in Blood and Wine.');
+gearSet('bear','Ursine School',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Diagrams found via a scavenger hunt starting near the Nilfgaardian garrison in western Velen; a heavy, high-vitality "tank" set. Grandmaster added in Blood and Wine.');
+gearSet('cat','Feline School',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Diagrams found via a scavenger hunt starting on the Skellige coast (a shipwreck note); a fast, sign-and-critical-focused set. Grandmaster added in Blood and Wine.');
+gearSet('manticore','Manticore School',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Hearts of Stone expansion set — diagrams found via a scavenger hunt beginning with a note in the Nameless Tower / Von Everec estate area.');
+gearSet('viper','Viper School',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Hearts of Stone expansion set, geared for fast dual dagger-style play — diagrams found via a scavenger hunt starting near Oxenfurt.');
+gearSet('tesham','Tesham Mutna',['Steel Sword','Silver Sword','Armor','Gauntlets','Trousers','Boots'],'Blood and Wine expansion set tied to the "Tesham Mutna" main quest — diagrams found in the Tesham Mutna ruins themselves.');
+add('gear','toussaint-gear',{ title:"Ducal Guard's Gear", meta:{School:'Toussaint', Source:'Toussaint armorers / quest reward'}, desc:['Toussaint knightly armor themed around the Duchess\'s personal guard.'], rewards:[] });
+add('gear','toussaint-gear',{ title:"Knight Errant's / Grandmaster Armor sets", meta:{School:'Toussaint', Source:'Corvo Bianco armorer / New Game+ crafting'}, desc:['Additional Blood and Wine armor sets purchasable or craftable once Corvo Bianco is obtained.'], rewards:[] });
+add('gear','toussaint-gear',{ title:'Grandmaster upgrade note', meta:{School:'All schools', Source:'New Game+'}, desc:['Grandmaster diagrams for the five base-game schools (Wolf, Griffin, Bear, Cat) plus Manticore/Viper/Tesham Mutna were added by Blood and Wine and mostly require New Game+ level to craft (level 100 gear).'], rewards:[] });
+
+/* ======================= LOCATIONS — PLACES OF POWER ======================= */
+[
+ ['Midcopse','Velen — grants a permanent skill point for meditating at the ley line marker.'],
+ ['Lindenvale','Velen — near the Nilfgaardian garrison.'],
+ ['Byways','Velen swamp — Crookback Bog area.'],
+ ['Merlaut Bridge','Velen — near the White Orchard border.'],
+ ['Wooded Hollow','Velen countryside.'],
+ ['Devil\'s Pit','Velen — a foreboding cave-like site.'],
+ ['Two Stones','Novigrad hinterlands.'],
+ ['Dead Man\'s Ravine','Novigrad hinterlands.'],
+ ['Coast of Wrecks','Skellige — An Skellig.'],
+ ['Fyresdal','Skellige — Ard Skellig.'],
+ ['Kaer Almhult','Skellige — Ard Skellig, tied to a Griffin gear scavenger hunt.'],
+ ['Harviken','Skellige — Ard Skellig.'],
+ ['Svorlag','Skellige — Spikeroog.'],
+ ['Undvik','Skellige — Undvik island.'],
+ ['Ostrit','Skellige — Hindarsfjall.'],
+ ['Kaer Morhen','The witchers\' keep itself — a place of power tied to the endgame.'],
+ ['Kaer Trolde Lighthouse','Skellige — Ard Skellig, near the capital.'],
+ ['Snake Island shrine','Toussaint — Blood and Wine.'],
+ ['Ducal vineyard site','Toussaint — Blood and Wine, near Corvo Bianco.'],
+ ['Mont Crane Castle grounds','Toussaint — Blood and Wine.'],
+].forEach(([name, desc]) => add('locations','power',{ title:name, meta:{Type:'Place of Power'}, desc:[desc + ' Meditating here permanently grants one extra ability/skill point (once per place).'], rewards:[] }));
+
+/* ======================= LOCATIONS — VELEN & NOVIGRAD POI ======================= */
+[
+ ["Crow's Perch",'The Bloody Baron\'s stronghold and the hub of the Velen questline.'],
+ ['Crookback Bog',"The Crones' swamp domain, thick with monsters and shrines."],
+ ['Downwarren','A besieged Velen village central to several contracts.'],
+ ['Oreton','A Velen village tied to multiple side quests.'],
+ ['Novigrad — Temple Isle','Home to the Eternal Fire\'s Hierarch and Church authority.'],
+ ['Novigrad — The Bits','The city\'s slums, home to Triss\'s hideout during the witch hunts.'],
+ ['Novigrad — Gildorf & the harbor','Novigrad\'s trade and dock district.'],
+ ['Oxenfurt Academy','The seat of learning where Shani and several quests are based.'],
+ ["Kingfisher's Inn / Border Post areas",'Notable waypoints along the Velen/Novigrad road.'],
+].forEach(([name, desc]) => add('locations','velen-poi',{ title:name, meta:{Type:'Point of Interest'}, desc:[desc], rewards:[] }));
+
+/* ======================= LOCATIONS — SKELLIGE POI ======================= */
+[
+ ['Kaer Trolde','Capital of Skellige, seat of Clan an Craite.'],
+ ['Ard Skellig','The largest of the isles, hub for most Skellige quests.'],
+ ['Undvik','Icy, monster-infested island tied to the main quest.'],
+ ['Spikeroog','A smaller isle with its own contracts and points of power.'],
+ ['Hindarsfjall','An isle tied to druidic sites and side content.'],
+ ['Faroe & An Skellig','Southern isles with scattered contracts and shipwrecks.'],
+ ["The Kaer Trolde Longhouse",'Where the succession feast and political scenes play out.'],
+].forEach(([name, desc]) => add('locations','skellige-poi',{ title:name, meta:{Type:'Point of Interest'}, desc:[desc], rewards:[] }));
+
+/* ======================= LOCATIONS — TOUSSAINT POI ======================= */
+[
+ ['Beauclair','The ducal capital city, seat of Anna Henrietta — Blood and Wine\'s hub.'],
+ ['Corvo Bianco','Geralt\'s own vineyard estate, obtained via "No Place Like Home."'],
+ ['Tesham Mutna','Ruined elven fortress central to the Regis/Dettlaff storyline.'],
+ ['Mont Crane Castle','A castle tied to a major Blood and Wine side arc.'],
+ ["Land of a Thousand Fables",'A fairy-tale pocket realm reached during the main Blood and Wine story.'],
+ ['Sansretour Valley','Toussaint countryside with its own contracts and points of power.'],
+].forEach(([name, desc]) => add('locations','toussaint-poi',{ title:name, meta:{Type:'Point of Interest'}, desc:[desc], rewards:[] }));
+
+/* ======================= TREASURE HUNTS ======================= */
+[
+ ['Scavenger Hunt: Wolf School Gear','wolf','Starts from a note near Blackbough, Velen; unlocks the Wolf School diagrams across multiple tiers.'],
+ ['Scavenger Hunt: Griffin School Gear','griffin','Starts from a note near Kaer Almhult/Fyresdal, Skellige.'],
+ ['Scavenger Hunt: Ursine (Bear) School Gear','bear','Starts from a note near a Nilfgaardian garrison, western Velen.'],
+ ['Scavenger Hunt: Feline (Cat) School Gear','cat','Starts from a shipwreck note on the Skellige coast.'],
+ ['Scavenger Hunt: Manticore School Gear','manticore','Hearts of Stone — starts near the Nameless Tower.'],
+ ['Scavenger Hunt: Viper School Gear','viper','Hearts of Stone — starts near Oxenfurt.'],
+].forEach(([name, tag, desc]) => add('treasure','scavenger',{ title:name, meta:{Ties:'Witcher gear school'}, desc:[desc], rewards:['Gear diagrams — see the matching tab under Witcher Gear'] }));
+
+[
+ ['Deserter Gold','A cache of coin hidden by army deserters, tracked from a note or map found on a corpse.'],
+ ['Precious Cargo','A merchant\'s lost shipment, tracked down via a map for a reward.'],
+ ["Ghosts of the Past",'A treasure tied to old war dead, often paired with a monster contract.'],
+ ["The Frightened Man's Grotto",'A hidden coastal cache found by following a rumor from a frightened villager.'],
+ ["Fake Fake Aerondight",'A joke treasure hunt in Skellige poking fun at a fabled sword.'],
+ ['The Great Escape','A treasure hunt tied to a prison break story thread.'],
+ ["Rock, Paper, Scissors",'A whimsical treasure map quest with a twist ending.'],
+].forEach(([name, desc]) => add('treasure','caches',{ title:name, meta:{Type:'Treasure Hunt'}, desc:[desc], rewards:['Coin, crafting materials, or a unique item'] }));
+
+[
+ ["Open Sesame!",'Recovering the Ofieri sword from a bandit-held tower for Olgierd.'],
+ ['The Nameless Tower loot','Additional caches inside and around the Nameless Tower.'],
+].forEach(([name, desc]) => add('treasure','hos-treasure',{ title:name, meta:{Expansion:'Hearts of Stone'}, desc:[desc], rewards:[] }));
+
+[
+ ['Beyond Hill and Dale... side caches','Scattered treasure notes found while tracking the Beast of Toussaint.'],
+ ['Vineyard caches near Corvo Bianco','Small hidden stashes around Geralt\'s own vineyard once obtained.'],
+ ['Tesham Mutna ruins loot','Notable gear and lore items hidden through the ruined fortress.'],
+].forEach(([name, desc]) => add('treasure','bw-treasure',{ title:name, meta:{Expansion:'Blood and Wine'}, desc:[desc], rewards:[] }));
+
+/* ======================= GWENT ======================= */
+[
+ ["King Foltest","Northern Realms leader card."],
+ ["King Henselt","Northern Realms leader card."],
+ ["King Demavend","Northern Realms leader card."],
+ ["Vernon Roche","Special unit — Blue Stripes commando."],
+ ["Ves","Special unit — Blue Stripes commando."],
+ ["Yarpen Zigrin","Special unit — dwarven commander."],
+ ["Siege Tower / Trebuchet / Catapult","Siege-row unit cards."],
+ ["Dun Banner Medic / Heavy Cavalry / Light Cavalry","Common Northern Realms unit cards."],
+].forEach(([name, note]) => add('gwent','northern-realms',{ title:name, meta:{Faction:'Northern Realms'}, desc:[note], rewards:[] }));
+
+[
+ ["Emperor Emhyr var Emreis","Nilfgaard leader card."],
+ ["Morvran Voorhis","Special unit card."],
+ ["Tibor Eggebracht","Special unit card."],
+ ["Cynthia / Fringilla Vigo","Notable unit cards tied to the Nilfgaardian court."],
+ ["Rotten Mangonel / Nausicaa Cavalry Rider","Common Nilfgaard unit cards."],
+].forEach(([name, note]) => add('gwent','nilfgaard',{ title:name, meta:{Faction:'Nilfgaard'}, desc:[note], rewards:[] }));
+
+[
+ ["Francesca Findabair","Scoia'tael leader card."],
+ ["Toruviel","Elven archer special unit."],
+ ["Yaevinn","Special unit tied to a Scoia'tael side story."],
+ ["Dennis Cranmer","Dwarven special unit."],
+ ["Elven Skirmisher / Mahakam Volunteers","Common Scoia'tael unit cards."],
+].forEach(([name, note]) => add('gwent','scoiatael',{ title:name, meta:{Faction:"Scoia'tael"}, desc:[note], rewards:[] }));
+
+[
+ ["Eredin Bréacc Glas","Monster leader card — Wild Hunt."],
+ ["Caranthir","Wild Hunt special unit."],
+ ["Imlerith","Wild Hunt special unit."],
+ ["Ge'els","Wild Hunt special unit."],
+ ["Katakan / Ekimmara / Fiend","Common Monster faction unit cards, matching bestiary creatures."],
+].forEach(([name, note]) => add('gwent','monsters',{ title:name, meta:{Faction:'Monsters'}, desc:[note], rewards:[] }));
+
+[
+ ["King Bran","Skellige leader card."],
+ ["Crach an Craite","Special unit — Skellige jarl."],
+ ["Cerys an Craite","Special unit tied to the Skellige succession quests."],
+ ["Hjalmar an Craite","Special unit tied to the Skellige succession quests."],
+ ["Donar an Hindar / Clan Fighters","Common Skellige unit cards."],
+].forEach(([name, note]) => add('gwent','skellige-gwent',{ title:name, meta:{Faction:'Skellige'}, desc:[note], rewards:[] }));
+
+add('gwent','merchants',{ title:'Ubiquitous Gwent players', meta:{Type:'Card sources'}, desc:['Most innkeepers across the Northern Realms, Skellige and Toussaint offer a hand of Gwent and their own card as a reward for a win — a primary way to fill out common cards.'], rewards:[] });
+add('gwent','merchants',{ title:'Djikstra / Novigrad merchants', meta:{Type:'Card sources'}, desc:['Certain Novigrad NPCs and quest-related characters offer unique cards not available from ordinary innkeepers.'], rewards:[] });
+add('gwent','merchants',{ title:'"Gwent: Old Pals" & Skellige tournament threads', meta:{Type:'Quest chain'}, desc:['A recurring side-quest chain (rival Gwent players challenging Geralt across regions) that hands out several unique cards on completion.'], rewards:[] });
+add('gwent','merchants',{ title:'Blood and Wine — Toussaint collectors', meta:{Type:'Card sources'}, desc:['New unique Gwent cards and players were added with the Blood and Wine expansion, obtainable through Toussaint innkeepers and a few quest NPCs.'], rewards:[] });
+
+/* ============================= SEARCH INDEX ============================= */
+function buildSearchIndex(){
+  return ENTRIES.map(e => ({
+    itemId: e.id, title: e.title,
+    sectionLabel: (SECTIONS.find(s=>s.id===e.sec)||{}).label + (TABS[e.sec] ? ' › ' + ((TABS[e.sec].find(t=>t.id===e.sub)||{}).label||'') : ''),
+    icon: (SECTIONS.find(s=>s.id===e.sec)||{}).icon || '📄',
+    snippet: (e.desc && e.desc[0]) || Object.values(e.meta||{}).join(' · '),
+    searchText: [e.title, JSON.stringify(e.meta||{}), (e.desc||[]).join(' ')].join(' ').toLowerCase(),
+    nav: { section: e.sec, sub: e.sub },
+  }));
+}
+const SEARCH_INDEX = buildSearchIndex();
+
+/* ============================= STATE ============================= */
+let activeSection = 'overview';
+let activeSub = null;
+let favOnly = false;
+let hideCompleted = false;
+let query = '';
+let favorites = new Set();
+let tracked = new Set();
+
+function storageKey(){ return 'witcher3-journal-progress'; }
+function navStateKey(){ return 'witcher3-journal-lastview'; }
+
+function syncFilterPills(){
+  document.querySelectorAll('.filter-pill[data-fav]').forEach(p => p.classList.toggle('active', p.dataset.fav === (favOnly ? 'favorites' : 'all')));
+  const hideBtn = document.querySelector('.filter-pill[data-hide-done]');
+  if (hideBtn) hideBtn.classList.toggle('active', hideCompleted);
+}
+
+function loadProgress(){
+  try {
+    const raw = localStorage.getItem(storageKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      favorites = new Set(parsed.favorites || []);
+      tracked = new Set(parsed.tracked || []);
+    }
+  } catch (e) { /* start fresh */ }
+}
+function saveProgress(){
+  try {
+    const state = { favorites: Array.from(favorites), tracked: Array.from(tracked), updatedAt: Date.now() };
+    const payload = JSON.stringify(state);
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
+    if (window.JawAccount && window.JawAccount.isSignedIn()) window.JawAccount.save('witcher3', state);
+  } catch (e) { console.error('Could not save progress', e); }
+}
+
+async function syncPullAndReconcile(){
+  if (!window.JawSync) return;
+  try {
+    const remote = await window.JawSync.pull(storageKey());
+    if (!remote) return;
+    const remoteParsed = JSON.parse(remote);
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remoteParsed.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remoteParsed.favorites || []);
+      tracked = new Set(remoteParsed.tracked || []);
+      localStorage.setItem(storageKey(), remote);
+      renderAll();
+    }
+  } catch (e) { console.error('Sync pull failed', e); }
+}
+async function syncAccountPullAndReconcile(){
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const remote = await window.JawAccount.load('witcher3');
+    if (!remote) return;
+    const localRaw = localStorage.getItem(storageKey());
+    const localParsed = localRaw ? JSON.parse(localRaw) : null;
+    if (!localParsed || (remote.updatedAt || 0) > (localParsed.updatedAt || 0)) {
+      favorites = new Set(remote.favorites || []);
+      tracked = new Set(remote.tracked || []);
+      localStorage.setItem(storageKey(), JSON.stringify(remote));
+      renderAll();
+    }
+  } catch (e) { console.error('Account sync pull failed', e); }
+}
+
+function saveNavState(){
+  try { localStorage.setItem(navStateKey(), JSON.stringify({ activeSection, activeSub })); } catch (e) {}
+}
+function loadNavState(){
+  try {
+    const raw = localStorage.getItem(navStateKey());
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s && SECTIONS.some(sec => sec.id === s.activeSection)) activeSection = s.activeSection;
+    if (s && 'activeSub' in s) activeSub = s.activeSub;
+  } catch (e) {}
+}
+
+function entriesFor(sec, sub){ return ENTRIES.filter(e => e.sec === sec && (!sub || e.sub === sub)); }
+function statFor(sec, sub){
+  const scoped = entriesFor(sec, sub).filter(e => e.trackable);
+  const done = scoped.filter(e => tracked.has(e.id)).length;
+  return { done, total: scoped.length };
+}
+function sectionStat(sec){
+  if (!TABS[sec]) return statFor(sec, null);
+  let done = 0, total = 0;
+  TABS[sec].forEach(t => { const s = statFor(sec, t.id); done += s.done; total += s.total; });
+  return { done, total };
+}
+function overallStat(){
+  let done = 0, total = 0;
+  SECTIONS.filter(s => s.id !== 'overview').forEach(s => { const st = sectionStat(s.id); done += st.done; total += st.total; });
+  return { done, total };
+}
+
+/* ============================= NAV ============================= */
+function renderNav(){
+  const btns = SECTIONS.map(s => `<button class="nav-btn ${activeSection===s.id?'active':''}" data-section="${s.id}">
+      <span class="icon">${s.icon}</span> ${s.label}
+    </button>`).join('');
+  document.getElementById('nav-desktop').innerHTML = btns;
+  document.getElementById('nav-mobile').innerHTML = btns;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSection = btn.dataset.section;
+      activeSub = TABS[activeSection] ? TABS[activeSection][0].id : null;
+      favOnly = false; hideCompleted = false; query = '';
+      const si = document.getElementById('search'); if (si) si.value = '';
+      syncFilterPills();
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ============================= SUB TABS ============================= */
+function renderSubRow(){
+  const row = document.getElementById('sub-row');
+  const tabs = TABS[activeSection];
+  if (!tabs) { row.style.display = 'none'; row.innerHTML = ''; return; }
+  if (!activeSub) activeSub = tabs[0].id;
+  row.style.display = 'flex';
+  row.innerHTML = tabs.map(t => {
+    const s = statFor(activeSection, t.id);
+    return `<button class="sub-pill ${activeSub===t.id?'active':''}" data-sub="${t.id}">${t.icon||''} ${t.label} <span class="n">${s.done}/${s.total}</span></button>`;
+  }).join('');
+  row.querySelectorAll('.sub-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeSub = btn.dataset.sub;
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ============================= HEADER ============================= */
+function renderHeader(){
+  const titles = {
+    overview: ['The White Wolf\'s Journal', '— a witcher\'s field notes, drawn up on the Path —'],
+    quests: ['Main Quest', '— the road from White Orchard to the Isles of Mist —'],
+    contracts: ['Witcher Contracts', '— monsters posted to notice boards across the Northern Kingdoms —'],
+    alchemy: ['Alchemy', '— potions, oils, decoctions and bombs brewed at the alchemy table —'],
+    gear: ['Witcher Gear', '— school steel, silver and armor, piece by piece —'],
+    locations: ['Places & Points of Interest', '— places of power and notable landmarks —'],
+    treasure: ['Treasure Hunts', '— scavenger hunts, hidden caches and lost coin —'],
+    gwent: ['Gwent Collection', '— notable cards, leaders and where to win them —'],
+  };
+  const [t, sub] = titles[activeSection] || titles.overview;
+  document.getElementById('page-title').textContent = t;
+  document.getElementById('page-subtitle').textContent = sub;
+}
+
+/* ============================= CARD RENDER ============================= */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderCard(e){
+  const isFav = favorites.has(e.id);
+  const isDone = tracked.has(e.id);
+  const metaHtml = e.meta ? Object.entries(e.meta).filter(([,v])=>v).map(([k,v]) => `<span><b>${escapeHtml(k)}:</b> ${escapeHtml(v)}</span>`).join('') : '';
+  const stepsHtml = (e.desc && e.desc.length) ? `<ul class="quest-steps">${e.desc.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>` : '';
+  const rewardsHtml = (e.rewards && e.rewards.length) ? `<div class="rewards-row">${e.rewards.map(r => `<span class="reward-chip">${escapeHtml(r)}</span>`).join('')}</div>` : '';
+  return `<div class="quest ${isDone?'done':''}" data-id="${e.id}">
+    <div class="quest-top">
+      <div class="quest-title-wrap"><h3>${escapeHtml(e.title)}</h3></div>
+      <button class="fav-btn ${isFav?'active':''}" data-fav-id="${e.id}" title="Favorite">★</button>
+    </div>
+    <div class="quest-meta">${metaHtml}</div>
+    ${stepsHtml}
+    ${rewardsHtml}
+    <div class="quest-foot">
+      <label class="track-btn" data-track-id="${e.id}"><span class="box"></span> ${isDone ? 'Completed / Obtained' : 'Mark complete'}</label>
+    </div>
+  </div>`;
+}
+
+function wireCards(container){
+  container.querySelectorAll('[data-fav-id]').forEach(btn => {
+    btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const id = Number(btn.dataset.favId);
+      if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+      saveProgress();
+      renderAll();
+    });
+  });
+  container.querySelectorAll('[data-track-id]').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const id = Number(el.dataset.trackId);
+      if (tracked.has(id)) tracked.delete(id); else tracked.add(id);
+      saveProgress();
+      renderAll();
+    });
+  });
+}
+
+/* ============================= SECTION RENDERERS ============================= */
+function renderOverview(){
+  const overall = overallStat();
+  const pct = overall.total ? Math.round((overall.done/overall.total)*100) : 0;
+  const circumference = 2 * Math.PI * 43;
+  const offset = circumference * (1 - pct/100);
+  let html = `<div class="overview-hero">
+    <div class="completion-ring-wrap">
+      <svg class="completion-ring" viewBox="0 0 104 104">
+        <circle class="completion-ring-track" cx="52" cy="52" r="43"></circle>
+        <circle class="completion-ring-fill" cx="52" cy="52" r="43" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+      </svg>
+      <div class="completion-ring-pct">${pct}%</div>
+    </div>
+    <div class="overview-hero-info">
+      <div class="overview-hero-title">Overall progress</div>
+      <div class="overview-hero-count">${overall.done} of ${overall.total} entries tracked across every section</div>
+      <span class="points-total-badge">🐺 ${favorites.size} favorited</span>
+    </div>
+  </div>
+  <div class="dash-grid">`;
+  SECTIONS.filter(s => s.id !== 'overview').forEach(s => {
+    const st = sectionStat(s.id);
+    const p = st.total ? Math.round((st.done/st.total)*100) : 0;
+    html += `<div class="dash-card" data-jump="${s.id}">
+      <div class="dash-card-top"><span class="dash-icon">${s.icon}</span><span class="dash-label">${s.label}</span></div>
+      <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${p}%"></div></div>
+      <div class="dash-count">${st.done} / ${st.total} tracked</div>
+    </div>`;
+  });
+  html += `</div>
+  <div class="reset-zone" style="margin-top:24px;">
+    <button class="reset-btn" id="reset-btn">Reset all progress</button>
+    <span class="reset-hint">Clears every favorite and completion mark. Click twice to confirm.</span>
+  </div>`;
+  document.getElementById('entries').innerHTML = html;
+  document.querySelectorAll('[data-jump]').forEach(card => {
+    card.addEventListener('click', () => {
+      activeSection = card.dataset.jump;
+      activeSub = TABS[activeSection] ? TABS[activeSection][0].id : null;
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+  const resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) {
+    let armed = false;
+    resetBtn.addEventListener('click', () => {
+      if (!armed) { armed = true; resetBtn.classList.add('armed'); resetBtn.textContent = 'Click again to confirm'; return; }
+      favorites = new Set(); tracked = new Set();
+      saveProgress();
+      renderAll();
+    });
+  }
+}
+
+function renderSearchResults(){
+  const q = query.toLowerCase();
+  const results = SEARCH_INDEX.filter(r => r.searchText.includes(q));
+  let html = `<p class="search-section-note">${results.length} result${results.length===1?'':'s'} for "${escapeHtml(query)}"</p>`;
+  if (!results.length) { html += `<div class="empty-state">No entries found</div>`; document.getElementById('entries').innerHTML = html; return; }
+  html += results.map(r => `<div class="quest search-result-card" data-jump-nav='${JSON.stringify(r.nav)}'>
+    <div class="quest-top"><div class="quest-title-wrap"><span class="result-icon">${r.icon}</span><h3>${escapeHtml(r.title)}</h3></div></div>
+    <div class="quest-meta"><span>${escapeHtml(r.sectionLabel)}</span></div>
+    <p class="ach-desc">${escapeHtml(r.snippet||'')}</p>
+  </div>`).join('');
+  document.getElementById('entries').innerHTML = html;
+  document.querySelectorAll('[data-jump-nav]').forEach(card => {
+    card.addEventListener('click', () => {
+      const nav = JSON.parse(card.dataset.jumpNav);
+      activeSection = nav.section; activeSub = nav.sub;
+      query = ''; const si = document.getElementById('search'); if (si) si.value = '';
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function renderEntriesSection(){
+  let list = entriesFor(activeSection, TABS[activeSection] ? activeSub : null);
+  if (favOnly) list = list.filter(e => favorites.has(e.id));
+  if (hideCompleted) list = list.filter(e => !tracked.has(e.id));
+  const container = document.getElementById('entries');
+  if (!list.length) { container.innerHTML = `<div class="empty-state">No entries here yet</div>`; return; }
+  container.innerHTML = list.map(renderCard).join('');
+  wireCards(container);
+}
+
+/* ============================= MASTER RENDER ============================= */
+function renderAll(){
+  renderNav();
+  renderHeader();
+  document.getElementById('search-row').style.display = 'flex';
+  syncFilterPills();
+  if (activeSection === 'overview') {
+    document.getElementById('sub-row').style.display = 'none';
+    if (query.trim()) renderSearchResults(); else renderOverview();
+  } else if (query.trim()) {
+    document.getElementById('sub-row').style.display = 'none';
+    renderSearchResults();
+  } else {
+    renderSubRow();
+    renderEntriesSection();
+  }
+  const tally = document.getElementById('progress-tally');
+  if (activeSection !== 'overview' && TABS[activeSection]) {
+    const s = statFor(activeSection, activeSub);
+    tally.style.display = 'inline';
+    tally.textContent = `${s.done} / ${s.total} complete`;
+  } else { tally.style.display = 'none'; }
+  saveNavState();
+}
+
+/* ============================= FILTER / SEARCH WIRING ============================= */
+document.getElementById('search').addEventListener('input', (e) => { query = e.target.value; renderAll(); });
+document.querySelectorAll('.filter-pill[data-fav]').forEach(p => {
+  p.addEventListener('click', () => { favOnly = p.dataset.fav === 'favorites'; syncFilterPills(); renderAll(); });
+});
+document.querySelector('.filter-pill[data-hide-done]').addEventListener('click', (e) => {
+  hideCompleted = !hideCompleted; syncFilterPills(); renderAll();
+});
+
+/* ============================= BACK TO TOP ============================= */
+const backToTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => { backToTop.classList.toggle('visible', window.scrollY > 600); });
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ============================= INIT ============================= */
+loadProgress();
+loadNavState();
+if (!TABS[activeSection] && activeSection !== 'overview') activeSection = 'overview';
+if (TABS[activeSection] && !activeSub) activeSub = TABS[activeSection][0].id;
+renderAll();
+syncPullAndReconcile();
+if (window.JawAccount) {
+  window.__jawSyncOnConfigured = () => { syncPullAndReconcile(); };
+  window.addEventListener('jaw-account-ready', syncAccountPullAndReconcile);
+  syncAccountPullAndReconcile();
+}
+</script>
+</body>
+</html>
