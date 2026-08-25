@@ -113,6 +113,19 @@
     return (session && session.user && session.user.user_metadata && session.user.user_metadata.display_name) || null;
   }
 
+  // Some journals follow one fixed, non-customizable protagonist (Geralt in Witcher 3;
+  // Arthur/John in RDR2), so a free-text "character name" doesn't make sense there. A page
+  // can set window.JAW_CHARACTER_NAME_OVERRIDE to a string, or to a function returning one
+  // (for a name that can change at runtime, e.g. an Arthur/John toggle) — when present, it
+  // replaces the editable display name everywhere it would otherwise show, and the name
+  // field in the account panel becomes a read-only note instead of an input.
+  function overrideName() {
+    const o = window.JAW_CHARACTER_NAME_OVERRIDE;
+    try { return (typeof o === 'function' ? o() : o) || null; } catch (e) { return null; }
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
   // Renames the signed-in account (shown in the widget instead of the email once set).
   // Stored directly on the Supabase auth user — no separate table needed.
   async function setDisplayName(name) {
@@ -237,7 +250,7 @@
     if (!dotEl) return;
     const map = {
       'signed-out': ['#786b4e', 'Sign in'],
-      'signed-in': ['#5cba60', displayName() || (session && session.user ? session.user.email : 'Signed in')],
+      'signed-in': ['#5cba60', overrideName() || displayName() || (session && session.user ? session.user.email : 'Signed in')],
     };
     const [color, label] = map[state] || map['signed-out'];
     dotEl.style.background = color;
@@ -266,27 +279,40 @@
             </div>
             <div id="jaw-account-redeem-msg" class="jaw-acc-msg" style="margin-top:6px;margin-bottom:0;"></div>
           </div>`;
-      modal.innerHTML = `
-        <div class="jaw-acc-card">
-          <h3 class="jaw-acc-h">Signed in</h3>
-          <p class="jaw-acc-p" style="margin-bottom:16px;">${session.user.email}</p>
+      const fixedName = overrideName();
+      const nameSection = fixedName ? `
+          <label class="jaw-acc-label">Character name</label>
+          <div class="jaw-acc-input" style="opacity:.85;cursor:default;">${escapeHtml(fixedName)}</div>
+          <p class="jaw-acc-note" style="margin:-6px 0 12px;">This journal follows a fixed protagonist, so the name shown here isn't editable — look for a toggle in the journal itself if it has more than one.</p>` : `
           <label class="jaw-acc-label">Character name (shown here instead of your email)</label>
           <input id="jaw-account-name" class="jaw-acc-input" type="text" maxlength="40" placeholder="e.g. Dovahkiin" value="${displayName() ? String(displayName()).replace(/"/g, '&quot;') : ''}" />
-          <div id="jaw-account-name-msg" class="jaw-acc-msg"></div>
-          ${syncSection}
+          <div id="jaw-account-name-msg" class="jaw-acc-msg"></div>`;
+      const nameRow = fixedName ? `
+          <div class="jaw-acc-row" style="margin-top:16px;">
+            <button id="jaw-account-close" class="jaw-acc-btn ghost">Close</button>
+            <button id="jaw-account-signout" class="jaw-acc-btn danger">Sign out</button>
+          </div>` : `
           <div class="jaw-acc-row split" style="margin-top:16px;">
             <button id="jaw-account-save-name" class="jaw-acc-btn primary">Save name</button>
             <div style="display:flex;gap:10px;">
               <button id="jaw-account-close" class="jaw-acc-btn ghost">Close</button>
               <button id="jaw-account-signout" class="jaw-acc-btn danger">Sign out</button>
             </div>
-          </div>
+          </div>`;
+      modal.innerHTML = `
+        <div class="jaw-acc-card">
+          <h3 class="jaw-acc-h">Signed in</h3>
+          <p class="jaw-acc-p" style="margin-bottom:16px;">${session.user.email}</p>
+          ${nameSection}
+          ${syncSection}
+          ${nameRow}
         </div>`;
       document.body.appendChild(modal);
       modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
       document.getElementById('jaw-account-close').addEventListener('click', () => modal.remove());
       document.getElementById('jaw-account-signout').addEventListener('click', async () => { await signOut(); modal.remove(); });
-      document.getElementById('jaw-account-save-name').addEventListener('click', async () => {
+      const saveNameBtn = document.getElementById('jaw-account-save-name');
+      if (saveNameBtn) saveNameBtn.addEventListener('click', async () => {
         const nameMsg = document.getElementById('jaw-account-name-msg');
         const name = document.getElementById('jaw-account-name').value.trim();
         setMsg(nameMsg, 'Saving…');
@@ -382,6 +408,11 @@
     });
   }
 
-  window.JawAccount = { init, load, save, isSignedIn, hasEntitlement, redeem };
+  // Re-renders the widget's current label — call this after changing whatever
+  // window.JAW_CHARACTER_NAME_OVERRIDE resolves to (e.g. an in-journal protagonist toggle),
+  // so the widget updates immediately instead of waiting for the next sign-in/out.
+  function refresh() { setStatus(session ? 'signed-in' : 'signed-out'); }
+
+  window.JawAccount = { init, load, save, isSignedIn, hasEntitlement, redeem, refresh };
   document.addEventListener('DOMContentLoaded', init);
 })();
