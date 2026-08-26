@@ -1,0 +1,16 @@
+{
+  "name": "JAW Digital Companion Journals",
+  "short_name": "JAW Journals",
+  "description": "Interactive companion journals and quest trackers for Skyrim, Oblivion, Red Dead Redemption 2, Fallout 4, Fallout 76, Fallout: New Vegas, and The Witcher 3.",
+  "start_url": "index.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#131110",
+  "theme_color": "#131110",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

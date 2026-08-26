@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#131110" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<title>JAW Digital — Companion Journals</title>
+<style>
+  :root {
+    --bg: #131110;
+    --panel: #1e1a14;
+    --border: #3a3226;
+    --border-soft: #2a251c;
+    --ink: #e8e0d0;
+    --ink-soft: #a89b7f;
+    --ink-dim: #786b4e;
+    --gold: #c9a227;
+    --gold-bright: #e2c158;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image: radial-gradient(ellipse at 50% -10%, rgba(201,162,39,0.06), transparent 45%);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    /* Safe-area padding so content clears the iOS notch/home-indicator inside the native shell */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  header { text-align: center; padding: 28px 20px 20px; }
+  header .brand { font-size: 20px; font-weight: bold; letter-spacing: 0.05em; color: var(--gold-bright); }
+  header .brand span { color: var(--ink-soft); font-weight: normal; }
+  header p { color: var(--ink-dim); font-size: 12.5px; margin-top: 6px; }
+  main { max-width: 720px; margin: 0 auto; padding: 4px 16px 40px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  a.card {
+    display: flex; align-items: center; gap: 14px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+    text-decoration: none; color: var(--ink); transition: border-color .15s ease, transform .15s ease;
+  }
+  a.card:active { transform: scale(0.98); border-color: var(--gold); }
+  a.card img {
+    width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex: none;
+    background: #0c0a08; border: 1px solid var(--border-soft);
+  }
+  .card-text .name { font-size: 14.5px; font-weight: bold; margin-bottom: 2px; }
+  .card-text .game { font-size: 11px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+  footer { text-align: center; padding: 10px 20px 30px; font-size: 11px; color: var(--ink-dim); }
+  footer a { color: var(--ink-dim); }
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand">JAW <span>Digital</span></div>
+    <p>Companion Journals — pick a game</p>
+  </header>
+  <main>
+    <div class="grid">
+      <a class="card" href="skyrim/index.html"><img src="screenshots/skyrim.jpg" alt="" /><div class="card-text"><div class="name">🐉 Dragonborn's Field Journal</div><div class="game">Skyrim</div></div></a>
+      <a class="card" href="oblivion/index.html"><img src="screenshots/oblivion.jpg" alt="" /><div class="card-text"><div class="name">🏛️ The Champion's Codex</div><div class="game">Oblivion</div></div></a>
+      <a class="card" href="rdr2/index.html"><img src="screenshots/rdr2.jpg" alt="" /><div class="card-text"><div class="name">🤠 Molly's Field Journal</div><div class="game">Red Dead Redemption 2</div></div></a>
+      <a class="card" href="fallout4/index.html"><img src="screenshots/fallout4.jpg" alt="" /><div class="card-text"><div class="name">🧊 The Sole Survivor's Logbook</div><div class="game">Fallout 4</div></div></a>
+      <a class="card" href="fallout76/index.html"><img src="screenshots/fallout76.jpg" alt="" /><div class="card-text"><div class="name">📻 Vault Dweller's Almanac</div><div class="game">Fallout 76</div></div></a>
+      <a class="card" href="newvegas/index.html"><img src="screenshots/newvegas.jpg" alt="" /><div class="card-text"><div class="name">🎰 The Courier's Log</div><div class="game">Fallout: New Vegas</div></div></a>
+      <a class="card" href="witcher3/index.html"><img src="screenshots/witcher3.jpg" alt="" /><div class="card-text"><div class="name">🐺 The White Wolf's Journal</div><div class="game">The Witcher 3</div></div></a>
+    </div>
+  </main>
+  <footer>
+    <a href="privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="terms.html">Terms</a>
+  </footer>
+</body>
+</html>
