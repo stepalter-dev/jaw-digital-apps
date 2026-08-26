@@ -1,27 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1a1712"/>
-      <stop offset="1" stop-color="#0c0a08"/>
-    </linearGradient>
-    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e2c158"/>
-      <stop offset="1" stop-color="#c9a227"/>
-    </linearGradient>
+    <radialGradient id="g-seal" cx="50%" cy="15%" r="80%">
+      <stop offset="0" stop-color="#2a231b"/>
+      <stop offset="1" stop-color="#1c1712"/>
+    </radialGradient>
   </defs>
-  <rect width="1024" height="1024" fill="url(#bg)"/>
-  <!-- open book -->
-  <g transform="translate(512 560)">
-    <path d="M -300 -60 L -20 -20 L -20 260 L -300 220 Z" fill="none" stroke="url(#gold)" stroke-width="18" stroke-linejoin="round"/>
-    <path d="M 300 -60 L 20 -20 L 20 260 L 300 220 Z" fill="none" stroke="url(#gold)" stroke-width="18" stroke-linejoin="round"/>
-    <path d="M -20 -20 L 20 -20" stroke="url(#gold)" stroke-width="18"/>
-    <path d="M -240 20 L -60 -4" stroke="#786b4e" stroke-width="10" stroke-linecap="round"/>
-    <path d="M -240 70 L -60 46" stroke="#786b4e" stroke-width="10" stroke-linecap="round"/>
-    <path d="M -240 120 L -60 96" stroke="#786b4e" stroke-width="10" stroke-linecap="round"/>
-    <path d="M 240 20 L 60 -4" stroke="#786b4e" stroke-width="10" stroke-linecap="round"/>
-    <path d="M 240 70 L 60 46" stroke="#786b4e" stroke-width="10" stroke-linecap="round"/>
-    <path d="M 240 120 L 60 96" stroke="#786b4e" stroke-width="10" stroke-linecap="round"/>
+  <rect width="1024" height="1024" fill="url(#g-seal)"/>
+  <circle cx="512" cy="512" r="300" fill="#7a3230"/>
+  <circle cx="512" cy="512" r="300" fill="none" stroke="#5c1f1d" stroke-width="6" opacity="0.6"/>
+  <g transform="translate(512 512)" fill="none" stroke="#e6c988" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <circle r="215" stroke-width="8" stroke-dasharray="4 22"/>
+    <path d="M 0 -120 L 0 90"/>
+    <path d="M 0 -120 L -55 -55"/>
+    <path d="M 0 -120 L 55 -55"/>
+    <path d="M -40 -20 L 0 30 L 40 -20"/>
+    <path d="M -40 60 L 0 110 L 40 60"/>
   </g>
-  <!-- JAW monogram -->
-  <text x="512" y="330" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="180" font-weight="bold" fill="url(#gold)" letter-spacing="6">JAW</text>
 </svg>

@@ -16,9 +16,11 @@ to run on a Mac (for iOS) or any machine with Node (for Android).
 - `www/privacy.html`, `www/terms.html` — draft policy pages, linked from both the app
   home and the marketing site footer. **Read the TODOs before shipping** — the contact
   emails are placeholders and need to be real addresses you control.
-- `assets/icon.svg` — a 1024×1024 placeholder app icon (dark background, gold "JAW"
-  monogram + open-book mark). Good enough to test the build pipeline; swap it for real
-  brand art before submitting.
+- `assets/icon.svg` — a 1024×1024 wax-seal icon (oxblood seal, gold branch-and-star
+  impression, dark leather ground), chosen from four IP-safe concepts reviewed against
+  the actual game trademarks. Good for testing the build pipeline; before final
+  submission, convert its shapes to outlined paths (it's already shape-only, no live
+  text, so this is mostly a formality) and have a designer polish the linework.
 - `package.json`, `capacitor.config.json` — Capacitor project config, app id
   `com.jawdigital.companionjournals`.
 - `.gitignore` — excludes `node_modules/`, `ios/`, `android/` (generated, don't commit).
