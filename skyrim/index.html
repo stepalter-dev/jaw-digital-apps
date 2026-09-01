@@ -897,6 +897,8 @@ const SECTIONS = [
   { id: 'shouts',     label: "Shouts (Thu'um)",        icon: '🐉', built: true },
   { id: 'treasure',   label: 'Treasure & Collectibles',icon: '💰', built: true },
   { id: 'locations',  label: 'Locations',              icon: '🗺️', built: true },
+  { id: 'secrets',    label: 'Secrets & Oddities',      icon: '🔮', built: true },
+  { id: 'notes',      label: 'Journal Notes',           icon: '📝', built: true },
 ];
 
 const QUESTLINES = [
@@ -4222,6 +4224,31 @@ const CC_EXTRAS = [
   { id:10542, category:'Gear & Spells', name:'Necromantic Grimoire', adds:'A unique necromancer robe with new enchantment variants, plus 13 necromancy spells — including the mighty Bone Colossus.', obtain:'Spell tomes and the robe are sold by vendors and found in containers.' },
 ];
 
+// One representative Skill Book per skill — reading any copy of a skill book's title grants a permanent
+// +1 to that skill, once per title. Each of the 18 skills actually has 5 different-titled skill books
+// scattered around Skyrim (90 in total), so the title/location below is just the most reliably-found pick;
+// the other 4 titles per skill are extra, optional +1s for anyone chasing the full 90.
+const SKILL_BOOKS = [
+  { id:13000, skill:'Alchemy',      title:'De Rerum Dirennis',        location:'College of Winterhold — the Alchemy Lab' },
+  { id:13001, skill:'Alteration',   title:'Breathing Water',          location:"Kraldar's house in Winterhold" },
+  { id:13002, skill:'Archery',      title:'Vernaccus and Bourlor',    location:'Knifepoint Ridge, in the smithing shop' },
+  { id:13003, skill:'Block',        title:'Death Blow of Abernit',    location:'Whiterun, Hall of the Dead' },
+  { id:13004, skill:'Conjuration',  title:'The Doors of Oblivion',    location:'Reachcliff Cave' },
+  { id:13005, skill:'Destruction',  title:"The Mystery of Princess Talara, Volume 3", location:'Winterhold' },
+  { id:13006, skill:'Enchanting',   title:'Catalog of Armor Enchantments', location:"Falion's house in Morthal" },
+  { id:13007, skill:'Heavy Armor',  title:'The Knights of the Nine',  location:'Windhelm, the dining area of Candlehearth Hall' },
+  { id:13008, skill:'Illusion',     title:"2920, Sun's Dawn, v2",     location:'Temple of Dibella inner sanctum, Markarth' },
+  { id:13009, skill:'Light Armor',  title:'The Rear Guard',           location:'Solitude, Castle Dour' },
+  { id:13010, skill:'Lockpicking',  title:'Advances in Lockpicking',  location:"Riften, the Ragged Flagon's cistern" },
+  { id:13011, skill:'One-Handed',   title:'Fire and Darkness',        location:'Folgunthur' },
+  { id:13012, skill:'Pickpocket',   title:'Purloined Shadows',        location:'Duskglow Crevice' },
+  { id:13013, skill:'Restoration',  title:'The Exodus',               location:'Winterhold, the Frozen Hearth inn' },
+  { id:13014, skill:'Smithing',     title:'The Last Scabbard of Akrash', location:'Gallows Rock (Silver Hand camp)' },
+  { id:13015, skill:'Sneak',        title:'The Red Kitchen Reader',   location:'Frostmere Crypt' },
+  { id:13016, skill:'Speech',       title:'Biography of the Wolf Queen', location:'Solitude, the Blue Palace' },
+  { id:13017, skill:'Two-Handed',   title:'Songs of Hrormir',         location:"Jorrvaskr, the Companions' living quarters" },
+];
+
 /* ============================= LOCATIONS ============================= */
 
 // The 9 hold capitals
@@ -6298,6 +6325,44 @@ const DLC_HOMES = [
     notes:'Comes fully furnished from the start, including a built-in Alchemy Lab, Arcane Enchanter, Tanning Rack, Smelter, Forge/Anvil, Grindstone, Workbench, and Cooking Pot — Skyrim\'s most complete "move-in ready" player home.' },
 ];
 
+/* ============================= SECRETS & ODDITIES ============================= */
+
+const SECRETS_TABS = [
+  { id:'popculture', label:'Pop-Culture Nods',    icon:'🎬' },
+  { id:'lorenods',   label:'Elder Scrolls Lore Nods', icon:'📖' },
+  { id:'unmarked',   label:'Strange & Unmarked Finds', icon:'👻' },
+];
+
+const SECRETS = [
+  // Pop-Culture Nods
+  { id:13100, sub:'popculture', name:'The Wampa Cave', ref:'Star Wars: The Empire Strikes Back', location:'Bleakcoast Cave',
+    note:"A skeleton frozen in a block of ice with its sword on the ground below — a straight recreation of Luke Skywalker's encounter with the Wampa on Hoth." },
+  { id:13101, sub:'popculture', name:'"This Is Skyrim"', ref:'300', location:'On the mountainside south of the Shrine to Peryite, west of Karthwasten',
+    note:'A skeleton with a spear through a wolf skull, mirroring the shot of Leonidas killing a wolf with a spear-thrust in 300.' },
+  { id:13102, sub:'popculture', name:"Narsil's Broken Blade", ref:'The Lord of the Rings', location:'A chest inside Angarvunde',
+    note:"A skeleton hand next to a broken steel sword — a nod to Narsil, the blade that shattered after Isildur cut the One Ring from Sauron's hand." },
+  { id:13103, sub:'popculture', name:'Sword in the Stone (x2)', ref:'The Sword in the Stone / Arthurian legend', location:"Rebel's Cairn, and an unmarked spot near Bleakwind Basin",
+    note:'A sword wedged hilt-up in a stone cairn at Rebel\'s Cairn; separately, near Bleakwind Basin a skeletal arm rises from a lake gripping a sword — the Lady of the Lake presenting Excalibur.' },
+  { id:13104, sub:'popculture', name:'The Companion Cube', ref:'Portal 2', location:'Skuldafn, inside a burning fireplace',
+    note:'A charred, heart-stamped companion cube sits in the flames — a nod to Portal 2, released the same year as Skyrim.' },
+  { id:13105, sub:'popculture', name:'The Notched Pickaxe', ref:'Minecraft', location:'The summit of the Throat of the World',
+    note:"A lone pickaxe on the mountain's peak, matching Minecraft's own pickaxe icon — Bethesda and Mojang trading nods across their two 2011 hits." },
+
+  // Elder Scrolls Lore Nods
+  { id:13106, sub:'lorenods', name:"Alduin's Wall", ref:'The Elder Scrolls I–IV', location:'Sky Haven Temple (Alduin\'s Wall, Main Quest)',
+    note:"The carved mural quietly depicts the Staff of Chaos (Arena), Numidium (Daggerfall), the eruption of Red Mountain (Morrowind), and an open Oblivion Gate (Oblivion) alongside the story of the Dragonborn and Alduin." },
+
+  // Strange & Unmarked Finds
+  { id:13107, sub:'unmarked', name:'The Frozen Mammoth', location:'A glacier north of Alftand, west of Saarthal',
+    note:"A giant mammoth's corpse entombed in ice, riddled with Dwarven spears and arrows — no quest attached, just an unexplained ancient hunt frozen in place." },
+  { id:13108, sub:'unmarked', name:'The Headless Horseman', location:'Encountered at night on the road, riding toward Hamvir\'s Rest',
+    note:"A rare random rider with no head atop his horse. Following him leads to Hamvir's Rest, an unmarked burial mound — he simply vanishes on arrival." },
+  { id:13109, sub:'unmarked', name:"The Lovers' Tent", location:'An unmarked campsite tent',
+    note:'Two skeletons lie together inside next to a bottle of wine and a note — a small, wordless tragedy with no quest marker pointing to it.' },
+  { id:13110, sub:'unmarked', name:'The Hidden Shrine of Talos', location:'North of the White River, near the Guardian Stones',
+    note:"An unmarked shrine off the beaten path with a good view over the valley — easy to miss since no quest or map marker calls it out, though it later ties into Elisif's storyline." },
+];
+
 /* ============================= GLOBAL SEARCH INDEX ============================= */
 
 // One flat, searchable record per trackable/reference entry across the ENTIRE app — not just quests.
@@ -6489,6 +6554,23 @@ function buildSearchIndex(){
     nav: { section:'locations', locationTab:'housing' },
   }));
 
+  SKILL_BOOKS.forEach(b => idx.push({
+    itemId: b.id, title: b.title, sectionLabel: 'Treasure & Collectibles › Skill Books', icon: '📚',
+    snippet: `${b.skill} — ${b.location}`,
+    searchText: [b.title, b.skill, b.location].join(' ').toLowerCase(),
+    nav: { section:'treasure', treasureTab:'skillbooks' },
+  }));
+
+  SECRETS.forEach(s => {
+    const tab = SECRETS_TABS.find(t => t.id === s.sub);
+    idx.push({
+      itemId: s.id, title: s.name, sectionLabel: `Secrets & Oddities › ${tab ? tab.label : ''}`, icon: tab ? tab.icon : '🔮',
+      snippet: s.ref || s.location,
+      searchText: [s.name, s.ref, s.location, s.note].join(' ').toLowerCase(),
+      nav: { section:'secrets', secretsTab:s.sub },
+    });
+  });
+
   return idx;
 }
 const SEARCH_INDEX = buildSearchIndex();
@@ -6509,6 +6591,8 @@ let activeTreasureTab = 'artifacts'; // sub-tab within Treasure & Collectibles
 let activeLocationTab = 'capitals'; // sub-tab within Locations
 let activeLocationHold = 'Eastmarch'; // selected hold within the Dungeons by Hold sub-tab
 let expandedLocations = new Set(); // ids of dungeon cards currently expanded for detail — UI-only, not persisted
+let activeSecretsTab = 'popculture'; // sub-tab within Secrets & Oddities
+let journalNotes = ''; // freeform text in the Journal Notes section
 let mapPinIndex = {}; // id -> pin data from the last buildMapPins() call, so the click popup can look up name/type/summary/nav
 let activeMapHolds = null; // Set of hold names currently shown on the map, or null for "all" — set up in the filter stage
 let activeMapPinId = null; // id of the pin whose popup is currently open, or null
@@ -6590,6 +6674,18 @@ async function syncPullAndReconcile(){
   } catch (e) { console.error('Sync pull failed', e); }
 }
 
+// Journal Notes lives in its own localStorage key, separate from storageKey()'s tracked/favorites payload —
+// same reasoning as navStateKey() below: Export/Import Progress and Reset All Progress are about trackable
+// checkmarks, and shouldn't touch (or wipe) freeform writing. Also intentionally left out of the
+// JawSync/JawAccount cloud sync above — notes stay local-only for now, same as before those existed.
+function notesKey(){ return 'skyrim-journal-notes'; }
+function loadNotes(){
+  try { journalNotes = localStorage.getItem(notesKey()) || ''; } catch (e) { journalNotes = ''; }
+}
+function saveNotes(){
+  try { localStorage.setItem(notesKey(), journalNotes); } catch (e) { console.error('Could not save notes', e); }
+}
+
 // Remembers which tab/sub-tab the user was last viewing — kept in its own localStorage key, separate from
 // storageKey()'s tracked/favorites payload, so Export/Import Progress (which is about trackable checkmarks,
 // not navigation) never touches it.
@@ -6599,7 +6695,7 @@ function saveNavState(){
     localStorage.setItem(navStateKey(), JSON.stringify({
       activeSection, activeLine, activeBranch, activeBuildTab, activeSkillTree,
       activeFollowerTab, activeCraftTab, activeShoutTab, activeTreasureTab,
-      activeLocationTab, activeLocationHold,
+      activeLocationTab, activeLocationHold, activeSecretsTab,
     }));
   } catch (e) { /* not critical */ }
 }
@@ -6619,6 +6715,7 @@ function loadNavState(){
     if (s.activeTreasureTab) activeTreasureTab = s.activeTreasureTab;
     if (s.activeLocationTab) activeLocationTab = s.activeLocationTab;
     if (s.activeLocationHold) activeLocationHold = s.activeLocationHold;
+    if (s.activeSecretsTab) activeSecretsTab = s.activeSecretsTab;
   } catch (e) { /* start at the default view */ }
 }
 
@@ -6641,7 +6738,7 @@ function achStat(){
 function overallStat(){
   let done = 0, total = 0;
   QUESTLINES.forEach(ql => { const s = statFor(ql.id); done += s.done; total += s.total; });
-  [achStat(), buildsStat(), followersStat(), craftingStat(), bestiaryStat(), shoutsStat(), treasureStat(), locationsStat(), housingStat()]
+  [achStat(), buildsStat(), followersStat(), craftingStat(), bestiaryStat(), shoutsStat(), treasureStat(), locationsStat(), housingStat(), secretsStat()]
     .forEach(s => { done += s.done; total += s.total; });
   return { done, total };
 }
@@ -6700,6 +6797,8 @@ function renderHeader(){
       : activeSection === 'shouts' ? '— words of power & Dragon Priest masks —'
       : activeSection === 'treasure' ? '— artifacts, gems & lost relics —'
       : activeSection === 'locations' ? '— holds, dungeons & landmarks —'
+      : activeSection === 'secrets' ? '— easter eggs, oddities & unmarked finds —'
+      : activeSection === 'notes' ? '— your own margin notes —'
       : '— notes from the road, Skyrim —';
   }
 }
@@ -6900,6 +6999,23 @@ function renderOverview(){
     </div>`;
   })();
 
+  const secretsCard = (() => {
+    const { done, total } = secretsStat();
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    return `
+    <div class="dash-card" data-nav-section="secrets">
+      <div class="dash-card-top"><span class="dash-icon">🔮</span><span class="dash-label">Secrets & Oddities</span></div>
+      <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="dash-count">${done} of ${total} discovered — ${pct}%</div>
+    </div>`;
+  })();
+
+  const notesCard = `
+    <div class="dash-card" data-nav-section="notes">
+      <div class="dash-card-top"><span class="dash-icon">📝</span><span class="dash-label">Journal Notes</span></div>
+      <div class="dash-count">${journalNotes.trim() ? 'Open your notes' : 'Blank page — jot something down'}</div>
+    </div>`;
+
   const placeholderCards = SECTIONS.filter(s => !s.built).map(s => `
     <div class="dash-card disabled">
       <div class="dash-card-top"><span class="dash-icon">${s.icon}</span><span class="dash-label">${s.label}</span></div>
@@ -6914,7 +7030,7 @@ function renderOverview(){
 
   container.innerHTML = `
     ${heroCard}
-    <div class="dash-grid" style="grid-column:1/-1;">${builtCard}${achCard}${buildsCard}${followersCard}${craftingCard}${bestiaryCard}${shoutsCard}${treasureCard}${locationsCard}${housingCard}${placeholderCards}</div>
+    <div class="dash-grid" style="grid-column:1/-1;">${builtCard}${achCard}${buildsCard}${followersCard}${craftingCard}${bestiaryCard}${shoutsCard}${treasureCard}${locationsCard}${housingCard}${secretsCard}${notesCard}${placeholderCards}</div>
     ${favCard}
     <div class="rune-divider" style="grid-column:1/-1;"></div>
     <div class="reset-zone" style="grid-column:1/-1;">
@@ -7878,9 +7994,14 @@ function renderShoutsInner(){
 /* ============================= TREASURE RENDER ============================= */
 
 function treasureStat(){
-  const items = [...TREASURES, ...BARENZIAH_STONES, ...RARE_CURIOS, ...LEGENDARY_ITEM_QUESTS, ...CC_EXTRAS];
+  const items = [...TREASURES, ...BARENZIAH_STONES, ...RARE_CURIOS, ...LEGENDARY_ITEM_QUESTS, ...CC_EXTRAS, ...SKILL_BOOKS];
   const done = items.filter(i => tracked.has(i.id)).length;
   return { done, total: items.length };
+}
+
+function secretsStat(){
+  const done = SECRETS.filter(s => tracked.has(s.id)).length;
+  return { done, total: SECRETS.length };
 }
 
 function renderTreasure(){
@@ -7900,6 +8021,7 @@ function renderTreasureInner(){
     { id:'curios',    label:'Rare Curios (CC)',       icon:'🏺' },
     { id:'itemquests', label:'Legendary Item Quests (CC)', icon:'🗡️' },
     { id:'ccextras',  label:'Creation Club Extras',   icon:'📦' },
+    { id:'skillbooks', label:'Skill Books',           icon:'📚' },
   ];
   const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${TTABS.map(t =>
     `<span class="sub-pill ${activeTreasureTab===t.id?'active':''}" data-treasuretab="${t.id}">${t.icon} ${t.label}</span>`).join('')}</div>`;
@@ -8001,7 +8123,7 @@ function renderTreasureInner(){
     };
     const itemQuestsNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">Single-quest legendary item unlocks from the Anniversary Edition Creation Club Creations — each is a self-contained mini-quest, not part of a larger questline. The 19 Daedric Artifacts are tracked separately above with their originating quests.</p>`;
     bodyHtml = itemQuestsNote + (list.length === 0 ? `<div class="empty-state">No item quests match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
-  } else {
+  } else if (activeTreasureTab === 'ccextras') {
     let list = CC_EXTRAS.slice();
     if (favOnly) list = list.filter(e => favorites.has(e.id));
     if (hideCompleted) list = list.filter(e => !tracked.has(e.id));
@@ -8030,6 +8152,27 @@ function renderTreasureInner(){
       <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${cat} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(e=>tracked.has(e.id)).length}/${items.length})</span></div>
       <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
     `).join(''));
+  } else {
+    let list = SKILL_BOOKS.slice();
+    if (favOnly) list = list.filter(b => favorites.has(b.id));
+    if (hideCompleted) list = list.filter(b => !tracked.has(b.id));
+    if (query.trim()) { const q = query.toLowerCase(); list = list.filter(b => b.title.toLowerCase().includes(q) || b.skill.toLowerCase().includes(q) || b.location.toLowerCase().includes(q)); }
+    const done = SKILL_BOOKS.filter(b => tracked.has(b.id)).length;
+    statLabel = `${done} of ${SKILL_BOOKS.length} skills boosted`;
+    const cardHtml = b => {
+      const isFav = favorites.has(b.id), isDone = tracked.has(b.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${b.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${b.title}</h3><span class="tag-chip tag-optional">${b.skill}</span></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${b.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> ${b.location}</span></div>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${b.id}"><span class="box"></span> ${isDone ? 'Read' : 'Mark read'}</button></div>
+      </article>`;
+    };
+    const skillBooksNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">One pick per skill, chosen for a reliably-found copy. Each skill actually has 5 different-titled skill books scattered around Skyrim (90 total) — reading any one copy of a title grants +1 to that skill, once per title, so the other 4 per skill are optional extra points for completionists.</p>`;
+    bodyHtml = skillBooksNote + (list.length === 0 ? `<div class="empty-state">No skill books match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
   }
 
   container.innerHTML = tabsHtml + bodyHtml;
@@ -8471,6 +8614,111 @@ function renderLocationsInner(){
   if (resetPillEl) resetPillEl.addEventListener('click', () => { activeMapHolds = null; hideMapPinPopup(); renderLocations(); });
 }
 
+/* ============================= SECRETS & ODDITIES RENDER ============================= */
+
+function renderSecrets(){
+  try { renderSecretsInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderSecretsInner(){
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  document.getElementById('search-row').style.display = 'flex';
+
+  const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${SECRETS_TABS.map(t =>
+    `<span class="sub-pill ${activeSecretsTab===t.id?'active':''}" data-secretstab="${t.id}">${t.icon} ${t.label}</span>`).join('')}</div>`;
+
+  let list = SECRETS.filter(s => s.sub === activeSecretsTab);
+  if (favOnly) list = list.filter(s => favorites.has(s.id));
+  if (hideCompleted) list = list.filter(s => !tracked.has(s.id));
+  if (query.trim()) {
+    const q = query.toLowerCase();
+    list = list.filter(s => [s.name, s.ref, s.location, s.note].join(' ').toLowerCase().includes(q));
+  }
+  const scoped = SECRETS.filter(s => s.sub === activeSecretsTab);
+  const done = scoped.filter(s => tracked.has(s.id)).length;
+  const statLabel = `${done} of ${scoped.length} discovered`;
+
+  const cardHtml = s => {
+    const isFav = favorites.has(s.id), isDone = tracked.has(s.id);
+    return `
+    <article class="quest ${isDone ? 'done' : ''}" data-id="${s.id}">
+      <div class="quest-top">
+        <div class="quest-title-wrap"><h3>${s.name}</h3>${s.ref ? `<span class="tag-chip tag-optional">${s.ref}</span>` : ''}</div>
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${s.id}" aria-label="Favorite">★</button>
+      </div>
+      <div class="quest-meta"><span><b>Where:</b> ${s.location}</span></div>
+      <p class="ach-desc">${s.note}</p>
+      <div class="quest-foot"><span></span><button class="track-btn" data-track="${s.id}"><span class="box"></span> ${isDone ? 'Discovered' : 'Mark discovered'}</button></div>
+    </article>`;
+  };
+  const bodyHtml = list.length === 0 ? `<div class="empty-state">No entries match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`;
+
+  container.innerHTML = tabsHtml + bodyHtml;
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.textContent = statLabel;
+  progressEl.style.display = 'inline';
+
+  container.querySelectorAll('[data-secretstab]').forEach(pill => {
+    pill.addEventListener('click', () => { activeSecretsTab = pill.dataset.secretstab; favOnly = false; hideCompleted = false; query = ''; const si = document.getElementById('search'); if (si) si.value = ''; renderAll(); saveNavState(); });
+  });
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderSecrets(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderSecrets(); saveProgress(); renderNav();
+    });
+  });
+}
+
+/* ============================= JOURNAL NOTES RENDER ============================= */
+
+function renderNotes(){
+  try { renderNotesInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderNotesInner(){
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  document.getElementById('search-row').style.display = 'none';
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.style.display = 'none';
+
+  container.innerHTML = `
+    <p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">A blank page for whatever the rest of the journal doesn't have a box for — current objectives, a build you're testing, roleplay notes, screenshot reminders. Saved automatically to this browser as you type, separate from your tracked progress.</p>
+    <textarea id="notes-area" spellcheck="false" placeholder="Dear journal..." style="width:100%; min-height:420px; resize:vertical; box-sizing:border-box; background: var(--panel); color: var(--ink); border: 1px solid var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi); padding:18px; font-family:'Spectral', serif; font-size:14px; line-height:1.6;">${journalNotes.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+    <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
+      <span id="notes-status" class="io-status ok" style="opacity:0.7;">Saved</span>
+    </div>
+  `;
+
+  const area = document.getElementById('notes-area');
+  const statusEl = document.getElementById('notes-status');
+  let saveTimer = null;
+  area.addEventListener('input', () => {
+    journalNotes = area.value;
+    statusEl.textContent = 'Saving…';
+    statusEl.classList.remove('ok');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saveNotes();
+      statusEl.textContent = 'Saved';
+      statusEl.classList.add('ok');
+    }, 400);
+  });
+}
+
 /* ============================= ACHIEVEMENTS RENDER ============================= */
 
 function renderAchievements(){
@@ -8805,6 +9053,8 @@ function renderSectionContent(){
   else if (activeSection === 'shouts') { renderShouts(); }
   else if (activeSection === 'treasure') { renderTreasure(); }
   else if (activeSection === 'locations') { renderLocations(); }
+  else if (activeSection === 'secrets') { renderSecrets(); }
+  else if (activeSection === 'notes') { renderNotes(); }
   else { renderPlaceholder(); }
 }
 
@@ -8855,6 +9105,7 @@ backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior:
 
 loadProgress();
 loadNavState();
+loadNotes();
 renderAll();
 syncPullAndReconcile();
 window.__jawSyncOnConfigured = syncPullAndReconcile;
