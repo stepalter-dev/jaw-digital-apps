@@ -164,7 +164,8 @@
   .status-strip .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot-color); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot-color) 25%, transparent); }
 
   /* ---------- PRICING (journals tab) ---------- */
-  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; max-width: 740px; margin: 0 auto; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px; max-width: 900px; margin: 0 auto; }
+  .price-card .best-value { position: absolute; top: -11px; right: 18px; background: var(--accent); color: #17130c; padding: 2px 10px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: bold; border-radius: 3px; }
   .price-card { background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 26px 24px; }
   .price-card.featured { border-color: var(--accent); position: relative; }
   .price-card .plan { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
@@ -350,7 +351,7 @@
       <div class="section-head">
         <div class="eyebrow2">Pricing</div>
         <h3>Free to browse. Pro to sync.</h3>
-        <p>Every journal works fully offline in your browser at no cost. Cloud sync — so progress follows you across devices — is being rolled out journal by journal.</p>
+        <p>Every journal works fully offline in your browser at no cost. Pro sync — so progress follows you across devices — is $2.50 per journal, or $10 for all seven.</p>
       </div>
       <div class="pricing-grid">
         <div class="price-card">
@@ -364,13 +365,25 @@
           </ul>
           <a class="btn ghost" href="#journals-grid" style="text-align:center;">Start browsing</a>
         </div>
-        <div class="price-card featured">
+        <div class="price-card">
           <span class="coming-soon-tag">Coming soon</span>
           <div class="plan">Pro sync</div>
-          <div class="price">TBD <small>/ per journal</small></div>
+          <div class="price">$2.50 <small>/ journal</small></div>
           <ul>
             <li>Everything in Free</li>
             <li>Account-based cloud sync</li>
+            <li>Progress follows you across devices</li>
+            <li>Pick just the journals you play</li>
+          </ul>
+          <button class="btn ghost disabled" disabled>Coming soon</button>
+        </div>
+        <div class="price-card featured">
+          <span class="best-value">Best value</span>
+          <div class="plan">Pro sync — all access</div>
+          <div class="price">$10 <small>/ all 7 journals</small></div>
+          <ul>
+            <li>Everything in Pro sync</li>
+            <li>Every journal, current &amp; future</li>
             <li>Progress follows you across devices</li>
             <li>Priority for new journal requests</li>
           </ul>
