@@ -1,9 +1,35 @@
 # App Store readiness — JAW Digital Companion Journals
 
 Scaffolding for wrapping the umbrella journal app (Skyrim, Oblivion, RDR2, Fallout 4,
-Fallout 76, New Vegas, Witcher 3) with Capacitor for iOS + Android. This machine has no
-Node.js, and iOS builds require Xcode on macOS regardless — so the steps below are what
-to run on a Mac (for iOS) or any machine with Node (for Android).
+Fallout 76, New Vegas, Witcher 3) with Capacitor for iOS + Android. iOS builds require
+Xcode on macOS regardless of what generates the native project — so step 1 below still
+needs to happen on a Mac (or any machine with Node, for the Android half). Update: a
+later pass found this machine *does* have Node 22 available after all (the original
+note above was wrong) — `npm install` / `npx cap add ios|android` would work here, but
+weren't run, since there's still no way to open Xcode or test the result from Linux.
+
+## Skyrim-specific progress (2 Sept 2026)
+
+Content-side, the Skyrim journal itself is feature-complete for release (Dragon Priest
+Masks including Konahrik + the Solstheim four, Dragon Claws, Guild Trophies, World
+Oddities, the new Lore & Shrines section, several new/expanded quests — see the repo's
+recent PRs). What got done in this pass, specifically for the App Store submission:
+
+- `screenshots/skyrim.jpg` refreshed — the old thumbnail predated all of the above;
+  it's now a current capture of the Overview dashboard (used on both the marketing
+  site card and the in-app home tile).
+- `screenshots/app-store/skyrim/` — two iPhone 6.7" (1290×2796) App Store Connect
+  screenshots (Overview, Treasure & Collectibles), plus `LISTING.md` with draft
+  description copy, keywords, and age-rating notes for the Skyrim portion of the
+  shared app listing. Still need the 6.5" and iPad size classes — same method, just
+  re-run at those pixel sizes.
+- Marketing site's Skyrim card description updated (it still said "quests, achievements,
+  builds, crafting, bestiary, locations" — now mentions shouts/masks, treasure, and lore
+  too).
+
+Everything else below (native project generation, IAP, trademark/legal review, listing
+prep for the other 6 games, actual submission) is still open — this pass only advanced
+the Skyrim-specific slice of it.
 
 ## What's done in this pass
 
