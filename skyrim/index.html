@@ -1204,9 +1204,46 @@ const QUESTS = [
   choice:{ flag:'Choose a Nightingale Blessing', text:"Pick one of three passive powers named for the three Nightingales: Karliah's (Shadow), Brynjolf's (Illumination), or Mercer's (Strife). Purely a playstyle choice — it can be swapped later by returning to the Sepulcher." },
   rewards:['A Nightingale Blessing (your choice)'], trackable:true },
 
+{ id:212, line:'thieves', order:11.1, title:'Silver Lining', giver:'Delvin Mallory (after 5 radiant jobs in Markarth)', location:'Markarth, Pinewatch',
+  steps:[
+    'Speak to Endon at the Silver-Blood Inn in Markarth about a silver mold he ordered from a Khajiit caravan, stolen by bandits led by Rigel Strong-Arm.',
+    "Travel to Pinewatch, northeast of Falkreath, and fight through to the bandits' sanctuary.",
+    'Take the key from Rigel Strong-Arm, open the locked room, and recover the silver mold.',
+    'Return the mold to Endon.'
+  ],
+  rewards:['A piece of enchanted armor', 'Leveled gold', 'Endon becomes an available fence in Markarth'], trackable:true },
+
+{ id:213, line:'thieves', order:11.2, title:'The Dainty Sload', giver:'Erikur (Blue Palace), via Delvin Mallory (after 5 radiant jobs in Solitude)', location:'Solitude docks; the Red Wave and the Dainty Sload',
+  steps:[
+    'Speak to Erikur at the Blue Palace, who wants ship captain Volf framed for smuggling after a business dispute.',
+    'Meet Sabine Nytte aboard the Red Wave near the East Empire Company Warehouse and obtain Balmora Blue from her — the fast route costs 1,500 gold for the key.',
+    "Board the Dainty Sload, deal with the First Mate to reach the Captain's Chest, and plant the Balmora Blue in Volf's footlocker.",
+    'Report back to Erikur.'
+  ],
+  rewards:['A random spell tome', 'A new merchant at the Ragged Flagon', 'Three Thief Cache barrels appear around Solitude'], trackable:true },
+
+{ id:214, line:'thieves', order:11.3, title:'Imitation Amnesty', giver:'Delvin Mallory (after 5 radiant jobs in Whiterun)', location:'Whiterun, Dragonsreach',
+  steps:[
+    "Delvin relays a request from Olfrid Battle-Born: an old war buddy, \"Arn,\" wanted for murder in Solitude, has been jailed in Whiterun for drunkenness under a false name.",
+    "Steal the letter incriminating Arn from the Jarl's chambers in Dragonsreach.",
+    "Forge the prison registry in the steward's quarters to cement Arn's false identity.",
+    'Report back to Olfrid Battle-Born.'
+  ],
+  rewards:['Ring of Peerless Lockpicking'], trackable:true },
+
+{ id:215, line:'thieves', order:11.4, title:'Summerset Shadows', giver:'Delvin Mallory (after 5 radiant jobs in Windhelm)', location:'Windhelm',
+  steps:[
+    'Delvin warns that a rival gang, the Summerset Shadows, is muscling in on Windhelm — speak to Torsten Cruel-Sea for details.',
+    'Confront the stall vendor Niranye about her fence Fjotli, and persuade or intimidate her into admitting she\'s being coerced by the Summerset Shadows.',
+    "Find the hidden panel in the back room of Niranye's house leading to a basement safe with letters naming the gang's hideout.",
+    "Clear the hideout, defeat the gang's leader Linwe, and take the locket from his body.",
+    'Deliver the locket to Torsten Cruel-Sea.'
+  ],
+  rewards:['Leveled gold', 'Restored Guild influence in Windhelm'], trackable:true },
+
 { id:211, line:'thieves', order:12, title:'Under New Management', giver:'None (auto-triggers)', location:'Ragged Flagon, Riften',
   steps:[
-    "Complete the four hold \"reputation\" jobs — Silver Lining (Markarth), The Dainty Sload (Solitude), Imitation Amnesty (Whiterun), Summerset Shadows (Windhelm) — each unlocked after 5 radiant jobs from Delvin or Vex in that hold.",
+    "Complete the four hold \"reputation\" quests above — Silver Lining (Markarth), The Dainty Sload (Solitude), Imitation Amnesty (Whiterun), Summerset Shadows (Windhelm) — each unlocked after 5 radiant jobs from Delvin or Vex in that hold.",
     'Once Guild influence is restored across all five holds, attend the induction ceremony at the Ragged Flagon.',
     "Receive the Guild Master's Armor from Tonilia, along with the key to the Guild Master's Tribute Chest."
   ],
@@ -1516,6 +1553,15 @@ const QUESTS = [
   ],
   rewards:['20,000 gold', 'The Dawnstar Sanctuary as a new home base'], trackable:true },
 
+{ id:515, line:'brotherhood', order:16, title:"Where You Hang Your Enemy's Head...", giver:'Nazir (after Hail Sithis!)', location:'Dawnstar Sanctuary; Delvin Mallory at the Ragged Flagon, Riften',
+  steps:[
+    'After Hail Sithis!, Nazir suggests contacting Delvin Mallory of the Thieves Guild to properly refurbish the new Dawnstar Sanctuary.',
+    'Travel to the Ragged Flagon in Riften and ask Delvin about the Dawnstar Sanctuary.',
+    "Spend gold with Delvin on the full set of upgrades — new banners, a poisoner's nook, a torture chamber, a secret entrance, and a master bedroom — costing 19,000 gold total, easily covered by the 20,000 gold from Hail Sithis!.",
+    'Talk to Delvin once more about the Sanctuary to complete the quest.'
+  ],
+  rewards:['Dawnstar Sanctuary fully furnished and upgraded'], trackable:true },
+
 /* ======================= CIVIL WAR ======================= */
 { id:600, line:'civilwar', branch:'imperial', order:1, title:'Joining the Legion', giver:'Legate Rikke / General Tullius', location:'Castle Dour (Solitude), Fort Hraggstad', level:'6',
   steps:[
@@ -1656,6 +1702,7 @@ const QUESTS = [
     'Gather blood samples from five races — High Elf, Wood Elf, Dark Elf, Falmer, and Orc — from anywhere in Skyrim, and deliver them to him.',
     'Septimus uses the Lexicon and blood to open the cube himself, transforming/dying in the process and leaving behind the Oghma Infinium.'
   ],
+  choice:{ flag:'Tip — a one-stop blood run', text:"Liar's Retreat (a cave west of Markarth) has Orc, Falmer, Dark Elf, and Wood Elf corpses all in the same dungeon, letting you collect 4 of the 5 required blood samples in a single trip." },
   rewards:['Oghma Infinium'], trackable:true },
 
 { id:704, line:'daedric', order:5, prince:'Hircine', title:'Ill Met By Moonlight', giver:'Mathies or Sinding', location:"Falkreath, Bloated Man's Grotto",
@@ -1695,6 +1742,7 @@ const QUESTS = [
     'Investigate the door yourself and hear her voice — she is Mephala, Prince of Whispers, who asks you (not the "too limited" child) to free her.',
     'Acquire the Whispering Door Key from Balgruuf or Farengar Secret-Fire and open the door.'
   ],
+  choice:{ flag:'Missable — charging the blade', text:"The Ebony Blade starts weak and only reaches its strongest tier by killing 10 friendly NPCs — followers or citizens whose favors you've completed — who trust you enough to say something like \"What do you need?\" before you strike. Killing hostile enemies or strangers doesn't count, so start banking trusted kills early if you want it maxed out for Oblivion Walker/completion purposes." },
   rewards:['The Ebony Blade (grows stronger the more you use it to kill those who trust you)'], trackable:true },
 
 { id:708, line:'daedric', order:9, prince:'Meridia', title:'The Break of Dawn', giver:"Meridia (via Beacon or Statue)", location:'Statue to Meridia, Kilkreath Ruins', level:'Required 12, suggested 24',
@@ -3482,7 +3530,7 @@ const SMITHING_ITEMS = [
   { id:4008, tier:'Daedric', name:'Daedric Greatsword & Daedric Armor', perk:'Daedric Smithing', ingredients:'Ebony Ingot + Daedra Heart', notes:'Requires a Daedra Heart per item — collected from dead Dremora or bought rarely.' },
   { id:4009, tier:'Dragon', name:'Dragonplate Armor & Dragonbone Weapons', perk:'Dragon Armor', ingredients:'Dragon Bone + Dragon Scales (armor); Dragon Bone (weapons)', notes:'Requires Daedric or Glass Smithing first; dragon bones/scales come from dragon corpses.' },
   { id:4010, tier:'Unique', name:'Nord Hero Weapons & Ancient Nord Armor', perk:'Companions questline', ingredients:'Quicksilver Ingot + Leather Strips (weapons); Iron/Steel + Leather (armor)', notes:'Unlocked at the Skyforge in Whiterun after completing Glory of the Dead.' },
-  { id:4011, tier:'Unique', name:'Stalhrim Weapons & Armor', perk:'Ebony Smithing + A New Source of Stalhrim', ingredients:'Stalhrim + Ebony Ingot (weapons) or Iron/Corundum Ingot + Leather (light/heavy armor)', notes:'Raw Stalhrim is mined only on Solstheim (Dragonborn DLC).' },
+  { id:4011, tier:'Unique', name:'Stalhrim Weapons & Armor', perk:'Ebony Smithing + A New Source of Stalhrim', ingredients:'Stalhrim + Ebony Ingot (weapons) or Iron/Corundum Ingot + Leather (light/heavy armor)', notes:"Raw Stalhrim is mined only on Solstheim (Dragonborn DLC). A New Source of Stalhrim is a short miscellaneous quest from Neloth at Tel Mithryn (not part of the main Dragonborn storyline, so it isn't tracked as its own quest card) — it opens up the Raven Rock mine as a renewable Stalhrim source." },
 ];
 
 // Full alchemy ingredient list — base game + Dawnguard/Hearthfire/Dragonborn (108 ingredients), 4 effects each in discovery order
@@ -3964,7 +4012,8 @@ const SHOUTS = [
     { id:6080, word:'Nos', mean:'Strike', wall:'White Ridge Sanctum' } ] },
 ];
 
-// The 8 base-game Dragon Priest masks (Konahrik, a 9th, is a combination reward for collecting all 8 — see note)
+// The 8 base-game Dragon Priest masks, plus Konahrik (a 9th, combination reward for collecting all 8 —
+// see note) and the 4 Solstheim masks added by the Dragonborn DLC.
 const DRAGON_MASKS = [
   { id:6100, name:'Krosis', location:'Shearpoint (dragon lair)', enchant:'Fortify Lockpicking, Archery, and Alchemy by 20% each' },
   { id:6101, name:'Morokei', location:'Labyrinthian', enchant:'Magicka regenerates 100% faster' },
@@ -3974,6 +4023,11 @@ const DRAGON_MASKS = [
   { id:6105, name:'Vokun', location:'High Gate Ruins', enchant:'Conjuration, Illusion, and Alteration spells cost 20% less' },
   { id:6106, name:'Volsung', location:'Volskygge', enchant:'Waterbreathing; +20 Barter; +20 Carry Weight' },
   { id:6107, name:'Hevnoraak', location:'Valthume', enchant:'Immune to disease and poison (100% resistance to both)' },
+  { id:6108, name:'Konahrik', location:"Crafted at Bromjunaar Sanctuary — a hidden room within Labyrinthian, revealed by equipping the Wooden Mask found there — once all 8 masks above are placed on their ceremonial busts", enchant:"Konahrik's Privilege: below 15% health, a chance to knock back nearby enemies, wreathe you in a Flame Cloak, and cast Grand Healing — rarely also summoning a Spectral Dragon Priest ally for 60 seconds." },
+  { id:6109, name:'Ahzidal', location:"Ahzidal's Tomb, within Kolbjorn Barrow (Dragonborn DLC — Unearthed quest)", enchant:'+50% Fire Resistance; Fire spells deal 25% more damage' },
+  { id:6110, name:'Dukaan', location:'White Ridge Sanctum, guarding the Cyclone word wall (Dragonborn DLC)', enchant:'+50% Frost Resistance; Frost spells deal 25% more damage' },
+  { id:6111, name:'Zahkriisos', location:'Raven Rock Mine (Dragonborn DLC — The Final Descent quest)', enchant:'+50% Shock Resistance; Shock spells deal 25% more damage' },
+  { id:6112, name:'Miraak', location:"Miraak's corpse after defeating him in At the Summit of Apocrypha (Dragonborn DLC)", enchant:'Fortify Magicka, scaling with your level' },
 ];
 
 /* ============================= TREASURE & COLLECTIBLES ============================= */
@@ -4093,6 +4147,55 @@ const RARE_CURIOS = [
   { id:9248, name:'Wisp Stalk Caps', origin:'Cyrodiil', effects:['Damage Health','Weakness to Poison','Frenzy','Regenerate Stamina'] },
   { id:9249, name:'Withering Moon', origin:'Shivering Isles', effects:['Restore Magicka','Spell Absorption','Fortify Light Armor','Cure Disease'] },
   { id:9250, name:"Worm's Head Cap", origin:'Shivering Isles', effects:['Fortify Lockpicking','Night Eye','Fortify Carry Weight','Slow'] },
+];
+
+// The 10 base-game Dragon Claws (each opens its own claw-locked door — read the claw for the rune
+// combination) plus the 2 Dragonborn DLC claws, found and used within the same Solstheim dungeon.
+const DRAGON_CLAWS = [
+  { id:9300, name:'Golden Claw', dungeon:'Bleak Falls Barrow', note:'Opens the vault door just past the puzzle room — read the claw itself for the correct rune order.' },
+  { id:9301, name:'Coral Dragon Claw', dungeon:'Yngol Barrow', note:"Opens its own claw door within Yngol Barrow; a duplicate sometimes turns up in Birna's stock in Winterhold." },
+  { id:9302, name:'Ivory Dragon Claw', dungeon:'Folgunthur', note:'Opens the claw door partway through Folgunthur.' },
+  { id:9303, name:'Ruby Dragon Claw', dungeon:"Dead Men's Respite", note:"Found within Dead Men's Respite, the dungeon visited during the Bards College quest King Olaf's Verse." },
+  { id:9304, name:'Sapphire Dragon Claw', dungeon:'Shrouded Hearth Barrow', note:'Found within Shrouded Hearth Barrow near Ivarstead; Wilhelm at the Vilemyr Inn is tied to the same delivery.' },
+  { id:9305, name:'Emerald Dragon Claw', dungeon:'Reachwater Rock', note:'Opens the claw door deep within Reachwater Rock.' },
+  { id:9306, name:'Glass Dragon Claw', dungeon:'Forelhost', note:'Opens its own claw-locked door within Forelhost.' },
+  { id:9307, name:'Ebony Dragon Claw', dungeon:'Korvanjund', note:'Found and used within Korvanjund during the Civil War quest The Jagged Crown.' },
+  { id:9308, name:'Diamond Dragon Claw', dungeon:'Skuldafn', note:'Found and used within Skuldafn during the Main Quest.' },
+  { id:9309, name:'Iron Dragon Claw', dungeon:'Ansilvund', note:'Opens its own claw door within Ansilvund.' },
+  { id:9310, name:'Amethyst Claw', dungeon:"Vahlok's Tomb (Dragonborn DLC)", note:"One of two claws found and used within Vahlok's Tomb on Solstheim." },
+  { id:9311, name:'Sulfur Claw', dungeon:"Vahlok's Tomb (Dragonborn DLC)", note:"Also called the Dragonborn Claw — the second claw found and used within Vahlok's Tomb." },
+];
+
+// The 7 unique Thieves Guild larceny targets — sell each to Delvin Mallory for a permanent trophy
+// display on the Guild Master's desk in the Ragged Flagon cistern.
+const GUILD_TROPHIES = [
+  { id:9320, name:'Queen Bee Statue', location:'Goldenglow Estate', note:'Found during the Goldenglow Estate quest.' },
+  { id:9321, name:'Honningbrew Decanter', location:'Honningbrew Meadery', note:'Found during Loud and Clear.' },
+  { id:9322, name:'East Empire Shipping Map', location:'East Empire Co. Warehouse', note:"Found during Scoundrel's Folly." },
+  { id:9323, name:'Model Ship', location:'Snow Veil Sanctum', note:'Found during Hard Answers.' },
+  { id:9324, name:'Dwemer Puzzle Cube', location:"Calcelmo's Laboratory, Understone Keep (Markarth)", note:'Sitting on a shelf in the laboratory — no quest required, just a lock or two.' },
+  { id:9325, name:'Bust of the Gray Fox', location:'Riftweald Manor, Riften', note:"Mercer Frey's house — easiest to reach once Hard Answers unlocks it." },
+  { id:9326, name:'Left Eye of the Falmer', location:'Irkngthand', note:'Found during the College of Winterhold/Main Quest chain, The Staff of Magnus.' },
+];
+
+// 5 unique "in a jar" oddities scattered around Skyrim — decorative curiosities with no gameplay effect,
+// each a one-of-a-kind static object rather than a craftable/lootable stack.
+const BUGS_IN_JARS = [
+  { id:9340, name:'Butterfly in a Jar', location:"Alchemist's Shack" },
+  { id:9341, name:'Dragonfly in a Jar', location:'Dushnikh Yal (Burguk\'s stronghold cellar)' },
+  { id:9342, name:'Moth in a Jar', location:"Dustman's Cairn" },
+  { id:9343, name:'Bee in a Jar', location:'Goldenglow Estate' },
+  { id:9344, name:'Torchbug in a Jar', location:'Frostflow Lighthouse' },
+];
+
+// The 5 Forgotten Vale Paragons (Dawnguard) — carried by roaming Frost Giants in the Vale; place each
+// on the ancient Falmer teleportation platform to reveal new areas and chests.
+const VALE_PARAGONS = [
+  { id:9350, name:'Amethyst Paragon' },
+  { id:9351, name:'Emerald Paragon' },
+  { id:9352, name:'Diamond Paragon' },
+  { id:9353, name:'Ruby Paragon' },
+  { id:9354, name:'Sapphire Paragon' },
 ];
 
 // Legendary Item Quests — single-quest legendary weapon/armor unlocks from the Anniversary Edition
@@ -6502,6 +6605,30 @@ function buildSearchIndex(){
     searchText: [c.name, c.origin, ...(c.effects||[])].join(' ').toLowerCase(),
     nav: { section:'treasure', treasureTab:'curios' },
   }));
+  DRAGON_CLAWS.forEach(c => idx.push({
+    itemId: c.id, title: c.name, sectionLabel: 'Treasure & Collectibles › Dragon Claws', icon: '🐾',
+    snippet: c.dungeon,
+    searchText: [c.name, c.dungeon, c.note].join(' ').toLowerCase(),
+    nav: { section:'treasure', treasureTab:'claws' },
+  }));
+  GUILD_TROPHIES.forEach(t => idx.push({
+    itemId: t.id, title: t.name, sectionLabel: 'Treasure & Collectibles › Guild Trophies', icon: '🕵️',
+    snippet: t.location,
+    searchText: [t.name, t.location, t.note].join(' ').toLowerCase(),
+    nav: { section:'treasure', treasureTab:'larceny' },
+  }));
+  BUGS_IN_JARS.forEach(x => idx.push({
+    itemId: x.id, title: x.name, sectionLabel: 'Treasure & Collectibles › World Oddities', icon: '🫙',
+    snippet: x.location,
+    searchText: [x.name, x.location].join(' ').toLowerCase(),
+    nav: { section:'treasure', treasureTab:'oddities' },
+  }));
+  VALE_PARAGONS.forEach(x => idx.push({
+    itemId: x.id, title: x.name, sectionLabel: 'Treasure & Collectibles › World Oddities', icon: '🫙',
+    snippet: 'Forgotten Vale (Dawnguard)',
+    searchText: [x.name, 'Forgotten Vale Paragon Dawnguard'].join(' ').toLowerCase(),
+    nav: { section:'treasure', treasureTab:'oddities' },
+  }));
   LEGENDARY_ITEM_QUESTS.forEach(q => idx.push({
     itemId: q.id, title: q.name, sectionLabel: 'Treasure & Collectibles › Legendary Item Quests', icon: '🗡️',
     snippet: [q.giver, q.location].filter(Boolean).join(' — '),
@@ -7585,6 +7712,7 @@ function renderCraftingInner(){
           <ul class="quest-steps">${ingredientList.map(part => `<li>${part}</li>`).join('')}</ul>
           <p class="ach-desc">${s.notes}</p>
           <button class="ach-link-btn" data-link-perktree="Smithing">🔗 View Smithing Perk Tree</button>
+          ${s.id === 4011 ? `<button class="ach-link-btn" data-link-nav='${JSON.stringify({ itemId: null, nav: { section:'quests', line:'dragonborn' } }).replace(/'/g, '&#39;')}' style="margin-left:6px;">🔗 View Dragonborn Quests</button>` : ''}
         </div>` : ''}
         <div class="quest-foot"><span></span><button class="track-btn" data-track="${s.id}"><span class="box"></span> ${isDone ? 'Crafted' : 'Mark crafted'}</button></div>
       </article>`;
@@ -7963,7 +8091,7 @@ function renderShoutsInner(){
         <div class="quest-foot"><span></span><button class="track-btn" data-track="${m.id}"><span class="box"></span> ${isDone ? 'Acquired' : 'Mark acquired'}</button></div>
       </article>`;
     };
-    bodyHtml = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">A 9th mask, Konahrik, is a bonus reward crafted at Bromjunaar Sanctuary once all 8 masks below have been collected.</p>` +
+    bodyHtml = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">Konahrik is a bonus 9th mask crafted at Bromjunaar Sanctuary once the 8 base-game masks above it are collected. The final 4 — Ahzidal, Dukaan, Zahkriisos, and Miraak — are added by the Dragonborn DLC on Solstheim.</p>` +
       (list.length === 0 ? `<div class="empty-state">No masks match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
   }
 
@@ -7994,7 +8122,7 @@ function renderShoutsInner(){
 /* ============================= TREASURE RENDER ============================= */
 
 function treasureStat(){
-  const items = [...TREASURES, ...BARENZIAH_STONES, ...RARE_CURIOS, ...LEGENDARY_ITEM_QUESTS, ...CC_EXTRAS, ...SKILL_BOOKS];
+  const items = [...TREASURES, ...BARENZIAH_STONES, ...RARE_CURIOS, ...DRAGON_CLAWS, ...GUILD_TROPHIES, ...BUGS_IN_JARS, ...VALE_PARAGONS, ...LEGENDARY_ITEM_QUESTS, ...CC_EXTRAS, ...SKILL_BOOKS];
   const done = items.filter(i => tracked.has(i.id)).length;
   return { done, total: items.length };
 }
@@ -8018,9 +8146,12 @@ function renderTreasureInner(){
   const TTABS = [
     { id:'artifacts', label:'Unique Weapons & Armor', icon:'⚔️' },
     { id:'stones',    label:'Stones of Barenziah',    icon:'💎' },
+    { id:'claws',     label:'Dragon Claws',           icon:'🐾' },
+    { id:'larceny',   label:'Guild Trophies',         icon:'🕵️' },
     { id:'curios',    label:'Rare Curios (CC)',       icon:'🏺' },
     { id:'itemquests', label:'Legendary Item Quests (CC)', icon:'🗡️' },
     { id:'ccextras',  label:'Creation Club Extras',   icon:'📦' },
+    { id:'oddities',  label:'World Oddities',         icon:'🫙' },
     { id:'skillbooks', label:'Skill Books',           icon:'📚' },
   ];
   const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${TTABS.map(t =>
@@ -8073,6 +8204,50 @@ function renderTreasureInner(){
     };
     const noStoneNote = `<div class="choice-box" style="margin-bottom:18px;"><b>No Stone Unturned</b>Picking up the first "Unusual Gem" starts this Thieves Guild-adjacent quest. Have Vex appraise it at the Ragged Flagon, then collect all 24 stones and return them to reforge the Crown of Barenziah for the permanent Prowler's Profit blessing.</div>`;
     bodyHtml = noStoneNote + (list.length === 0 ? `<div class="empty-state">No stones match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map((s,i) => cardHtml(s,i)).join('')}</div>`);
+  } else if (activeTreasureTab === 'claws') {
+    let list = DRAGON_CLAWS.slice();
+    if (favOnly) list = list.filter(c => favorites.has(c.id));
+    if (hideCompleted) list = list.filter(c => !tracked.has(c.id));
+    if (query.trim()) { const q = query.toLowerCase(); list = list.filter(c => c.name.toLowerCase().includes(q) || c.dungeon.toLowerCase().includes(q)); }
+    const done = DRAGON_CLAWS.filter(c => tracked.has(c.id)).length;
+    statLabel = `${done} of ${DRAGON_CLAWS.length} recovered`;
+    const cardHtml = c => {
+      const isFav = favorites.has(c.id), isDone = tracked.has(c.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${c.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${c.name}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${c.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> ${c.dungeon}</span></div>
+        <p class="ach-desc">${c.note}</p>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${c.id}"><span class="box"></span> ${isDone ? 'Recovered' : 'Mark recovered'}</button></div>
+      </article>`;
+    };
+    const clawsNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">Each claw is both key and lock — carry it a few rooms to the matching door and read it there for the correct rune order. The 10 base-game claws each belong to a separate dungeon; the 2 Dragonborn DLC claws are found and used within the same Solstheim dungeon, Vahlok's Tomb.</p>`;
+    bodyHtml = clawsNote + (list.length === 0 ? `<div class="empty-state">No claws match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
+  } else if (activeTreasureTab === 'larceny') {
+    let list = GUILD_TROPHIES.slice();
+    if (favOnly) list = list.filter(t => favorites.has(t.id));
+    if (hideCompleted) list = list.filter(t => !tracked.has(t.id));
+    if (query.trim()) { const q = query.toLowerCase(); list = list.filter(t => t.name.toLowerCase().includes(q) || t.location.toLowerCase().includes(q)); }
+    const done = GUILD_TROPHIES.filter(t => tracked.has(t.id)).length;
+    statLabel = `${done} of ${GUILD_TROPHIES.length} sold`;
+    const cardHtml = t => {
+      const isFav = favorites.has(t.id), isDone = tracked.has(t.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${t.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${t.name}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${t.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> ${t.location}</span></div>
+        <p class="ach-desc">${t.note}</p>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${t.id}"><span class="box"></span> ${isDone ? 'Sold to Delvin' : 'Mark sold'}</button></div>
+      </article>`;
+    };
+    const larcenyNote = `<div class="choice-box" style="margin-bottom:18px;"><b>Guild Master's Desk</b>These 7 unique items are each found in a specific dungeon or quest. Sell one to Delvin Mallory at the Ragged Flagon and it appears as a permanent trophy on the Guild Master's desk — purely cosmetic completionist flair, no gold or perk attached.</div>`;
+    bodyHtml = larcenyNote + (list.length === 0 ? `<div class="empty-state">No trophies match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
   } else if (activeTreasureTab === 'curios') {
     let list = RARE_CURIOS.slice();
     if (favOnly) list = list.filter(c => favorites.has(c.id));
@@ -8152,6 +8327,48 @@ function renderTreasureInner(){
       <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${cat} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(e=>tracked.has(e.id)).length}/${items.length})</span></div>
       <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
     `).join(''));
+  } else if (activeTreasureTab === 'oddities') {
+    let bugsList = BUGS_IN_JARS.slice();
+    let paragonsList = VALE_PARAGONS.slice();
+    if (favOnly) { bugsList = bugsList.filter(x => favorites.has(x.id)); paragonsList = paragonsList.filter(x => favorites.has(x.id)); }
+    if (hideCompleted) { bugsList = bugsList.filter(x => !tracked.has(x.id)); paragonsList = paragonsList.filter(x => !tracked.has(x.id)); }
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      bugsList = bugsList.filter(x => x.name.toLowerCase().includes(q) || x.location.toLowerCase().includes(q));
+      paragonsList = paragonsList.filter(x => x.name.toLowerCase().includes(q));
+    }
+    const done = [...BUGS_IN_JARS, ...VALE_PARAGONS].filter(x => tracked.has(x.id)).length;
+    statLabel = `${done} of ${BUGS_IN_JARS.length + VALE_PARAGONS.length} found`;
+    const bugCard = x => {
+      const isFav = favorites.has(x.id), isDone = tracked.has(x.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${x.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${x.name}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${x.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> ${x.location}</span></div>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${x.id}"><span class="box"></span> ${isDone ? 'Found' : 'Mark found'}</button></div>
+      </article>`;
+    };
+    const paragonCard = x => {
+      const isFav = favorites.has(x.id), isDone = tracked.has(x.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${x.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${x.name}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${x.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> Carried by a Frost Giant, Forgotten Vale (Dawnguard)</span></div>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${x.id}"><span class="box"></span> ${isDone ? 'Found' : 'Mark found'}</button></div>
+      </article>`;
+    };
+    const oddNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">Two unrelated sets of open-world collectibles that don't fit anywhere else: 5 unique "in a jar" decorations with no gameplay effect, and the 5 Forgotten Vale Paragons used to unlock new areas during Touching the Sky.</p>`;
+    const bugsSection = `<div style="margin: 0 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">Bugs in Jars <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${bugsList.filter(x=>tracked.has(x.id)).length}/${BUGS_IN_JARS.length})</span></div>` +
+      (bugsList.length === 0 ? `<div class="empty-state">No matches.</div>` : `<div class="ach-group-list">${bugsList.map(bugCard).join('')}</div>`);
+    const paragonsSection = `<div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">Forgotten Vale Paragons (Dawnguard) <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${paragonsList.filter(x=>tracked.has(x.id)).length}/${VALE_PARAGONS.length})</span></div>` +
+      (paragonsList.length === 0 ? `<div class="empty-state">No matches.</div>` : `<div class="ach-group-list">${paragonsList.map(paragonCard).join('')}</div>`);
+    bodyHtml = oddNote + bugsSection + paragonsSection;
   } else {
     let list = SKILL_BOOKS.slice();
     if (favOnly) list = list.filter(b => favorites.has(b.id));
