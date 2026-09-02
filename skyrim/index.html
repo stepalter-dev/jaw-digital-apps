@@ -898,6 +898,7 @@ const SECTIONS = [
   { id: 'treasure',   label: 'Treasure & Collectibles',icon: '💰', built: true },
   { id: 'locations',  label: 'Locations',              icon: '🗺️', built: true },
   { id: 'secrets',    label: 'Secrets & Oddities',      icon: '🔮', built: true },
+  { id: 'lore',       label: 'Lore & Shrines',          icon: '📖', built: true },
   { id: 'notes',      label: 'Journal Notes',           icon: '📝', built: true },
 ];
 
@@ -6466,6 +6467,58 @@ const SECRETS = [
     note:"An unmarked shrine off the beaten path with a good view over the valley — easy to miss since no quest or map marker calls it out, though it later ties into Elisif's storyline." },
 ];
 
+/* ============================= LORE & SHRINES DATA ============================= */
+
+// A curated shelf, not the full ~800-book library — Skyrim's lore books are mostly single-page flavor
+// text with nothing to check off. These are the entries with real narrative weight, kept to one flowing
+// list (not split across sub-categories) and ordered by the era their events actually happened in, so
+// reading top to bottom traces Tamriel's history from creation myth up to the eve of the game itself.
+const LORE_ERAS = ['Dawn Era — Creation Myths', 'Merethic Era', 'First Era', 'Second & Third Era', 'Fourth Era — Leading to Skyrim'];
+
+const LORE_BOOKS = [
+  { id:13200, era:'Dawn Era — Creation Myths', title:'The Monomyth', location:"Temples and college libraries across Skyrim",
+    summary:"A comparative overview of how different Tamrielic cultures tell the creation myth — the et'Ada, Lorkhan, and the making of Mundus — laying out the mythic framework everything else in the timeline sits on top of." },
+  { id:13201, era:'Dawn Era — Creation Myths', title:'The Annotated Anuad', location:'Temples and college libraries across Skyrim',
+    summary:"The Aldmeri (elven) version of the creation myth, following two brothers' rivalry over the same woman — the elven counterpart to the Monomyth, and a good sense of how differently Men and Elves remember the same events." },
+  { id:13202, era:'Merethic Era', title:'The Dragon War', location:'Word wall dungeons and temple libraries',
+    summary:'Recounts the Dragon War — the rebellion of early Men, aided by the Tongues and the dov-rider Alduin\'s first defeat — the deep-prehistory backdrop to why dragons and Dragonborn shouts exist at all.' },
+  { id:13203, era:'Merethic Era', title:'Night of Tears', location:'Saarthal',
+    summary:'Written by Dranor Seleth, this covers the founding of Saarthal by the Nedes/proto-Nords fleeing Atmora, and the Snow Elves\' sack of the city over the Eye of Magnus — the event that draws Ysgramor back to Tamriel.' },
+  { id:13204, era:'Merethic Era', title:'Songs of the Return', location:'Jorrvaskr and other Companions-adjacent libraries in Whiterun',
+    summary:"Traditional verse recounting Ysgramor's return to Skyrim with the Five Hundred Companions to avenge Saarthal, driving the Snow Elves out and founding the first Nordic kingdom." },
+  { id:13205, era:'Merethic Era', title:'Fall of the Snow Prince', location:'Jolgeirr Barrow, where the account was originally discovered',
+    summary:"A chronicler's account of the Battle of the Moesring — the last stand of the Snow Elves against Ysgramor's heirs, where the Snow Prince single-handedly cut down five Nordic champions before falling. Marks the end of the Snow Elves as a free people." },
+  { id:13206, era:'First Era', title:'Trials of St. Alessia', location:'Temples of the Nine Divines, such as the Temple of Mara in Riften',
+    summary:"Covers the Alessian slave rebellion against Ayleid rule in Cyrodiil, aided by the demigod Pelinal Whitestrake — the founding of the First Empire and, with it, worship of the Eight (later Nine) Divines." },
+  { id:13207, era:'First Era', title:'The Aetherium Wars', location:"Dwemer ruins and Understone Keep's Dwemer museum in Markarth",
+    summary:'The Dwemer city-states of Skyrim descend into decades of civil war over a newly-discovered vein of Aetherium — the internal collapse that let the Nords finish driving the Dwarves out, not long before the Dwemer vanished entirely.' },
+  { id:13208, era:'Second & Third Era', title:'A Brief History of the Empire', location:"Jarls' quarters, colleges, and noble manors across Skyrim",
+    summary:'A multi-volume chronicle running from the Akaviri invasion and Reman Dynasty of the Second Era through Tiber Septim\'s (Talos\'s) unification of Tamriel in the Third — the single broadest historical throughline in the game.' },
+  { id:13209, era:'Second & Third Era', title:'The Real Barenziah', location:"Noble manors, and fittingly alongside the Thieves Guild's own Stones of Barenziah quest",
+    summary:"A scandalous, unauthorized biography of Barenziah, Queen-Mother of Morrowind — her rise from a Dunmer street urchin to the Third Era's most influential queen." },
+  { id:13210, era:'Second & Third Era', title:'A Dance in Fire', location:'Libraries and manor bookshelves across Skyrim',
+    summary:"A multi-part serial following the Camoran Usurper's bloody bid for the Imperial throne in the late Third Era, and the mercenary company caught in the middle of it." },
+  { id:13211, era:'Fourth Era — Leading to Skyrim', title:'A Concise Account of the Great War Between the Empire and the Aldmeri Dominion', location:"Imperial and Stormcloak camps, and Solitude's Blue Palace",
+    summary:'Covers the Great War (4E 171–175) between the Empire and the Thalmor-led Aldmeri Dominion, ending in the White-Gold Concordat that outlawed Talos worship — the direct spark behind the Civil War questline you\'re fighting through in-game.' },
+  { id:13212, era:'Fourth Era — Leading to Skyrim', title:'Book of the Dragonborn', location:'Given by Esbern at Sky Haven Temple during the Main Quest',
+    summary:"Attributed to Prior Emelene Madrine, this lays out the Prophecy of the Dragonborn recorded on Alduin's Wall — ending in the line \"the World-Eater wakes, and the Wheel turns upon the Last Dragonborn.\" The bridge from everything above to the moment the game actually begins." },
+];
+
+// The 9 Shrines of the Nine Divines. Physically there are duplicate shrine objects to most gods scattered
+// all over Skyrim (Talos alone has over a dozen), but the blessing itself is one effect per deity — praying
+// at any shrine to a god overwrites whichever blessing you're currently carrying and cures all diseases.
+const SHRINES = [
+  { id:13300, name:'Akatosh', title:'Dragon God of Time', location:"Temple of the Divines, Solitude (which holds all nine shrines in one room)", blessing:'Magicka regenerates 10% faster.' },
+  { id:13301, name:'Arkay', title:'God of Life and Death', location:'Any Hall of the Dead (Whiterun, Markarth, Riften) — also at the Temple of the Divines, Solitude', blessing:'+25 Health.' },
+  { id:13302, name:'Dibella', title:'Goddess of Beauty and Love', location:'Temple of Dibella, Markarth — also at the Temple of the Divines, Solitude', blessing:'+10 Speech.' },
+  { id:13303, name:'Julianos', title:'God of Wisdom and Logic', location:'Fellglow Keep, Fort Amol, Hagravel — also at the Temple of the Divines, Solitude', blessing:'+25 Magicka.' },
+  { id:13304, name:'Kynareth', title:'Goddess of the Air, Sky, and Nature', location:'Temple of Kynareth, Whiterun — also at the Temple of the Divines, Solitude', blessing:'+25 Stamina.' },
+  { id:13305, name:'Mara', title:'Goddess of Love and Compassion', location:'Temple of Mara, Riften — also at the Temple of the Divines, Solitude', blessing:'Restoration spells are 10% more effective.' },
+  { id:13306, name:'Stendarr', title:'God of Mercy and Justice', location:"Hall of the Vigilant, Markarth — also at the Temple of the Divines, Solitude", blessing:'Blocking is 10% more effective.' },
+  { id:13307, name:'Talos', title:'God-Hero of Mankind (formerly Tiber Septim)', location:"Dozens of hidden wayshrines across Skyrim, including a restored one in Solitude's Hall of the Dead — also at the Temple of the Divines", blessing:'Shout recovery time is 20% shorter.' },
+  { id:13308, name:'Zenithar', title:'God of Work and Commerce', location:'Small wayshrines near trade routes — also at the Temple of the Divines, Solitude', blessing:'Buying and selling prices are 10% better.' },
+];
+
 /* ============================= GLOBAL SEARCH INDEX ============================= */
 
 // One flat, searchable record per trackable/reference entry across the ENTIRE app — not just quests.
@@ -6629,6 +6682,18 @@ function buildSearchIndex(){
     searchText: [x.name, 'Forgotten Vale Paragon Dawnguard'].join(' ').toLowerCase(),
     nav: { section:'treasure', treasureTab:'oddities' },
   }));
+  LORE_BOOKS.forEach(b => idx.push({
+    itemId: b.id, title: b.title, sectionLabel: 'Lore & Shrines › Lore Library', icon: '📖',
+    snippet: b.era,
+    searchText: [b.title, b.era, b.summary, b.location].join(' ').toLowerCase(),
+    nav: { section:'lore', loreTab:'books' },
+  }));
+  SHRINES.forEach(s => idx.push({
+    itemId: s.id, title: `Shrine of ${s.name}`, sectionLabel: 'Lore & Shrines › Shrines of the Divines', icon: '🕯️',
+    snippet: s.blessing,
+    searchText: [s.name, s.title, s.location, s.blessing].join(' ').toLowerCase(),
+    nav: { section:'lore', loreTab:'shrines' },
+  }));
   LEGENDARY_ITEM_QUESTS.forEach(q => idx.push({
     itemId: q.id, title: q.name, sectionLabel: 'Treasure & Collectibles › Legendary Item Quests', icon: '🗡️',
     snippet: [q.giver, q.location].filter(Boolean).join(' — '),
@@ -6719,6 +6784,7 @@ let activeLocationTab = 'capitals'; // sub-tab within Locations
 let activeLocationHold = 'Eastmarch'; // selected hold within the Dungeons by Hold sub-tab
 let expandedLocations = new Set(); // ids of dungeon cards currently expanded for detail — UI-only, not persisted
 let activeSecretsTab = 'popculture'; // sub-tab within Secrets & Oddities
+let activeLoreTab = 'books'; // sub-tab within Lore & Shrines
 let journalNotes = ''; // freeform text in the Journal Notes section
 let mapPinIndex = {}; // id -> pin data from the last buildMapPins() call, so the click popup can look up name/type/summary/nav
 let activeMapHolds = null; // Set of hold names currently shown on the map, or null for "all" — set up in the filter stage
@@ -6822,7 +6888,7 @@ function saveNavState(){
     localStorage.setItem(navStateKey(), JSON.stringify({
       activeSection, activeLine, activeBranch, activeBuildTab, activeSkillTree,
       activeFollowerTab, activeCraftTab, activeShoutTab, activeTreasureTab,
-      activeLocationTab, activeLocationHold, activeSecretsTab,
+      activeLocationTab, activeLocationHold, activeSecretsTab, activeLoreTab,
     }));
   } catch (e) { /* not critical */ }
 }
@@ -6843,6 +6909,7 @@ function loadNavState(){
     if (s.activeLocationTab) activeLocationTab = s.activeLocationTab;
     if (s.activeLocationHold) activeLocationHold = s.activeLocationHold;
     if (s.activeSecretsTab) activeSecretsTab = s.activeSecretsTab;
+    if (s.activeLoreTab) activeLoreTab = s.activeLoreTab;
   } catch (e) { /* start at the default view */ }
 }
 
@@ -6859,13 +6926,18 @@ function achStat(){
   const done = ACHIEVEMENTS.filter(a => tracked.has(a.id)).length;
   return { done, total: ACHIEVEMENTS.length };
 }
+function loreStat(){
+  const items = [...LORE_BOOKS, ...SHRINES];
+  const done = items.filter(i => tracked.has(i.id)).length;
+  return { done, total: items.length };
+}
 
 // Combined completion across every trackable item in the entire app — sums the same per-section stat
 // helpers the dashboard cards already use, so it can never drift out of sync with them.
 function overallStat(){
   let done = 0, total = 0;
   QUESTLINES.forEach(ql => { const s = statFor(ql.id); done += s.done; total += s.total; });
-  [achStat(), buildsStat(), followersStat(), craftingStat(), bestiaryStat(), shoutsStat(), treasureStat(), locationsStat(), housingStat(), secretsStat()]
+  [achStat(), buildsStat(), followersStat(), craftingStat(), bestiaryStat(), shoutsStat(), treasureStat(), locationsStat(), housingStat(), secretsStat(), loreStat()]
     .forEach(s => { done += s.done; total += s.total; });
   return { done, total };
 }
@@ -6925,6 +6997,7 @@ function renderHeader(){
       : activeSection === 'treasure' ? '— artifacts, gems & lost relics —'
       : activeSection === 'locations' ? '— holds, dungeons & landmarks —'
       : activeSection === 'secrets' ? '— easter eggs, oddities & unmarked finds —'
+      : activeSection === 'lore' ? '— the history behind the story, and the Nine Divines —'
       : activeSection === 'notes' ? '— your own margin notes —'
       : '— notes from the road, Skyrim —';
   }
@@ -7137,6 +7210,17 @@ function renderOverview(){
     </div>`;
   })();
 
+  const loreCard = (() => {
+    const { done, total } = loreStat();
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    return `
+    <div class="dash-card" data-nav-section="lore">
+      <div class="dash-card-top"><span class="dash-icon">📖</span><span class="dash-label">Lore & Shrines</span></div>
+      <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="dash-count">${done} of ${total} read/blessed — ${pct}%</div>
+    </div>`;
+  })();
+
   const notesCard = `
     <div class="dash-card" data-nav-section="notes">
       <div class="dash-card-top"><span class="dash-icon">📝</span><span class="dash-label">Journal Notes</span></div>
@@ -7157,7 +7241,7 @@ function renderOverview(){
 
   container.innerHTML = `
     ${heroCard}
-    <div class="dash-grid" style="grid-column:1/-1;">${builtCard}${achCard}${buildsCard}${followersCard}${craftingCard}${bestiaryCard}${shoutsCard}${treasureCard}${locationsCard}${housingCard}${secretsCard}${notesCard}${placeholderCards}</div>
+    <div class="dash-grid" style="grid-column:1/-1;">${builtCard}${achCard}${buildsCard}${followersCard}${craftingCard}${bestiaryCard}${shoutsCard}${treasureCard}${locationsCard}${housingCard}${secretsCard}${loreCard}${notesCard}${placeholderCards}</div>
     ${favCard}
     <div class="rune-divider" style="grid-column:1/-1;"></div>
     <div class="reset-zone" style="grid-column:1/-1;">
@@ -8897,6 +8981,105 @@ function renderSecretsInner(){
   });
 }
 
+/* ============================= LORE & SHRINES RENDER ============================= */
+
+function renderLore(){
+  try { renderLoreInner(); } catch (err) { showRenderError(err); }
+}
+
+function renderLoreInner(){
+  const container = document.getElementById('entries');
+  container.classList.remove('grid-mode');
+  document.getElementById('sub-row').style.display = 'none';
+  document.getElementById('branch-banner').style.display = 'none';
+  document.getElementById('search-row').style.display = 'flex';
+
+  const LTABS = [
+    { id:'books',   label:'Lore Library',            icon:'📖' },
+    { id:'shrines', label:'Shrines of the Divines',  icon:'🕯️' },
+  ];
+  const tabsHtml = `<div class="sub-row" style="display:flex; margin-bottom:18px;">${LTABS.map(t =>
+    `<span class="sub-pill ${activeLoreTab===t.id?'active':''}" data-loretab="${t.id}">${t.icon} ${t.label}</span>`).join('')}</div>`;
+
+  let statLabel, bodyHtml;
+
+  if (activeLoreTab === 'books') {
+    let list = LORE_BOOKS.slice();
+    if (favOnly) list = list.filter(b => favorites.has(b.id));
+    if (hideCompleted) list = list.filter(b => !tracked.has(b.id));
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter(b => [b.title, b.era, b.summary, b.location].join(' ').toLowerCase().includes(q));
+    }
+    const done = LORE_BOOKS.filter(b => tracked.has(b.id)).length;
+    statLabel = `${done} of ${LORE_BOOKS.length} read`;
+    const cardHtml = b => {
+      const isFav = favorites.has(b.id), isDone = tracked.has(b.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${b.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${b.title}</h3></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${b.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> ${b.location}</span></div>
+        <p class="ach-desc">${b.summary}</p>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${b.id}"><span class="box"></span> ${isDone ? 'Read' : 'Mark read'}</button></div>
+      </article>`;
+    };
+    const grouped = LORE_ERAS.map(era => ({ era, items: list.filter(b => b.era === era) })).filter(x => x.items.length);
+    const loreNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">A curated shelf, not all ~800 books in the game — these are the ones with real narrative weight, ordered by the era their events actually happened in, oldest first, so reading down the list traces Tamriel's history up to the eve of Skyrim itself.</p>`;
+    bodyHtml = loreNote + (list.length === 0 ? `<div class="empty-state">No books match. Try another search or clear the filter.</div>` : grouped.map(({ era, items }) => `
+      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${era} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(b=>tracked.has(b.id)).length}/${items.length})</span></div>
+      <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
+    `).join(''));
+  } else {
+    let list = SHRINES.slice();
+    if (favOnly) list = list.filter(s => favorites.has(s.id));
+    if (hideCompleted) list = list.filter(s => !tracked.has(s.id));
+    if (query.trim()) { const q = query.toLowerCase(); list = list.filter(s => [s.name, s.title, s.location, s.blessing].join(' ').toLowerCase().includes(q)); }
+    const done = SHRINES.filter(s => tracked.has(s.id)).length;
+    statLabel = `${done} of ${SHRINES.length} blessed`;
+    const cardHtml = s => {
+      const isFav = favorites.has(s.id), isDone = tracked.has(s.id);
+      return `
+      <article class="quest ${isDone ? 'done' : ''}" data-id="${s.id}">
+        <div class="quest-top">
+          <div class="quest-title-wrap"><h3>${s.name}</h3><span class="tag-chip tag-optional">${s.title}</span></div>
+          <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${s.id}" aria-label="Favorite">★</button>
+        </div>
+        <div class="quest-meta"><span><b>Where:</b> ${s.location}</span></div>
+        <p class="ach-desc"><b>Blessing:</b> ${s.blessing}</p>
+        <div class="quest-foot"><span></span><button class="track-btn" data-track="${s.id}"><span class="box"></span> ${isDone ? 'Blessed' : 'Mark blessed'}</button></div>
+      </article>`;
+    };
+    const shrineNote = `<div class="choice-box" style="margin-bottom:18px;"><b>One blessing at a time</b>Praying at any shrine cures all diseases and grants that deity's blessing for 8 hours, overwriting whichever one you're currently carrying — so "collecting" all 9 here just means having visited each at least once, not holding them simultaneously.</div>`;
+    bodyHtml = shrineNote + (list.length === 0 ? `<div class="empty-state">No shrines match. Try another search or clear the filter.</div>` : `<div class="ach-group-list">${list.map(cardHtml).join('')}</div>`);
+  }
+
+  container.innerHTML = tabsHtml + bodyHtml;
+  const progressEl = document.getElementById('progress-tally');
+  progressEl.textContent = statLabel;
+  progressEl.style.display = 'inline';
+
+  container.querySelectorAll('[data-loretab]').forEach(pill => {
+    pill.addEventListener('click', () => { activeLoreTab = pill.dataset.loretab; favOnly = false; hideCompleted = false; query = ''; const si = document.getElementById('search'); if (si) si.value = ''; renderAll(); saveNavState(); });
+  });
+  container.querySelectorAll('[data-fav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.fav);
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      renderLore(); saveProgress();
+    });
+  });
+  container.querySelectorAll('[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.track);
+      tracked.has(id) ? tracked.delete(id) : tracked.add(id);
+      renderLore(); saveProgress(); renderNav();
+    });
+  });
+}
+
 /* ============================= JOURNAL NOTES RENDER ============================= */
 
 function renderNotes(){
@@ -9165,6 +9348,7 @@ function navigateToResult(r){
   if (nav.treasureTab) activeTreasureTab = nav.treasureTab;
   if (nav.locationTab) activeLocationTab = nav.locationTab;
   if (nav.holdTab) activeLocationHold = nav.holdTab;
+  if (nav.loreTab) activeLoreTab = nav.loreTab;
   favOnly = false; hideCompleted = false; query = '';
   const si = document.getElementById('search'); if (si) si.value = '';
   renderAll();
@@ -9271,6 +9455,7 @@ function renderSectionContent(){
   else if (activeSection === 'treasure') { renderTreasure(); }
   else if (activeSection === 'locations') { renderLocations(); }
   else if (activeSection === 'secrets') { renderSecrets(); }
+  else if (activeSection === 'lore') { renderLore(); }
   else if (activeSection === 'notes') { renderNotes(); }
   else { renderPlaceholder(); }
 }
