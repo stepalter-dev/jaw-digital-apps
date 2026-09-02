@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>JAW Digital — Companion Journals</title>
+<title>JAW Digital — independent software studio</title>
+<meta name="description" content="JAW Digital builds small, sharp tools: Companion Journals for open-world games, Tip Line, Flight Line, and the Field Kit Auditor." />
 <style>
   :root {
     --bg: #131110;
@@ -14,10 +15,16 @@
     --ink: #e8e0d0;
     --ink-soft: #a89b7f;
     --ink-dim: #786b4e;
-    --gold: #c9a227;
-    --gold-bright: #e2c158;
     --green: #6dbf6d;
     --red: #d9635e;
+
+    /* studio neutral (header, footer, hero) */
+    --studio: #c9a227;
+    --studio-bright: #e2c158;
+
+    /* active project accent — swapped by [data-active] */
+    --accent: #c9a227;
+    --accent-bright: #e2c158;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -34,86 +41,131 @@
 
   /* ---------- NAV ---------- */
   header.site-nav {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(19, 17, 16, 0.9);
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(19, 17, 16, 0.92);
     backdrop-filter: blur(6px);
     border-bottom: 1px solid var(--border-soft);
   }
-  header.site-nav .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; padding-bottom: 16px; }
-  .brand { font-size: 17px; font-weight: bold; letter-spacing: 0.06em; color: var(--gold-bright); text-decoration: none; }
-  .brand span { color: var(--ink-soft); font-weight: normal; letter-spacing: 0.03em; }
-  nav.links { display: flex; gap: 24px; font-size: 13px; letter-spacing: 0.03em; }
-  nav.links a { text-decoration: none; color: var(--ink-soft); transition: color .15s ease; }
-  nav.links a:hover { color: var(--gold-bright); }
+  header.site-nav .wrap { padding-top: 14px; padding-bottom: 14px; }
+  .nav-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand .mark { width: 28px; height: 28px; flex: none; display: block; }
+  .brand .word { font-size: 16px; font-weight: bold; letter-spacing: 0.08em; color: var(--studio-bright); }
+  .brand .word span { color: var(--ink-soft); font-weight: normal; letter-spacing: 0.03em; }
+  .nav-meta { display: flex; gap: 20px; font-size: 12.5px; }
+  .nav-meta a { text-decoration: none; color: var(--ink-dim); transition: color .15s ease; }
+  .nav-meta a:hover { color: var(--studio-bright); }
 
-  /* ---------- HERO ---------- */
-  .hero { padding: 72px 0 56px; text-align: center; }
-  .hero h1 { font-size: clamp(28px, 4.5vw, 42px); letter-spacing: 0.02em; margin: 0 0 16px; color: var(--ink); }
-  .hero h1 em { font-style: normal; color: var(--gold-bright); }
-  .hero p.sub { max-width: 620px; margin: 0 auto 30px; color: var(--ink-soft); font-size: 15.5px; }
-  .hero .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  /* ---------- TABS ---------- */
+  .tabbar { display: flex; gap: 6px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+  .tabbar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+    background: transparent; border: 1px solid var(--border-soft); color: var(--ink-soft);
+    font-family: inherit; font-size: 13px; letter-spacing: 0.02em; padding: 9px 16px 9px 12px;
+    border-radius: 999px; cursor: pointer; transition: all .15s ease;
+  }
+  .tab-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--dot-color, var(--ink-dim)); flex: none; }
+  .tab-btn:hover { color: var(--ink); border-color: var(--border); }
+  .tab-btn[aria-selected="true"] {
+    color: var(--accent-bright); border-color: var(--accent); background: rgba(255,255,255,0.03);
+  }
+
+  /* ---------- HERO (studio) ---------- */
+  .hero { padding: 60px 0 46px; text-align: center; border-bottom: 1px solid var(--border-soft); }
+  .hero h1 { font-size: clamp(24px, 4vw, 36px); letter-spacing: 0.01em; margin: 0 0 14px; color: var(--ink); }
+  .hero h1 em { font-style: normal; color: var(--studio-bright); }
+  .hero p.sub { max-width: 640px; margin: 0 auto; color: var(--ink-soft); font-size: 14.5px; }
+
+  /* ---------- PROJECT PANELS ---------- */
+  .panel { display: none; }
+  .panel[data-visible="true"] { display: block; }
+
+  .project-hero { padding: 56px 0 8px; text-align: center; }
+  .project-hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 12px; border: 1px solid var(--border);
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .project-hero .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot-color); }
+  .project-hero h2 { font-size: clamp(24px, 4vw, 34px); margin: 0 0 14px; }
+  .project-hero h2 em { font-style: normal; color: var(--accent-bright); }
+  .project-hero p.sub { max-width: 600px; margin: 0 auto 26px; color: var(--ink-soft); font-size: 14.5px; }
+  .project-hero .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
+
   .btn {
     display: inline-block; padding: 12px 22px; border-radius: 3px; text-decoration: none;
-    font-size: 13.5px; letter-spacing: 0.04em; border: 1px solid var(--border); transition: border-color .15s ease, background .15s ease, transform .15s ease;
+    font-size: 13.5px; letter-spacing: 0.04em; border: 1px solid var(--border);
+    transition: border-color .15s ease, background .15s ease, transform .15s ease; cursor: pointer;
+    font-family: inherit;
   }
   .btn:hover { transform: translateY(-1px); }
-  .btn.primary { background: var(--gold); color: #17130c; border-color: var(--gold); font-weight: bold; }
-  .btn.primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); }
+  .btn.primary { background: var(--accent); color: #17130c; border-color: var(--accent); font-weight: bold; }
+  .btn.primary:hover { background: var(--accent-bright); border-color: var(--accent-bright); }
   .btn.ghost { color: var(--ink); background: transparent; }
-  .btn.ghost:hover { border-color: var(--gold-dim, var(--gold)); color: var(--gold-bright); }
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent-bright); }
+  .btn.disabled { opacity: 0.5; cursor: default; pointer-events: none; }
 
-  .stat-row { display: flex; justify-content: center; gap: 40px; margin-top: 48px; flex-wrap: wrap; }
+  .stat-row { display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap; }
   .stat { text-align: center; }
-  .stat .n { font-size: 26px; color: var(--gold-bright); font-weight: bold; }
-  .stat .l { font-size: 11.5px; color: var(--ink-dim); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+  .stat .n { font-size: 24px; color: var(--accent-bright); font-weight: bold; }
+  .stat .l { font-size: 11px; color: var(--ink-dim); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
 
-  /* ---------- SECTION HEADERS ---------- */
-  section { padding: 64px 0; border-top: 1px solid var(--border-soft); }
-  section#hero-section { border-top: none; }
-  .section-head { text-align: center; margin-bottom: 44px; }
-  .section-head .eyebrow { font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
-  .section-head h2 { font-size: clamp(22px, 3vw, 28px); margin: 0 0 10px; }
-  .section-head p { color: var(--ink-soft); font-size: 14px; max-width: 560px; margin: 0 auto; }
+  section.block { padding: 52px 0; border-top: 1px solid var(--border-soft); }
+  .section-head { text-align: center; margin-bottom: 40px; }
+  .section-head .eyebrow2 { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .section-head h3 { font-size: clamp(20px, 3vw, 26px); margin: 0 0 10px; }
+  .section-head p { color: var(--ink-soft); font-size: 13.5px; max-width: 560px; margin: 0 auto; }
 
-  /* ---------- PROJECT GRID ---------- */
-  .grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
-  }
+  /* ---------- PROJECT GRID (games) ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
   .card {
     background: var(--panel); border: 1px solid var(--border); border-radius: 5px; overflow: hidden;
     display: flex; flex-direction: column; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
   }
-  .card:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 12px 28px rgba(0,0,0,0.4); }
+  .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 28px rgba(0,0,0,0.4); }
   .card .thumb-link { display: block; }
   .card img {
     width: 100%; aspect-ratio: 16/10; object-fit: cover; object-position: top;
-    display: block; border-bottom: 1px solid var(--border);
-    background: #0c0a08;
+    display: block; border-bottom: 1px solid var(--border); background: #0c0a08;
   }
-  .card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
-  .card-body .name { font-size: 16px; font-weight: bold; color: var(--ink); margin-bottom: 4px; }
-  .card-body .desc { font-size: 12.5px; color: var(--ink-soft); flex: 1; margin-bottom: 14px; line-height: 1.55; }
+  .card-body { padding: 15px 17px 17px; display: flex; flex-direction: column; flex: 1; }
+  .card-body .name { font-size: 15.5px; font-weight: bold; color: var(--ink); margin-bottom: 4px; }
+  .card-body .desc { font-size: 12px; color: var(--ink-soft); flex: 1; margin-bottom: 13px; line-height: 1.55; }
   .card-body .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .card-body a.view { font-size: 12px; letter-spacing: 0.03em; color: var(--gold-bright); text-decoration: none; font-weight: bold; }
+  .card-body a.view { font-size: 11.5px; letter-spacing: 0.03em; color: var(--accent-bright); text-decoration: none; font-weight: bold; }
   .card-body a.view:hover { text-decoration: underline; }
   .badge { font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; border: 1px solid var(--border); color: var(--ink-dim); }
 
-  /* ---------- PRICING ---------- */
-  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 760px; margin: 0 auto; }
-  .price-card { background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 28px 26px; }
-  .price-card.featured { border-color: var(--gold); position: relative; }
-  .price-card .plan { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
-  .price-card .price { font-size: 26px; font-weight: bold; margin-bottom: 4px; }
+  /* ---------- FEATURE GRID (non-game projects) ---------- */
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .feat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 22px 20px; }
+  .feat-card .fi { font-size: 20px; margin-bottom: 10px; }
+  .feat-card h4 { font-size: 14.5px; margin: 0 0 8px; color: var(--ink); }
+  .feat-card p { font-size: 12.5px; color: var(--ink-soft); margin: 0; line-height: 1.6; }
+
+  /* status strip (dev-stage projects) */
+  .status-strip {
+    display: flex; align-items: center; gap: 10px; justify-content: center; max-width: 560px; margin: 0 auto 30px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 12px 18px; font-size: 12.5px; color: var(--ink-soft);
+  }
+  .status-strip .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot-color); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot-color) 25%, transparent); }
+
+  /* ---------- PRICING (journals tab) ---------- */
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; max-width: 740px; margin: 0 auto; }
+  .price-card { background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 26px 24px; }
+  .price-card.featured { border-color: var(--accent); position: relative; }
+  .price-card .plan { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .price-card .price { font-size: 24px; font-weight: bold; margin-bottom: 4px; }
   .price-card .price small { font-size: 12px; color: var(--ink-dim); font-weight: normal; }
-  .price-card ul { list-style: none; padding: 0; margin: 18px 0 22px; font-size: 13px; color: var(--ink-soft); }
+  .price-card ul { list-style: none; padding: 0; margin: 16px 0 20px; font-size: 12.5px; color: var(--ink-soft); }
   .price-card li { padding: 6px 0; border-bottom: 1px solid var(--border-soft); }
   .price-card li:last-child { border-bottom: none; }
   .price-card li::before { content: "✓ "; color: var(--green); }
   .price-card .btn { width: 100%; text-align: center; }
-  .btn.disabled { opacity: 0.55; cursor: default; pointer-events: none; }
   .coming-soon-tag { position: absolute; top: -11px; right: 18px; background: var(--bg); padding: 0 8px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); }
 
-  /* ---------- CONTACT ---------- */
+  /* ---------- CONTACT (shared) ---------- */
   .contact-wrap { max-width: 480px; margin: 0 auto; }
   form.contact-form { display: flex; flex-direction: column; gap: 14px; }
   form.contact-form label { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 5px; display: block; }
@@ -122,21 +174,26 @@
     padding: 11px 12px; font-family: inherit; font-size: 14px; border-radius: 3px; outline: none;
     transition: border-color .15s ease;
   }
-  form.contact-form input:focus, form.contact-form textarea:focus { border-color: var(--gold); }
-  form.contact-form textarea { min-height: 110px; resize: vertical; }
+  form.contact-form input:focus, form.contact-form textarea:focus { border-color: var(--studio); }
+  form.contact-form textarea { min-height: 100px; resize: vertical; }
   form.contact-form button { align-self: flex-start; cursor: pointer; font-family: inherit; }
   #contact-status { font-size: 12.5px; margin-top: 4px; min-height: 16px; }
   #contact-status.ok { color: var(--green); }
   #contact-status.err { color: var(--red); }
 
   /* ---------- FOOTER ---------- */
-  footer.site-foot { border-top: 1px solid var(--border-soft); padding: 32px 0; text-align: center; }
-  footer.site-foot .brand { display: block; margin-bottom: 6px; }
+  footer.site-foot { border-top: 1px solid var(--border-soft); padding: 30px 0; text-align: center; }
+  footer.site-foot .brand-line { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; }
+  footer.site-foot .brand-line .mark { width: 18px; height: 18px; opacity: 0.85; }
+  footer.site-foot .brand-line span { font-size: 12.5px; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: bold; }
   footer.site-foot p { font-size: 11.5px; color: var(--ink-dim); margin: 0; }
+  footer.site-foot p.links { margin-top: 10px; }
+  footer.site-foot p.links a { color: var(--ink-dim); }
+  footer.site-foot p.links a:hover { color: var(--studio-bright); }
 
   @media (max-width: 640px) {
-    nav.links { display: none; }
-    .stat-row { gap: 26px; }
+    .nav-meta { display: none; }
+    .stat-row { gap: 24px; }
   }
 </style>
 </head>
@@ -144,151 +201,328 @@
 
 <header class="site-nav">
   <div class="wrap">
-    <a class="brand" href="#hero-section">JAW DIGITAL <span>· companion journals</span></a>
-    <nav class="links">
-      <a href="#journals">Journals</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#contact">Contact</a>
-    </nav>
+    <div class="nav-top">
+      <a class="brand" href="#top">
+        <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true">
+          <circle cx="512" cy="512" r="300" fill="#7a3230"/>
+          <circle cx="512" cy="512" r="300" fill="none" stroke="#5c1f1d" stroke-width="6" opacity="0.6"/>
+          <g transform="translate(512 512)" fill="none" stroke="#e6c988" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+            <circle r="215" stroke-width="8" stroke-dasharray="4 22"/>
+            <path d="M 0 -120 L 0 90"/>
+            <path d="M 0 -120 L -55 -55"/>
+            <path d="M 0 -120 L 55 -55"/>
+            <path d="M -40 -20 L 0 30 L 40 -20"/>
+            <path d="M -40 60 L 0 110 L 40 60"/>
+          </g>
+        </svg>
+        <span class="word">JAW DIGITAL <span>· studio</span></span>
+      </a>
+      <nav class="nav-meta">
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="tabbar" role="tablist" aria-label="Projects">
+      <button class="tab-btn" role="tab" data-tab="journals" style="--dot-color:#c9a227"><span class="dot"></span>Gaming Journals</button>
+      <button class="tab-btn" role="tab" data-tab="fieldkit" style="--dot-color:#3fa189"><span class="dot"></span>Field Kit Auditor</button>
+      <button class="tab-btn" role="tab" data-tab="tipline" style="--dot-color:#6dbf6d"><span class="dot"></span>Tip Line</button>
+      <button class="tab-btn" role="tab" data-tab="flightline" style="--dot-color:#5a8fd6"><span class="dot"></span>Flight Line</button>
+    </div>
   </div>
 </header>
 
-<section id="hero-section">
-  <div class="wrap hero">
-    <h1>Field journals for <em>open-world games</em>, built to last longer than your save file.</h1>
-    <p class="sub">
-      Quest checklists, gear trackers, and collectible logs for seven open-world games —
-      browsable free in any browser, with optional cloud sync so your progress
-      follows you from your desktop to your phone.
-    </p>
-    <div class="cta-row">
-      <a class="btn primary" href="#journals">Browse the journals</a>
-      <a class="btn ghost" href="#contact">Get in touch</a>
-    </div>
-    <div class="stat-row">
-      <div class="stat"><div class="n">7</div><div class="l">Journals live</div></div>
-      <div class="stat"><div class="n">1,900+</div><div class="l">Tracked entries</div></div>
-      <div class="stat"><div class="n">$0</div><div class="l">To browse & track</div></div>
-    </div>
+<section id="top" class="hero">
+  <div class="wrap">
+    <h1>An independent studio building <em>small, sharp tools.</em></h1>
+    <p class="sub">One person, four products — a game-companion journal suite, a footy tipping app, a flight watchlist, and an offline-first field kit auditor. Pick a project above.</p>
   </div>
 </section>
 
-<section id="journals">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">The Lineup</div>
-      <h2>Seven games, seven journals</h2>
-      <p>Each one is a full single-page app: searchable, favoritable, and organized the way that game's own systems work — not a generic checklist template.</p>
-    </div>
-    <div class="grid">
+<!-- ============ GAMING JOURNALS ============ -->
+<main class="panel" data-tab-panel="journals" style="--accent:#c9a227; --accent-bright:#e2c158;">
 
-      <div class="card">
-        <a class="thumb-link" href="skyrim/" target="_blank" rel="noopener"><img src="screenshots/skyrim.jpg" alt="Dragonborn's Field Journal screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">🐉 Dragonborn's Field Journal</div>
-          <div class="desc">Skyrim companion — quests &amp; factions, achievements, character builds, crafting, bestiary, and locations.</div>
-          <div class="row"><a class="view" href="skyrim/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
-        </div>
+  <div class="project-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot" style="--dot-color:#c9a227"></span>Companion Journals</div>
+      <h2>Field journals for <em>open-world games</em>, built to last longer than your save file.</h2>
+      <p class="sub">Quest checklists, gear trackers, and collectible logs for seven open-world games — browsable free in any browser, with optional cloud sync so your progress follows you from your desktop to your phone.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="#journals-grid">Browse the journals</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
       </div>
-
-      <div class="card">
-        <a class="thumb-link" href="oblivion/" target="_blank" rel="noopener"><img src="screenshots/oblivion.jpg" alt="The Champion's Codex screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">🏛️ The Champion's Codex</div>
-          <div class="desc">Oblivion companion — Main Quest, every guild questline, Daedric shrines, achievements, and alchemy.</div>
-          <div class="row"><a class="view" href="oblivion/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
-        </div>
+      <div class="stat-row">
+        <div class="stat"><div class="n">7</div><div class="l">Journals live</div></div>
+        <div class="stat"><div class="n">1,900+</div><div class="l">Tracked entries</div></div>
+        <div class="stat"><div class="n">$0</div><div class="l">To browse &amp; track</div></div>
       </div>
-
-      <div class="card">
-        <a class="thumb-link" href="rdr2/" target="_blank" rel="noopener"><img src="screenshots/rdr2.jpg" alt="Molly's Field Journal screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">🤠 Molly's Field Journal</div>
-          <div class="desc">Red Dead Redemption 2 companion — compendium, challenges, 100% mission tips, treasure maps, and an Arthur/John toggle.</div>
-          <div class="row"><a class="view" href="rdr2/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <a class="thumb-link" href="fallout76/" target="_blank" rel="noopener"><img src="screenshots/fallout76.jpg" alt="Vault Dweller's Almanac screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">📻 Vault Dweller's Almanac</div>
-          <div class="desc">Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile.</div>
-          <div class="row"><a class="view" href="fallout76/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <a class="thumb-link" href="witcher3/" target="_blank" rel="noopener"><img src="screenshots/witcher3.jpg" alt="The White Wolf's Journal screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">🐺 The White Wolf's Journal</div>
-          <div class="desc">Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent.</div>
-          <div class="row"><a class="view" href="witcher3/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <a class="thumb-link" href="newvegas/" target="_blank" rel="noopener"><img src="screenshots/newvegas.jpg" alt="The Courier's Log screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">🎰 The Courier's Log</div>
-          <div class="desc">Fallout: New Vegas companion — all four ending paths, factions, companions, perks, unique gear, and snow globes.</div>
-          <div class="row"><a class="view" href="newvegas/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <a class="thumb-link" href="fallout4/" target="_blank" rel="noopener"><img src="screenshots/fallout4.jpg" alt="The Sole Survivor's Logbook screenshot" loading="lazy" /></a>
-        <div class="card-body">
-          <div class="name">🧊 The Sole Survivor's Logbook</div>
-          <div class="desc">Fallout 4 companion — all four faction endings, companions, the full S.P.E.C.I.A.L. perk chart, settlements, and gear.</div>
-          <div class="row"><a class="view" href="fallout4/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
-        </div>
-      </div>
-
     </div>
   </div>
-</section>
 
-<section id="pricing">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">Pricing</div>
-      <h2>Free to browse. Pro to sync.</h2>
-      <p>Every journal works fully offline in your browser at no cost. Cloud sync — so progress follows you across devices — is being rolled out journal by journal.</p>
-    </div>
-    <div class="pricing-grid">
-      <div class="price-card">
-        <div class="plan">Free</div>
-        <div class="price">$0</div>
-        <ul>
-          <li>All 7 journals, fully browsable</li>
-          <li>Quest, gear &amp; collectible tracking</li>
-          <li>Progress saved in your browser</li>
-          <li>Optional personal GitHub-Gist backup</li>
-        </ul>
-        <a class="btn ghost" href="#journals" style="text-align:center;">Start browsing</a>
+  <section class="block" id="journals-grid">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow2">The Lineup</div>
+        <h3>Seven games, seven journals</h3>
+        <p>Each one is a full single-page app: searchable, favoritable, and organized the way that game's own systems work — not a generic checklist template.</p>
       </div>
-      <div class="price-card featured">
-        <span class="coming-soon-tag">Coming soon</span>
-        <div class="plan">Pro sync</div>
-        <div class="price">TBD <small>/ per journal</small></div>
-        <ul>
-          <li>Everything in Free</li>
-          <li>Account-based cloud sync</li>
-          <li>Progress follows you across devices</li>
-          <li>Priority for new journal requests</li>
-        </ul>
+      <div class="grid">
+
+        <div class="card">
+          <a class="thumb-link" href="skyrim/" target="_blank" rel="noopener"><img src="screenshots/skyrim.jpg" alt="Dragonborn's Field Journal screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">🐉 Dragonborn's Field Journal</div>
+            <div class="desc">Skyrim companion — quests &amp; factions, achievements, character builds, crafting, bestiary, and locations.</div>
+            <div class="row"><a class="view" href="skyrim/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <a class="thumb-link" href="oblivion/" target="_blank" rel="noopener"><img src="screenshots/oblivion.jpg" alt="The Champion's Codex screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">🏛️ The Champion's Codex</div>
+            <div class="desc">Oblivion companion — Main Quest, every guild questline, Daedric shrines, achievements, and alchemy.</div>
+            <div class="row"><a class="view" href="oblivion/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <a class="thumb-link" href="rdr2/" target="_blank" rel="noopener"><img src="screenshots/rdr2.jpg" alt="Molly's Field Journal screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">🤠 Molly's Field Journal</div>
+            <div class="desc">Red Dead Redemption 2 companion — compendium, challenges, 100% mission tips, treasure maps, and an Arthur/John toggle.</div>
+            <div class="row"><a class="view" href="rdr2/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <a class="thumb-link" href="fallout76/" target="_blank" rel="noopener"><img src="screenshots/fallout76.jpg" alt="Vault Dweller's Almanac screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">📻 Vault Dweller's Almanac</div>
+            <div class="desc">Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile.</div>
+            <div class="row"><a class="view" href="fallout76/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <a class="thumb-link" href="witcher3/" target="_blank" rel="noopener"><img src="screenshots/witcher3.jpg" alt="The White Wolf's Journal screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">🐺 The White Wolf's Journal</div>
+            <div class="desc">Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent.</div>
+            <div class="row"><a class="view" href="witcher3/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <a class="thumb-link" href="newvegas/" target="_blank" rel="noopener"><img src="screenshots/newvegas.jpg" alt="The Courier's Log screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">🎰 The Courier's Log</div>
+            <div class="desc">Fallout: New Vegas companion — all four ending paths, factions, companions, perks, unique gear, and snow globes.</div>
+            <div class="row"><a class="view" href="newvegas/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <a class="thumb-link" href="fallout4/" target="_blank" rel="noopener"><img src="screenshots/fallout4.jpg" alt="The Sole Survivor's Logbook screenshot" loading="lazy" /></a>
+          <div class="card-body">
+            <div class="name">🧊 The Sole Survivor's Logbook</div>
+            <div class="desc">Fallout 4 companion — all four faction endings, companions, the full S.P.E.C.I.A.L. perk chart, settlements, and gear.</div>
+            <div class="row"><a class="view" href="fallout4/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow2">Pricing</div>
+        <h3>Free to browse. Pro to sync.</h3>
+        <p>Every journal works fully offline in your browser at no cost. Cloud sync — so progress follows you across devices — is being rolled out journal by journal.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="plan">Free</div>
+          <div class="price">$0</div>
+          <ul>
+            <li>All 7 journals, fully browsable</li>
+            <li>Quest, gear &amp; collectible tracking</li>
+            <li>Progress saved in your browser</li>
+            <li>Optional personal GitHub-Gist backup</li>
+          </ul>
+          <a class="btn ghost" href="#journals-grid" style="text-align:center;">Start browsing</a>
+        </div>
+        <div class="price-card featured">
+          <span class="coming-soon-tag">Coming soon</span>
+          <div class="plan">Pro sync</div>
+          <div class="price">TBD <small>/ per journal</small></div>
+          <ul>
+            <li>Everything in Free</li>
+            <li>Account-based cloud sync</li>
+            <li>Progress follows you across devices</li>
+            <li>Priority for new journal requests</li>
+          </ul>
+          <button class="btn primary disabled" disabled>Coming soon</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FIELD KIT AUDITOR ============ -->
+<main class="panel" data-tab-panel="fieldkit" style="--accent:#3fa189; --accent-bright:#5fcdb0;">
+
+  <div class="project-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot" style="--dot-color:#3fa189"></span>Digital Tool Crib &amp; Field Kit Auditor</div>
+      <h2>Kit audits that work when <em>there's no signal.</em></h2>
+      <p class="sub">Offline-first inventory auditing for field techs, diesel fitters, and drilling crews — trucks, kits, and consumables tracked whether or not there's reception, with everything reconciling cleanly once the crew is back in range.</p>
+      <div class="status-strip"><span class="status-dot" style="--dot-color:#e2c158"></span>In active development — not yet publicly released</div>
+      <div class="cta-row">
         <button class="btn primary disabled" disabled>Coming soon</button>
+        <a class="btn ghost" href="#contact">Get notified</a>
       </div>
     </div>
   </div>
-</section>
 
-<section id="contact">
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow2">How it's built</div>
+        <h3>An event log, not a spreadsheet</h3>
+        <p>Every count, pack-out, and restock is an append-only event — so two techs auditing the same kit offline, syncing hours apart, never silently overwrite each other.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="fi">📶</div>
+          <h4>Offline-first, always</h4>
+          <p>A React PWA backed by IndexedDB — full functionality with zero signal, syncing to Supabase whenever a connection reappears.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">✅</div>
+          <h4>Pack-out audits</h4>
+          <p>Mandatory-missing items hard-block departure; low-stock consumables soft-warn instead — so real problems never get lost in noise.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">📋</div>
+          <h4>Restock manifests</h4>
+          <p>Generated straight from the same event log as the audits — no separate system to keep in sync, exportable as PDF or CSV.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🔁</div>
+          <h4>Idempotent sync</h4>
+          <p>Events replay safely no matter the order they arrive in; last-write-wins only where it's actually safe — locations, assets, kit metadata.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🪪</div>
+          <h4>Shared-device friendly</h4>
+          <p>A lightweight "chip tap" switch-user for trucks and tablets passed between techs — no login wall for the day-to-day.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🎒</div>
+          <h4>Built for the field, not an office</h4>
+          <p>High-contrast, outdoor-readable UI aimed at techs checking a kit in direct sun, not a warehouse desk.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ TIP LINE ============ -->
+<main class="panel" data-tab-panel="tipline" style="--accent:#5fa85f; --accent-bright:#8ad98a;">
+
+  <div class="project-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot" style="--dot-color:#6dbf6d"></span>Tip Line</div>
+      <h2>Footy tipping, <em>done properly.</em></h2>
+      <p class="sub">A private NRL &amp; AFL tipping app built for a mates' tipping group — ladders, crest-based team picks, and weekly results, without the clutter of a generic tipping site.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://tipline.bw8.dev" target="_blank" rel="noopener">Open Tip Line ↗</a>
+        <a class="btn ghost" href="#contact">Ask about access</a>
+      </div>
+    </div>
+  </div>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow2">Built for one group</div>
+        <h3>Private by design</h3>
+        <p>Tip Line runs for a specific tipping competition rather than the general public — get in touch if you'd like something similar stood up for your own group.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="fi">🏉</div>
+          <h4>NRL &amp; AFL support</h4>
+          <p>Round-by-round tipping for both codes, with live ladders and a running tally for the whole group.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🛡️</div>
+          <h4>Crest-based picks</h4>
+          <p>Team selection built around fixed-size club crests, not dropdown menus — quick to scan, quick to tip.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🔒</div>
+          <h4>Account &amp; sync</h4>
+          <p>Supabase-backed accounts keep tips and history in sync across every device, all season long.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FLIGHT LINE ============ -->
+<main class="panel" data-tab-panel="flightline" style="--accent:#5a8fd6; --accent-bright:#8fb6ea;">
+
+  <div class="project-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot" style="--dot-color:#5a8fd6"></span>Flight Line</div>
+      <h2>Watch a flight <em>without an account.</em></h2>
+      <p class="sub">A flight watchlist, live route status, and route map — no login, no database. Your watchlist lives in your own browser, and disappears the moment you don't want it anymore.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://flights.bw8.dev" target="_blank" rel="noopener">Open Flight Line ↗</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
+      </div>
+    </div>
+  </div>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow2">Deliberately simple</div>
+        <h3>Built to be glanced at, not read</h3>
+        <p>Status text stays short on purpose — airport codes and times, one colored dot for phase, and delays pulled out in bold red rather than buried in a paragraph.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="fi">✈️</div>
+          <h4>Flight watchlist</h4>
+          <p>Track flights by number — the one printed on a boarding pass — with live phase, delay, and countdown at a glance.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🗺️</div>
+          <h4>Route status &amp; map</h4>
+          <p>One-off route lookups and a live map, powered by AeroDataBox, for flights you're not actively watching.</p>
+        </div>
+        <div class="feat-card">
+          <div class="fi">🙅</div>
+          <h4>No accounts, no database</h4>
+          <p>The watchlist lives in your browser's local storage only — zero friction, genuinely per-device by design.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<section class="block" id="contact" style="border-top: 1px solid var(--border-soft);">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Get In Touch</div>
-      <h2>Questions, feedback, or a game request?</h2>
+      <div class="eyebrow2" style="color:var(--studio);">Get In Touch</div>
+      <h3>Questions, feedback, or a project request?</h3>
       <p>Send a note and I'll get back to you.</p>
     </div>
     <div class="contact-wrap">
@@ -305,7 +539,7 @@
           <label for="cf-message">Message</label>
           <textarea id="cf-message" name="message" required></textarea>
         </div>
-        <button type="submit" class="btn primary">Send message</button>
+        <button type="submit" class="btn primary" style="background:var(--studio); border-color:var(--studio);">Send message</button>
         <div id="contact-status"></div>
       </form>
     </div>
@@ -314,13 +548,47 @@
 
 <footer class="site-foot">
   <div class="wrap">
-    <span class="brand">JAW DIGITAL</span>
-    <p>Independently built companion journals for open-world games.</p>
-    <p style="margin-top: 10px;"><a href="www/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="www/terms.html">Terms</a></p>
+    <div class="brand-line">
+      <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true">
+        <path d="M 512 392 L 512 602" stroke="#a89b7f" stroke-width="40" stroke-linecap="round" fill="none"/>
+        <path d="M 512 392 L 457 457" stroke="#a89b7f" stroke-width="40" stroke-linecap="round" fill="none"/>
+        <path d="M 512 392 L 567 457" stroke="#a89b7f" stroke-width="40" stroke-linecap="round" fill="none"/>
+        <path d="M 472 492 L 512 542 L 552 492" stroke="#a89b7f" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M 472 572 L 512 622 L 552 572" stroke="#a89b7f" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>JAW DIGITAL</span>
+    </div>
+    <p>Independently built software — Companion Journals, Tip Line, Flight Line, and the Field Kit Auditor.</p>
+    <p class="links"><a href="www/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="www/terms.html">Terms</a></p>
   </div>
 </footer>
 
 <script>
+  // ---------- Tabs ----------
+  const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
+
+  function activateTab(id, opts) {
+    opts = opts || {};
+    tabBtns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === id)));
+    panels.forEach(p => p.setAttribute('data-visible', String(p.dataset.tabPanel === id)));
+    if (!opts.skipHash) {
+      history.replaceState(null, '', '#' + id);
+    }
+    if (opts.scroll) {
+      document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab, { scroll: true }));
+  });
+
+  const validTabs = tabBtns.map(b => b.dataset.tab);
+  const initial = validTabs.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'journals';
+  activateTab(initial, { skipHash: true });
+
+  // ---------- Contact form ----------
   const form = document.getElementById('contact-form');
   const status = document.getElementById('contact-status');
   form.addEventListener('submit', async (e) => {
