@@ -659,6 +659,13 @@ const SEED_TASKS = [
   t('Inspect roof void / subfloor for pest activity', 'pest', 'annual', null, ''),
 ];
 
+// Snapshot the seed data as JSON right away — tasks get mutated in place as the
+// app runs (mark complete, edit), so SEED_TASKS itself is not safe to reuse
+// later. freshSeedTasks() always hands back untouched copies, both for the
+// first-ever load and for Reset.
+const SEED_TASKS_JSON = JSON.stringify(SEED_TASKS);
+function freshSeedTasks() { return JSON.parse(SEED_TASKS_JSON); }
+
 /* ============================= STATE ============================= */
 
 const TASKS_KEY = 'hmc_tasks';
@@ -677,13 +684,13 @@ let resetTimer = null;
 function loadState() {
   try {
     const rawTasks = localStorage.getItem(TASKS_KEY);
-    tasks = rawTasks ? JSON.parse(rawTasks) : SEED_TASKS;
-  } catch (e) { tasks = SEED_TASKS; }
+    tasks = rawTasks ? JSON.parse(rawTasks) : freshSeedTasks();
+  } catch (e) { tasks = freshSeedTasks(); }
   try {
     const rawLog = localStorage.getItem(LOG_KEY);
     completedLog = rawLog ? JSON.parse(rawLog) : [];
   } catch (e) { completedLog = []; }
-  if (!Array.isArray(tasks) || tasks.length === 0) tasks = SEED_TASKS;
+  if (!Array.isArray(tasks) || tasks.length === 0) tasks = freshSeedTasks();
   if (!Array.isArray(completedLog)) completedLog = [];
 }
 function saveTasks() { try { localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); } catch (e) { console.error('Could not save tasks', e); } }
@@ -1120,8 +1127,7 @@ function handleResetClick() {
   } else {
     clearTimeout(resetTimer);
     resetArmed = false;
-    SEED_ID = 1;
-    tasks = SEED_TASKS.map(x => ({ ...x }));
+    tasks = freshSeedTasks();
     completedLog = [];
     saveTasks(); saveLog();
     renderAll();
