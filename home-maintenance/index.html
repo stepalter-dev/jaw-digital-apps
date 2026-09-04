@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="canonical" href="https://stepalter-dev.github.io/jaw-digital-apps/home-maintenance/" />
+<meta name="theme-color" content="#FBF3E6" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🏠%3C/text%3E%3C/svg%3E" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="JAW Digital" />
+<meta property="og:title" content="Home Maintenance Companion" />
+<meta property="og:description" content="A warm, simple household maintenance tracker — HVAC, plumbing, appliances, safety, garden and more, all in one place." />
+<meta property="og:url" content="https://stepalter-dev.github.io/jaw-digital-apps/home-maintenance/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Home Maintenance Companion" />
+<meta name="twitter:description" content="A warm, simple household maintenance tracker — HVAC, plumbing, appliances, safety, garden and more, all in one place." />
 <title>Home Maintenance Companion</title>
 <meta name="description" content="A warm, simple household maintenance tracker — HVAC, plumbing, appliances, safety, garden and more, all in one place." />
 <style>
@@ -485,6 +496,22 @@
     }
     .nav-mobile .nav-btn { flex-shrink: 0; }
     .page { padding: 20px 16px 50px; }
+  }
+
+  /* ---- shared accessibility defaults (JAW Digital suite) ---- */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 </style>
 </head>
@@ -1149,5 +1176,6 @@ loadTheme();
 loadState();
 renderAll();
 </script>
+<script src="../studio-nav.js" defer></script>
 </body>
 </html>

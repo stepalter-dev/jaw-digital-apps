@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile." />
+<link rel="canonical" href="https://stepalter-dev.github.io/jaw-digital-apps/fallout76/" />
+<meta name="theme-color" content="#030b06" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E📻%3C/text%3E%3C/svg%3E" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="JAW Digital" />
+<meta property="og:title" content="Vault Dweller's Almanac — Fallout 76 Companion" />
+<meta property="og:description" content="Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile." />
+<meta property="og:url" content="https://stepalter-dev.github.io/jaw-digital-apps/fallout76/" />
+<meta property="og:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/fallout76.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Vault Dweller's Almanac — Fallout 76 Companion" />
+<meta name="twitter:description" content="Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile." />
+<meta name="twitter:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/fallout76.jpg" />
 <title>Vault Dweller's Almanac — Fallout 76 Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -290,6 +304,22 @@
     .page { padding: 24px 18px 40px; }
     .form-grid7 { grid-template-columns: repeat(4, 1fr); }
   }
+
+  /* ---- shared accessibility defaults (JAW Digital suite) ---- */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -321,7 +351,7 @@
 
     <section id="content"></section>
 
-    <footer class="note">Field data compiled for one Vault Dweller by JAW Digital — verify against live game balance; Bethesda tweaks perk costs & levels regularly.</footer>
+    <footer class="note">A record kept for one Vault Dweller by JAW Digital<br /><small>Verify against live game balance &mdash; Bethesda tweaks perk costs &amp; levels regularly.</small></footer>
   </main>
 </div>
 
@@ -1275,5 +1305,6 @@ loadProgress();
 renderAll();
 syncPullAndReconcile();
 </script>
+<script src="../studio-nav.js" defer></script>
 </body>
 </html>
