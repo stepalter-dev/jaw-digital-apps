@@ -13,7 +13,7 @@
  *    wiring in each game's index.html).
  *
  * Requires a GitHub personal access token with the "gist" scope. Nothing
- * syncs until one is entered via the widget's gear icon (bottom-right corner
+ * syncs until one is entered via the widget's gear icon (top-right corner
  * of every page). The token and gist id are stored in localStorage under
  * "jaw-sync-config" — losing *that* only means re-pasting the token or gist
  * URL; it does not touch the progress data sitting in the Gist itself.
@@ -99,11 +99,38 @@
     }
   }
 
-  // --- tiny status widget, bottom-right on every page ---
-  let statusEl, dotEl;
+  // --- tiny status widget, top-right, tucked under the account pill ---
+  let statusEl, dotEl, wrapEl;
+
+  // The account widget (account.js, .jaw-acc-widget) also sits at top:14px
+  // right:14px, and is only built once supabase-js has loaded — so it can
+  // appear after this one. Measure it when it turns up rather than assuming a
+  // fixed offset, and fall back to the corner on pages without account.js.
+  function placeWidget() {
+    if (!wrapEl) return;
+    const acc = document.querySelector('.jaw-acc-widget');
+    const top = acc ? Math.round(acc.getBoundingClientRect().bottom + 10) : 14;
+    wrapEl.style.top = top + 'px';
+  }
+
+  function watchForAccountWidget() {
+    if (document.querySelector('.jaw-acc-widget')) { placeWidget(); return; }
+    if (typeof MutationObserver !== 'function') return;
+    const obs = new MutationObserver(function () {
+      if (document.querySelector('.jaw-acc-widget')) {
+        placeWidget();
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+    // Don't observe forever on pages that never load account.js.
+    setTimeout(function () { obs.disconnect(); }, 15000);
+  }
+
   function buildWidget() {
     const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:fixed;bottom:14px;right:14px;z-index:99999;font-family:system-ui,sans-serif;font-size:12px;display:flex;align-items:center;gap:6px;background:#1c1812;color:#e8e0d0;border:1px solid #3a3226;border-radius:20px;padding:6px 10px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);';
+    wrapEl = wrap;
+    wrap.style.cssText = 'position:fixed;top:14px;right:14px;z-index:99998;font-family:system-ui,sans-serif;font-size:12px;display:flex;align-items:center;gap:6px;background:#1c1812;color:#e8e0d0;border:1px solid #3a3226;border-radius:20px;padding:6px 10px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);';
     dotEl = document.createElement('span');
     dotEl.style.cssText = 'width:8px;height:8px;border-radius:50%;background:#786b4e;flex:none;';
     statusEl = document.createElement('span');
@@ -112,6 +139,9 @@
     wrap.appendChild(statusEl);
     wrap.addEventListener('click', openSettings);
     document.body.appendChild(wrap);
+    placeWidget();
+    watchForAccountWidget();
+    window.addEventListener('resize', placeWidget);
   }
   function setStatus(state) {
     if (!dotEl) return;
