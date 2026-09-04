@@ -265,6 +265,33 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* ---------- resume card ---------- */
+  .resume-card {
+    display: inline-flex; align-items: center; gap: 14px;
+    margin: 18px auto 0; text-decoration: none;
+    background: var(--panel); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 5px;
+    padding: 12px 18px 12px 16px; max-width: 100%;
+    transition: border-color .15s ease, background .15s ease;
+    text-align: left;
+  }
+  .resume-card:hover { background: var(--bg-raised); border-color: var(--accent); }
+  .resume-card:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 3px; }
+  .resume-icon {
+    font-family: system-ui, 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+    font-size: 22px; line-height: 1; flex: none;
+  }
+  .resume-text { display: flex; flex-direction: column; min-width: 0; }
+  .resume-label {
+    font-size: 10.5px; letter-spacing: 0.11em; text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .resume-title {
+    font-size: 15px; color: var(--ink); overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .resume-go { color: var(--accent-bright); font-size: 17px; flex: none; }
 </style>
 </head>
 <body>
@@ -322,6 +349,14 @@
         <a class="btn primary" href="#journals-grid">Browse the journals</a>
         <a class="btn ghost" href="#contact">Get in touch</a>
       </div>
+      <a class="resume-card" id="resumeCard" href="#" hidden>
+        <span class="resume-icon" id="resumeIcon" aria-hidden="true"></span>
+        <span class="resume-text">
+          <span class="resume-label">Pick up where you left off</span>
+          <span class="resume-title" id="resumeTitle"></span>
+        </span>
+        <span class="resume-go" aria-hidden="true">&rarr;</span>
+      </a>
       <div class="stat-row">
         <div class="stat"><div class="n">6</div><div class="l">Journals live</div></div>
         <div class="stat"><div class="n">100%</div><div class="l">Works offline</div></div>
@@ -749,6 +784,25 @@
     strip.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
     update();
+  })();
+
+  // If a journal has been opened on this device, offer it straight back.
+  // Journals share this origin, so they write the key themselves
+  // (see journal-app.js) and nothing server-side is involved.
+  (function () {
+    var card = document.getElementById('resumeCard');
+    if (!card) return;
+    var raw;
+    try { raw = localStorage.getItem('jaw_last_journal'); } catch (e) { return; }
+    if (!raw) return;
+    var last;
+    try { last = JSON.parse(raw); } catch (e) { return; }
+    if (!last || !last.slug || !last.title) return;
+
+    document.getElementById('resumeIcon').textContent = last.icon || '📖';
+    document.getElementById('resumeTitle').textContent = last.title;
+    card.setAttribute('href', last.slug + '/');
+    card.hidden = false;
   })();
 </script>
 
