@@ -21,7 +21,8 @@
     { slug: 'fallout76', icon: '📻', name: "Vault Dweller's Almanac", game: 'Fallout 76' },
     { slug: 'witcher3',  icon: '🐺', name: "The White Wolf's Journal", game: 'Witcher 3' },
     { slug: 'newvegas',  icon: '🎰', name: "The Courier's Log", game: 'New Vegas' },
-    { slug: 'fallout4',  icon: '🧊', name: "The Sole Survivor's Logbook", game: 'Fallout 4' }
+    { slug: 'fallout4',  icon: '🧊', name: "The Sole Survivor's Logbook", game: 'Fallout 4' },
+    { slug: 'cyberpunk', icon: '🌃', name: "The Merc's Shard", game: 'Cyberpunk 2077' }
   ];
 
   var STUDIO_MARK =

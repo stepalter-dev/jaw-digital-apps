@@ -2,7 +2,7 @@
   "name": "jaw-digital-companion-journals",
   "version": "1.0.0",
   "private": true,
-  "description": "JAW Digital Companion Journals — umbrella iOS/Android app wrapping the Skyrim, Oblivion, Fallout 4, Fallout 76, New Vegas, and Witcher 3 companion journals.",
+  "description": "JAW Digital Companion Journals — umbrella iOS/Android app wrapping the Skyrim, Oblivion, Fallout 4, Fallout 76, New Vegas, Witcher 3, and Cyberpunk 2077 companion journals.",
   "scripts": {
     "assets": "capacitor-assets generate",
     "sync": "npx cap sync",
