@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Molly's Field Journal is unlisted — it stays online for the person it was
+# made for, but shouldn't appear in search results.
+Disallow: /jaw-digital-apps/rdr2/
+
+Sitemap: https://stepalter-dev.github.io/jaw-digital-apps/sitemap.xml

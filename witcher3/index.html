@@ -3,9 +3,25 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent." />
+<link rel="canonical" href="https://stepalter-dev.github.io/jaw-digital-apps/witcher3/" />
+<meta name="theme-color" content="#0A0C0F" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🐺%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="JAW Digital" />
+<meta property="og:title" content="The White Wolf's Journal — Witcher 3 Companion" />
+<meta property="og:description" content="Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent." />
+<meta property="og:url" content="https://stepalter-dev.github.io/jaw-digital-apps/witcher3/" />
+<meta property="og:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/witcher3.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The White Wolf's Journal — Witcher 3 Companion" />
+<meta name="twitter:description" content="Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent." />
+<meta name="twitter:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/witcher3.jpg" />
 <title>The White Wolf's Journal — Witcher 3 Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral+SC:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+SC:wght@400;500;700;900&family=Grenze+Gotisch:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     /* canvas — oiled steel & wet leather, not warm like the Imperial/Nordic journals */
@@ -44,7 +60,7 @@
       radial-gradient(ellipse at 50% -10%, rgba(111,184,217,0.05), transparent 40%),
       radial-gradient(ellipse at 12% 0%, rgba(176,130,74,0.05), transparent 50%),
       radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.65) 100%);
-    font-family: 'Spectral', serif;
+    font-family: 'Alegreya', serif;
     color: var(--ink);
     min-height: 100vh;
     padding: 24px 16px 60px;
@@ -78,7 +94,7 @@
     pointer-events: none;
   }
   .nav-brand {
-    font-family: 'Cinzel Decorative', serif;
+    font-family: 'Grenze Gotisch', 'Alegreya SC', serif;
     font-size: 15px;
     color: var(--frost);
     text-align: center;
@@ -98,7 +114,7 @@
     padding: 11px 18px;
     margin: 1px 8px;
     color: var(--ink-soft);
-    font-family: 'Cinzel', serif;
+    font-family: 'Alegreya SC', serif;
     font-weight: 500;
     font-size: 11.5px;
     letter-spacing: 0.1em;
@@ -160,7 +176,7 @@
     z-index: 1;
   }
   h1 {
-    font-family: 'Cinzel', serif;
+    font-family: 'Alegreya SC', serif;
     font-weight: 700;
     font-size: clamp(20px, 3vw, 30px);
     color: var(--heading);
@@ -170,14 +186,14 @@
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
   .subtitle {
-    font-family: 'Spectral SC', serif;
+    font-family: 'Alegreya SC', serif;
     font-size: 12px;
     color: var(--ink-soft);
     letter-spacing: 0.03em;
     margin-top: 5px;
   }
   .seal {
-    font-family: 'Cinzel', serif;
+    font-family: 'Alegreya SC', serif;
     font-size: 10px;
     color: #E8C766;
     background: radial-gradient(circle at 35% 30%, #3A4552, #12151A 75%);
@@ -230,7 +246,7 @@
   }
   .search-plate input {
     background: transparent; border: none; outline: none; color: var(--ink);
-    font-family: 'Spectral', serif; font-size: 13px; width: 100%; letter-spacing: 0.02em;
+    font-family: 'Alegreya', serif; font-size: 13px; width: 100%; letter-spacing: 0.02em;
   }
   .search-plate input::placeholder { color: var(--ink-dim); }
 
@@ -248,7 +264,7 @@
   .back-to-top:hover { border-color: var(--gold-dim); color: var(--gold); }
 
   .filter-pill {
-    font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft);
+    font-family: 'Alegreya SC', serif; font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-soft);
     background: transparent; border: none; border-bottom: 2px solid transparent;
     padding: 7px 10px 6px; cursor: pointer; user-select: none; text-transform: uppercase;
     transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
@@ -260,7 +276,7 @@
 
   .sub-row { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 18px; position: relative; z-index: 1; }
   .sub-pill {
-    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-soft);
+    font-family: 'Alegreya SC', serif; font-size: 11px; letter-spacing: 0.08em; color: var(--ink-soft);
     background: transparent; border: none; border-bottom: 2px solid transparent;
     padding: 7px 12px 6px; cursor: pointer; text-transform: uppercase;
     transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
@@ -277,7 +293,7 @@
     padding: 12px 16px; margin-bottom: 18px; font-size: 12.5px; color: var(--ink-soft);
     line-height: 1.5; position: relative; z-index: 1;
   }
-  .branch-banner b { color: var(--blood); font-family:'Cinzel', serif; font-size: 11px; letter-spacing:0.06em; text-transform: uppercase; }
+  .branch-banner b { color: var(--blood); font-family:'Alegreya SC', serif; font-size: 11px; letter-spacing:0.06em; text-transform: uppercase; }
 
   .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; position: relative; z-index: 1; }
   .dash-card {
@@ -288,10 +304,10 @@
   .dash-card:hover { transform: translateY(-2px); border-color: var(--gold-dim); box-shadow: 2px 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 var(--panel-hi), 0 0 12px rgba(176,130,74,0.12); }
   .dash-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .dash-icon { font-size: 18px; }
-  .dash-label { font-family: 'Cinzel', serif; font-size: 12px; color: var(--heading); letter-spacing: 0.08em; text-transform: uppercase; }
+  .dash-label { font-family: 'Alegreya SC', serif; font-size: 12px; color: var(--heading); letter-spacing: 0.08em; text-transform: uppercase; }
   .dash-bar-track { background: rgba(0,0,0,0.08); border: 1px solid var(--iron); height: 7px; overflow: hidden; margin-bottom: 8px; }
   .dash-bar-fill { background: var(--frost); height: 100%; transition: width .3s ease; }
-  .dash-count { font-family: 'Spectral', serif; font-size: 11px; color: var(--ink-soft); }
+  .dash-count { font-family: 'Alegreya', serif; font-size: 11px; color: var(--ink-soft); }
 
   .overview-hero {
     display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
@@ -302,26 +318,26 @@
   .completion-ring { width: 104px; height: 104px; transform: rotate(-90deg); }
   .completion-ring-track { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 9; }
   .completion-ring-fill { fill: none; stroke: var(--frost); stroke-width: 9; stroke-linecap: butt; transition: stroke-dashoffset .6s ease; }
-  .completion-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 21px; font-weight: 600; color: var(--heading); }
+  .completion-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Alegreya SC', serif; font-size: 21px; font-weight: 600; color: var(--heading); }
   .overview-hero-info { flex: 1; min-width: 220px; }
-  .overview-hero-title { font-family: 'Cinzel', serif; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 4px; }
-  .overview-hero-count { font-family: 'Spectral', serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
+  .overview-hero-title { font-family: 'Alegreya SC', serif; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 4px; }
+  .overview-hero-count { font-family: 'Alegreya', serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
   .points-total-badge {
-    display: inline-flex; align-items: center; gap: 7px; font-family: 'Spectral SC', serif; font-size: 12.5px;
+    display: inline-flex; align-items: center; gap: 7px; font-family: 'Alegreya SC', serif; font-size: 12.5px;
     color: var(--gold-bright); background: rgba(176,130,74,0.1); border: 1px solid rgba(176,130,74,0.35); padding: 6px 13px;
   }
 
-  .io-btn { all: unset; cursor: pointer; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.06em; color: var(--frost); border: 1px solid var(--frost-dim); padding: 8px 14px; text-transform: uppercase; }
+  .io-btn { all: unset; cursor: pointer; font-family: 'Alegreya SC', serif; font-size: 11px; letter-spacing: 0.06em; color: var(--frost); border: 1px solid var(--frost-dim); padding: 8px 14px; text-transform: uppercase; }
   .io-btn:hover { background: rgba(111,184,217,0.1); }
-  .io-status { font-family: 'Spectral', serif; font-size: 11.5px; opacity: 0.9; }
+  .io-status { font-family: 'Alegreya', serif; font-size: 11.5px; opacity: 0.9; }
   .io-status.ok { color: var(--sage-ok); }
   .io-status.err { color: var(--blood); }
 
   .reset-zone { margin-top: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
-  .reset-btn { all: unset; cursor: pointer; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.06em; color: var(--blood); border: 1px solid var(--blood); padding: 8px 14px; text-transform: uppercase; }
+  .reset-btn { all: unset; cursor: pointer; font-family: 'Alegreya SC', serif; font-size: 11px; letter-spacing: 0.06em; color: var(--blood); border: 1px solid var(--blood); padding: 8px 14px; text-transform: uppercase; }
   .reset-btn:hover { background: rgba(162,42,42,0.12); }
   .reset-btn.armed { background: var(--blood); color: var(--stone-1); }
-  .reset-hint { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
+  .reset-hint { font-family: 'Alegreya', serif; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
 
   .entries { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
 
@@ -334,8 +350,8 @@
 
   .quest-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
   .quest-title-wrap { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-  .quest h3 { font-family: 'Cinzel', serif; font-weight: 600; font-size: 14.5px; margin: 0; color: var(--heading); letter-spacing: 0.02em; line-height: 1.35; }
-  .tag-chip { font-family: 'Spectral SC', serif; font-size: 9.5px; letter-spacing: 0.03em; padding: 2px 7px; text-transform: uppercase; }
+  .quest h3 { font-family: 'Alegreya SC', serif; font-weight: 600; font-size: 14.5px; margin: 0; color: var(--heading); letter-spacing: 0.02em; line-height: 1.35; }
+  .tag-chip { font-family: 'Alegreya SC', serif; font-size: 9.5px; letter-spacing: 0.03em; padding: 2px 7px; text-transform: uppercase; }
   .tag-optional { background: rgba(111,184,217,0.14); color: var(--frost); }
   .tag-rare { background: rgba(111,184,217,0.14); color: var(--frost); }
   .tag-uncommon { background: rgba(176,130,74,0.18); color: var(--moss); }
@@ -347,7 +363,7 @@
   .fav-btn:hover { color: var(--gold-dim); opacity: 1; }
   .fav-btn.active { color: var(--gold-bright); opacity: 1; transform: scale(1.12); text-shadow: 0 0 8px rgba(217,174,109,0.45); }
 
-  .quest-meta { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
+  .quest-meta { font-family: 'Alegreya', serif; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
   .quest-meta span { margin-right: 12px; }
   .quest-meta b { color: var(--heading); font-weight: 600; }
 
@@ -355,15 +371,15 @@
   .quest-steps li { margin-bottom: 4px; }
 
   .rewards-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-  .reward-chip { font-family: 'Spectral', serif; font-size: 11px; color: var(--gold-bright); background: rgba(176,130,74,0.14); border: 1px solid rgba(176,130,74,0.45); padding: 3px 9px; margin: 0; }
+  .reward-chip { font-family: 'Alegreya', serif; font-size: 11px; color: var(--gold-bright); background: rgba(176,130,74,0.14); border: 1px solid rgba(176,130,74,0.45); padding: 3px 9px; margin: 0; }
 
   .quest-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .track-btn { display: flex; align-items: center; gap: 6px; color: var(--ink-soft); font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+  .track-btn { display: flex; align-items: center; gap: 6px; color: var(--ink-soft); font-family: 'Alegreya SC', serif; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
   .track-btn .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); display: inline-block; }
   .quest.done .track-btn .box { background: var(--sage-ok); border-color: var(--sage-ok); }
   .quest.done .track-btn { color: var(--sage-ok); opacity: 1; }
 
-  .empty-state { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); padding: 46px 10px; text-align: center; opacity: 0.8; position: relative; z-index: 1; }
+  .empty-state { font-family: 'Alegreya SC', serif; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); padding: 46px 10px; text-align: center; opacity: 0.8; position: relative; z-index: 1; }
 
   .search-result-card { cursor: pointer; transition: border-left-color .15s ease, background .15s ease; }
   .search-result-card:hover { border-left-color: var(--frost); background: rgba(111,184,217,0.05); }
@@ -374,7 +390,7 @@
   @keyframes flashHighlight { 0%, 100% { box-shadow: 0 0 0 0 rgba(111,184,217,0); } 20% { box-shadow: 0 0 0 4px rgba(111,184,217,0.55); } }
   .quest.flash-highlight { animation: flashHighlight 2.2s ease-out; }
 
-  footer.note { margin-top: 32px; text-align: center; font-family: 'Spectral SC', serif; font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.6; position: relative; z-index: 1; }
+  footer.note { margin-top: 32px; text-align: center; font-family: 'Alegreya SC', serif; font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-soft); opacity: 0.6; position: relative; z-index: 1; }
 
   @media (min-width: 1180px) {
     .entries { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 16px; align-items: start; }
@@ -388,6 +404,22 @@
     .nav-mobile { display: flex; overflow-x: auto; gap: 6px; padding: 12px; background: var(--stone-1); }
     .nav-mobile .nav-btn { margin: 0; flex-shrink: 0; }
     .page { padding: 24px 18px 40px; }
+  }
+
+  /* ---- shared accessibility defaults (JAW Digital suite) ---- */
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 </style>
 </head>
@@ -416,7 +448,7 @@
       <span class="filter-pill active" data-fav="all">All entries</span>
       <span class="filter-pill" data-fav="favorites">★ Favorites only</span>
       <span class="filter-pill" data-hide-done="true">✓ Hide completed</span>
-      <span id="progress-tally" style="display:none; font-family:'Spectral SC', serif; font-size:11px; color: var(--sage-ok);"></span>
+      <span id="progress-tally" style="display:none; font-family:'Alegreya SC', serif; font-size:11px; color: var(--sage-ok);"></span>
     </div>
 
     <div class="sub-row" id="sub-row" style="display:none;"></div>
@@ -424,7 +456,7 @@
 
     <section class="entries" id="entries"></section>
 
-    <footer class="note">Field notes kept by one witcher of the School of the Wolf, for JAW Digital</footer>
+    <footer class="note">A record kept for one witcher of the School of the Wolf by JAW Digital</footer>
   </main>
 </div>
 
@@ -1254,5 +1286,7 @@ if (window.JawAccount) {
   syncAccountPullAndReconcile();
 }
 </script>
+<script src="../studio-nav.js" defer></script>
+<script src="../journal-app.js" defer></script>
 </body>
 </html>

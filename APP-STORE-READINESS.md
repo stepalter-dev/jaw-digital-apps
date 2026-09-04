@@ -1,6 +1,6 @@
 # App Store readiness — JAW Digital Companion Journals
 
-Scaffolding for wrapping the umbrella journal app (Skyrim, Oblivion, RDR2, Fallout 4,
+Scaffolding for wrapping the umbrella journal app (Skyrim, Oblivion, Fallout 4,
 Fallout 76, New Vegas, Witcher 3) with Capacitor for iOS + Android. This machine has no
 Node.js, and iOS builds require Xcode on macOS regardless — so the steps below are what
 to run on a Mac (for iOS) or any machine with Node (for Android).

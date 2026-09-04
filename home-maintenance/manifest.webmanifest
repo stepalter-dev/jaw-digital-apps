@@ -1,0 +1,16 @@
+{
+  "name": "Home Maintenance Companion",
+  "short_name": "Home Upkeep",
+  "description": "Household maintenance tracker — HVAC, plumbing, appliances, safety and garden.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FBF3E6",
+  "theme_color": "#FBF3E6",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

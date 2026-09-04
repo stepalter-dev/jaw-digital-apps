@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>JAW Digital — independent software studio</title>
 <meta name="description" content="JAW Digital builds small, sharp tools: Companion Journals for open-world games, Tip Line, Flight Line, the Field Kit Auditor, and Home Maintenance Companion." />
+<link rel="canonical" href="https://stepalter-dev.github.io/jaw-digital-apps/" />
+<meta name="theme-color" content="#131110" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' fill='%231c1712'/%3E%3Ccircle cx='512' cy='512' r='300' fill='%237a3230'/%3E%3Cg transform='translate(512 512)' fill='none' stroke='%23e6c988' stroke-width='52' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M 0 -150 L 0 120'/%3E%3Cpath d='M 0 -150 L -70 -70'/%3E%3Cpath d='M 0 -150 L 70 -70'/%3E%3Cpath d='M -55 -25 L 0 40 L 55 -25'/%3E%3Cpath d='M -55 75 L 0 140 L 55 75'/%3E%3C/g%3E%3C/svg%3E" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="JAW Digital" />
+<meta property="og:title" content="JAW Digital — independent software studio" />
+<meta property="og:description" content="Small, sharp tools: six companion journals for open-world games, a footy tipping app, a flight watchlist, a field kit auditor, and a household maintenance tracker." />
+<meta property="og:url" content="https://stepalter-dev.github.io/jaw-digital-apps/" />
+<meta property="og:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/skyrim.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="JAW Digital — independent software studio" />
+<meta name="twitter:description" content="Small, sharp tools: six companion journals for open-world games, a footy tipping app, a flight watchlist, a field kit auditor, and a household maintenance tracker." />
+<meta name="twitter:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/skyrim.jpg" />
 <style>
   :root {
     --bg: #131110;
@@ -208,6 +222,76 @@
     .nav-meta { display: none; }
     .stat-row { gap: 24px; }
   }
+
+  /* ---------- accessibility & polish ---------- */
+  :focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .tab-btn:focus-visible, .btn:focus-visible, a:focus-visible {
+    outline: 2px solid var(--studio-bright);
+    outline-offset: 3px;
+  }
+
+  footer.site-foot .copyright {
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--ink-dim);
+    margin-top: 10px;
+  }
+
+  /* Fade the right edge of the project tab strip so it reads as scrollable
+     on narrow screens, where the last tabs sit off-screen. */
+  .tabbar-shell { position: relative; }
+  .tabbar-shell::after {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 44px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .18s ease;
+    background: linear-gradient(to right, rgba(19,17,16,0), rgba(19,17,16,0.95));
+  }
+  .tabbar-shell[data-scrollable="true"]::after { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* ---------- resume card ---------- */
+  .resume-card {
+    display: inline-flex; align-items: center; gap: 14px;
+    margin: 18px auto 0; text-decoration: none;
+    background: var(--panel); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 5px;
+    padding: 12px 18px 12px 16px; max-width: 100%;
+    transition: border-color .15s ease, background .15s ease;
+    text-align: left;
+  }
+  .resume-card:hover { background: var(--bg-raised); border-color: var(--accent); }
+  .resume-card:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 3px; }
+  .resume-icon {
+    font-family: system-ui, 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+    font-size: 22px; line-height: 1; flex: none;
+  }
+  .resume-text { display: flex; flex-direction: column; min-width: 0; }
+  .resume-label {
+    font-size: 10.5px; letter-spacing: 0.11em; text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .resume-title {
+    font-size: 15px; color: var(--ink); overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .resume-go { color: var(--accent-bright); font-size: 17px; flex: none; }
 </style>
 </head>
 <body>
@@ -234,12 +318,14 @@
         <a href="#contact">Contact</a>
       </nav>
     </div>
+    <div class="tabbar-shell">
     <div class="tabbar" role="tablist" aria-label="Projects">
       <button class="tab-btn" role="tab" data-tab="journals" style="--dot-color:#c9a227"><span class="dot"></span>Gaming Journals</button>
       <button class="tab-btn" role="tab" data-tab="fieldkit" style="--dot-color:#3fa189"><span class="dot"></span>Field Kit Auditor</button>
       <button class="tab-btn" role="tab" data-tab="tipline" style="--dot-color:#6dbf6d"><span class="dot"></span>Tip Line</button>
       <button class="tab-btn" role="tab" data-tab="flightline" style="--dot-color:#5a8fd6"><span class="dot"></span>Flight Line</button>
       <button class="tab-btn" role="tab" data-tab="homemaintenance" style="--dot-color:#c9822f"><span class="dot"></span>Home Maintenance</button>
+    </div>
     </div>
   </div>
 </header>
@@ -258,14 +344,22 @@
     <div class="wrap">
       <div class="eyebrow"><span class="dot" style="--dot-color:#c9a227"></span>Companion Journals</div>
       <h2>Field journals for <em>open-world games</em>, built to last longer than your save file.</h2>
-      <p class="sub">Quest checklists, gear trackers, and collectible logs for seven open-world games — browsable free in any browser, with optional cloud sync so your progress follows you from your desktop to your phone.</p>
+      <p class="sub">Quest checklists, gear trackers, and collectible logs for six open-world games — browsable free in any browser, with optional cloud sync so your progress follows you from your desktop to your phone.</p>
       <div class="cta-row">
         <a class="btn primary" href="#journals-grid">Browse the journals</a>
         <a class="btn ghost" href="#contact">Get in touch</a>
       </div>
+      <a class="resume-card" id="resumeCard" href="#" hidden>
+        <span class="resume-icon" id="resumeIcon" aria-hidden="true"></span>
+        <span class="resume-text">
+          <span class="resume-label">Pick up where you left off</span>
+          <span class="resume-title" id="resumeTitle"></span>
+        </span>
+        <span class="resume-go" aria-hidden="true">&rarr;</span>
+      </a>
       <div class="stat-row">
-        <div class="stat"><div class="n">1</div><div class="l">Journal live</div></div>
-        <div class="stat"><div class="n">6</div><div class="l">In development</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Journals live</div></div>
+        <div class="stat"><div class="n">100%</div><div class="l">Works offline</div></div>
         <div class="stat"><div class="n">$0</div><div class="l">To browse &amp; track</div></div>
       </div>
     </div>
@@ -275,8 +369,8 @@
     <div class="wrap">
       <div class="section-head">
         <div class="eyebrow2">The Lineup</div>
-        <h3>Seven games, seven journals</h3>
-        <p>Each one is a full single-page app: searchable, favoritable, and organized the way that game's own systems work — not a generic checklist template. Dragonborn's Field Journal is live now; the rest are in active development.</p>
+        <h3>Six games, six journals</h3>
+        <p>Each one is a full single-page app: searchable, favoritable, and organized the way that game's own systems work — not a generic checklist template. All six are live and free to browse right now.</p>
       </div>
       <div class="grid">
 
@@ -289,57 +383,48 @@
           </div>
         </div>
 
-        <div class="card dev">
-          <div class="thumb-link"><span class="dev-ribbon">Coming soon</span><img src="screenshots/oblivion.jpg" alt="The Champion's Codex screenshot" loading="lazy" /></div>
+        <div class="card">
+          <a class="thumb-link" href="oblivion/" target="_blank" rel="noopener"><img src="screenshots/oblivion.jpg" alt="The Champion's Codex screenshot" loading="lazy" /></a>
           <div class="card-body">
             <div class="name">🏛️ The Champion's Codex</div>
             <div class="desc">Oblivion companion — Main Quest, every guild questline, Daedric shrines, achievements, and alchemy.</div>
-            <div class="row"><span class="view disabled">In development</span><span class="badge">Free + Pro sync</span></div>
+            <div class="row"><a class="view" href="oblivion/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
           </div>
         </div>
 
-        <div class="card dev">
-          <div class="thumb-link"><span class="dev-ribbon">Coming soon</span><img src="screenshots/rdr2.jpg" alt="Molly's Field Journal screenshot" loading="lazy" /></div>
-          <div class="card-body">
-            <div class="name">🤠 Molly's Field Journal</div>
-            <div class="desc">Red Dead Redemption 2 companion — compendium, challenges, 100% mission tips, treasure maps, and an Arthur/John toggle.</div>
-            <div class="row"><span class="view disabled">In development</span><span class="badge">Free + Pro sync</span></div>
-          </div>
-        </div>
-
-        <div class="card dev">
-          <div class="thumb-link"><span class="dev-ribbon">Coming soon</span><img src="screenshots/fallout76.jpg" alt="Vault Dweller's Almanac screenshot" loading="lazy" /></div>
+        <div class="card">
+          <a class="thumb-link" href="fallout76/" target="_blank" rel="noopener"><img src="screenshots/fallout76.jpg" alt="Vault Dweller's Almanac screenshot" loading="lazy" /></a>
           <div class="card-body">
             <div class="name">📻 Vault Dweller's Almanac</div>
             <div class="desc">Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile.</div>
-            <div class="row"><span class="view disabled">In development</span><span class="badge">Free + Pro sync</span></div>
+            <div class="row"><a class="view" href="fallout76/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
           </div>
         </div>
 
-        <div class="card dev">
-          <div class="thumb-link"><span class="dev-ribbon">Coming soon</span><img src="screenshots/witcher3.jpg" alt="The White Wolf's Journal screenshot" loading="lazy" /></div>
+        <div class="card">
+          <a class="thumb-link" href="witcher3/" target="_blank" rel="noopener"><img src="screenshots/witcher3.jpg" alt="The White Wolf's Journal screenshot" loading="lazy" /></a>
           <div class="card-body">
             <div class="name">🐺 The White Wolf's Journal</div>
             <div class="desc">Witcher 3 companion — main quest, Witcher Contracts, alchemy, gear schools, places of power, and Gwent.</div>
-            <div class="row"><span class="view disabled">In development</span><span class="badge">Free + Pro sync</span></div>
+            <div class="row"><a class="view" href="witcher3/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
           </div>
         </div>
 
-        <div class="card dev">
-          <div class="thumb-link"><span class="dev-ribbon">Coming soon</span><img src="screenshots/newvegas.jpg" alt="The Courier's Log screenshot" loading="lazy" /></div>
+        <div class="card">
+          <a class="thumb-link" href="newvegas/" target="_blank" rel="noopener"><img src="screenshots/newvegas.jpg" alt="The Courier's Log screenshot" loading="lazy" /></a>
           <div class="card-body">
             <div class="name">🎰 The Courier's Log</div>
             <div class="desc">Fallout: New Vegas companion — all four ending paths, factions, companions, perks, unique gear, and snow globes.</div>
-            <div class="row"><span class="view disabled">In development</span><span class="badge">Free + Pro sync</span></div>
+            <div class="row"><a class="view" href="newvegas/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
           </div>
         </div>
 
-        <div class="card dev">
-          <div class="thumb-link"><span class="dev-ribbon">Coming soon</span><img src="screenshots/fallout4.jpg" alt="The Sole Survivor's Logbook screenshot" loading="lazy" /></div>
+        <div class="card">
+          <a class="thumb-link" href="fallout4/" target="_blank" rel="noopener"><img src="screenshots/fallout4.jpg" alt="The Sole Survivor's Logbook screenshot" loading="lazy" /></a>
           <div class="card-body">
             <div class="name">🧊 The Sole Survivor's Logbook</div>
             <div class="desc">Fallout 4 companion — all four faction endings, companions, the full S.P.E.C.I.A.L. perk chart, settlements, and gear.</div>
-            <div class="row"><span class="view disabled">In development</span><span class="badge">Free + Pro sync</span></div>
+            <div class="row"><a class="view" href="fallout4/" target="_blank" rel="noopener">Open journal →</a><span class="badge">Free + Pro sync</span></div>
           </div>
         </div>
 
@@ -352,14 +437,14 @@
       <div class="section-head">
         <div class="eyebrow2">Pricing</div>
         <h3>Free to browse. Pro to sync.</h3>
-        <p>Every journal works fully offline in your browser at no cost. Pro sync — so progress follows you across devices — is $5 per journal, or $20 for all seven.</p>
+        <p>Every journal works fully offline in your browser at no cost. Pro sync — so progress follows you across devices — is $5 per journal, or $20 for all six.</p>
       </div>
       <div class="pricing-grid">
         <div class="price-card">
           <div class="plan">Free</div>
           <div class="price">$0</div>
           <ul>
-            <li>All 7 journals, fully browsable</li>
+            <li>All 6 journals, fully browsable</li>
             <li>Quest, gear &amp; collectible tracking</li>
             <li>Progress saved in your browser</li>
             <li>Optional personal GitHub-Gist backup</li>
@@ -381,7 +466,7 @@
         <div class="price-card featured">
           <span class="best-value">Best value</span>
           <div class="plan">Pro sync — all access</div>
-          <div class="price">$20 <small>/ all 7 journals</small></div>
+          <div class="price">$20 <small>/ all 6 journals</small></div>
           <ul>
             <li>Everything in Pro sync</li>
             <li>Every journal, current &amp; future</li>
@@ -629,7 +714,8 @@
       <span>JAW DIGITAL</span>
     </div>
     <p>Independently built software — Companion Journals, Tip Line, Flight Line, the Field Kit Auditor, and Home Maintenance Companion.</p>
-    <p class="links"><a href="www/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="www/terms.html">Terms</a></p>
+    <p class="links"><a href="www/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="www/terms.html">Terms</a> &nbsp;·&nbsp; <a href="#contact">Contact</a></p>
+    <p class="copyright">&copy; 2026 JAW Digital. All rights reserved.</p>
   </div>
 </footer>
 
@@ -684,6 +770,40 @@
       status.className = 'err';
     }
   });
+
+  // Show a fade on the right of the project tab strip while there are tabs
+  // scrolled out of view, so it's obvious the row continues on narrow screens.
+  (function () {
+    const shell = document.querySelector('.tabbar-shell');
+    const strip = shell && shell.querySelector('.tabbar');
+    if (!shell || !strip) return;
+    function update() {
+      const more = strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 4;
+      shell.setAttribute('data-scrollable', String(more));
+    }
+    strip.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+
+  // If a journal has been opened on this device, offer it straight back.
+  // Journals share this origin, so they write the key themselves
+  // (see journal-app.js) and nothing server-side is involved.
+  (function () {
+    var card = document.getElementById('resumeCard');
+    if (!card) return;
+    var raw;
+    try { raw = localStorage.getItem('jaw_last_journal'); } catch (e) { return; }
+    if (!raw) return;
+    var last;
+    try { last = JSON.parse(raw); } catch (e) { return; }
+    if (!last || !last.slug || !last.title) return;
+
+    document.getElementById('resumeIcon').textContent = last.icon || '📖';
+    document.getElementById('resumeTitle').textContent = last.title;
+    card.setAttribute('href', last.slug + '/');
+    card.hidden = false;
+  })();
 </script>
 
 </body>
