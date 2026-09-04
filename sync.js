@@ -137,24 +137,73 @@
     statusEl.textContent = 'Sync';
     wrap.appendChild(dotEl);
     wrap.appendChild(statusEl);
-    wrap.addEventListener('click', openSettings);
+    wrap.addEventListener('click', onWidgetClick);
     document.body.appendChild(wrap);
     placeWidget();
     watchForAccountWidget();
     window.addEventListener('resize', placeWidget);
+    render();
   }
-  function setStatus(state) {
+
+  // Two sync paths exist: this file's GitHub Gist backup (needs a personal
+  // access token) and account.js's Supabase account sync (needs a sign-in).
+  // The pill used to report only the Gist one, so a signed-in user whose
+  // progress *was* syncing still saw a permanent "Sync: off". Whichever path
+  // is actually live now wins, and the account path takes precedence.
+  let gistState = 'unconfigured';
+  let accountState = null;
+
+  const GIST_LABELS = {
+    unconfigured: ['#786b4e', 'Sync: off'],
+    pending: ['#c9a227', 'Sync: pending…'],
+    syncing: ['#c9a227', 'Syncing…'],
+    synced: ['#4caf50', 'Synced'],
+    error: ['#e5484d', 'Sync error'],
+  };
+
+  const ACCOUNT_LABELS = {
+    'signed-in': ['#4caf50', 'Sync on'],
+    saving: ['#c9a227', 'Saving…'],
+    saved: ['#4caf50', 'Synced'],
+    error: ['#e5484d', 'Sync error'],
+    // Signed in, but this journal isn't unlocked on the account — the case
+    // that previously failed silently.
+    locked: ['#c9a227', 'Sync: not unlocked'],
+  };
+
+  function accountSignedIn() {
+    return !!(window.JawAccount && window.JawAccount.isSignedIn && window.JawAccount.isSignedIn());
+  }
+
+  function render() {
     if (!dotEl) return;
-    const map = {
-      unconfigured: ['#786b4e', 'Sync: off'],
-      pending: ['#c9a227', 'Sync: pending…'],
-      syncing: ['#c9a227', 'Syncing…'],
-      synced: ['#4caf50', 'Synced'],
-      error: ['#e5484d', 'Sync error'],
-    };
-    const [color, label] = map[state] || map.unconfigured;
-    dotEl.style.background = color;
-    statusEl.textContent = label;
+    let pair;
+    if (accountSignedIn() && accountState && accountState !== 'signed-out') {
+      pair = ACCOUNT_LABELS[accountState] || ACCOUNT_LABELS['signed-in'];
+    } else {
+      pair = GIST_LABELS[gistState] || GIST_LABELS.unconfigured;
+    }
+    dotEl.style.background = pair[0];
+    statusEl.textContent = pair[1];
+  }
+
+  function setStatus(state) {
+    gistState = state;
+    render();
+  }
+
+  window.addEventListener('jaw:account-sync', function (ev) {
+    accountState = (ev && ev.detail && ev.detail.state) || null;
+    render();
+  });
+
+  // Clicking should open whichever thing the pill is describing.
+  function onWidgetClick() {
+    if (accountSignedIn() && window.JawAccount.openPanel) {
+      window.JawAccount.openPanel();
+      return;
+    }
+    openSettings();
   }
 
   function openSettings() {

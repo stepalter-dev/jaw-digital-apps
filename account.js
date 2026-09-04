@@ -53,10 +53,12 @@
       entitlements = new Set();
       if (session) await refreshEntitlements();
       setStatus(session ? 'signed-in' : 'signed-out');
+      emitSync(session ? 'signed-in' : 'signed-out');
       if (session && typeof window.__jawAccountOnSignedIn === 'function') window.__jawAccountOnSignedIn();
     });
     buildWidget();
     setStatus(session ? 'signed-in' : 'signed-out');
+    emitSync(session ? 'signed-in' : 'signed-out');
   }
 
   // Pulls every game this account has cloud-sync access to, so hasEntitlement()
@@ -148,18 +150,45 @@
     return Object.assign({}, data.payload, { updatedAt: new Date(data.updated_at).getTime() });
   }
 
+  // Announces what account sync is actually doing, so the status pill in
+  // sync.js can report the truth instead of only ever describing the older
+  // Gist path. Nothing depends on anyone listening.
+  function emitSync(state, extra) {
+    try {
+      window.dispatchEvent(new CustomEvent('jaw:account-sync', {
+        detail: Object.assign({ state: state }, extra || {})
+      }));
+    } catch (e) { /* very old browser — status just stays neutral */ }
+  }
+
   // Upserts this game's progress row for the signed-in user. Payload should be a plain object
   // (not yet JSON-stringified) — updated_at is set server-side via now().
   async function save(game, payloadObj) {
     if (!client || !session) return;
-    if (requiresEntitlement(game) && !hasEntitlement(game)) return;
+    // Silently doing nothing here is what made sync look broken: signed in,
+    // but the journal isn't unlocked on this account, so nothing ever
+    // uploaded and the pill just sat at "off". Say so instead.
+    if (requiresEntitlement(game) && !hasEntitlement(game)) { emitSync('locked', { game: game }); return; }
+    emitSync('saving', { game: game });
     const { error } = await client
       .from('progress')
       .upsert({ user_id: session.user.id, game, payload: payloadObj, updated_at: new Date().toISOString() }, { onConflict: 'user_id,game' });
-    if (error) console.error('JawAccount save failed', error);
+    if (error) {
+      console.error('JawAccount save failed', error);
+      emitSync('error', { game: game });
+      return;
+    }
+    emitSync('saved', { game: game, at: Date.now() });
   }
 
   function isSignedIn() { return !!session; }
+
+  // True when this game will actually sync for the current user: signed in,
+  // and entitled if the game is gated.
+  function syncsFor(game) {
+    if (!session) return false;
+    return !requiresEntitlement(game) || hasEntitlement(game);
+  }
 
   // Sets a status line's text and colors it — 'ok' green, 'err' red, omitted = neutral dim.
   function setMsg(el, text, kind) {
@@ -413,6 +442,6 @@
   // so the widget updates immediately instead of waiting for the next sign-in/out.
   function refresh() { setStatus(session ? 'signed-in' : 'signed-out'); }
 
-  window.JawAccount = { init, load, save, isSignedIn, hasEntitlement, redeem, refresh };
+  window.JawAccount = { init, load, save, isSignedIn, hasEntitlement, syncsFor, redeem, refresh, openPanel };
   document.addEventListener('DOMContentLoaded', init);
 })();

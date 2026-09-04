@@ -288,8 +288,8 @@
 
   /* floating "back to top" button — appears once the reader has scrolled a screen or more down a
      long list, so jumping back to the search bar/filters doesn't require manual scrolling.
-     Bottom-LEFT deliberately: sync.js's own status widget already fixes itself to bottom-right
-     (bottom:14px;right:14px;z-index:99999) on every page, so the right corner is taken. */
+     Bottom-LEFT deliberately: the account and sync pills both sit top-right,
+     and the PWA install prompt takes the bottom-right corner. */
   .back-to-top {
     position: fixed;
     left: 22px;
@@ -913,8 +913,8 @@
 <button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 
 <script>window.JAW_GAME = 'skyrim';</script>
-<script src="../sync.js"></script>
-<script src="../account.js"></script>
+<script src="../sync.js?v=20260905"></script>
+<script src="../account.js?v=20260905"></script>
 <script>
 /* ============================= DATA ============================= */
 
@@ -9546,7 +9546,7 @@ window.__jawSyncOnConfigured = syncPullAndReconcile;
 syncAccountPullAndReconcile();
 window.__jawAccountOnSignedIn = syncAccountPullAndReconcile;
 </script>
-<script src="../studio-nav.js" defer></script>
-<script src="../journal-app.js" defer></script>
+<script src="../studio-nav.js?v=20260905" defer></script>
+<script src="../journal-app.js?v=20260905" defer></script>
 </body>
 </html>
