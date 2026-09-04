@@ -18,6 +18,7 @@
     witcher3: 'The White Wolf’s Journal',
     newvegas: 'The Courier’s Log',
     fallout4: 'The Sole Survivor’s Logbook',
+    cyberpunk: 'The Merc’s Shard',
     rdr2: 'Molly’s Field Journal',
     'home-maintenance': 'Home Maintenance Companion'
   };
@@ -25,7 +26,7 @@
   var ICONS = {
     skyrim: '🐉', oblivion: '🏛️', fallout76: '📻',
     witcher3: '🐺', newvegas: '🎰', fallout4: '🧊',
-    rdr2: '🤠', 'home-maintenance': '🏠'
+    rdr2: '🤠', cyberpunk: '🌃', 'home-maintenance': '🏠'
   };
 
   function slug() {

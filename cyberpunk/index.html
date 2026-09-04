@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Cyberpunk 2077 companion — main jobs, side jobs, gigs, cyberpsycho sightings, tarot, romances, every ending, and all of Phantom Liberty." />
+<link rel="canonical" href="https://stepalter-dev.github.io/jaw-digital-apps/cyberpunk/" />
+<meta name="theme-color" content="#08080C" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🌃%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="JAW Digital" />
+<meta property="og:title" content="The Merc's Shard — Cyberpunk 2077 Companion" />
+<meta property="og:description" content="Cyberpunk 2077 companion — main jobs, side jobs, gigs, cyberpsycho sightings, tarot, romances, every ending, and all of Phantom Liberty." />
+<meta property="og:url" content="https://stepalter-dev.github.io/jaw-digital-apps/cyberpunk/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="The Merc's Shard — Cyberpunk 2077 Companion" />
+<meta name="twitter:description" content="Cyberpunk 2077 companion — main jobs, side jobs, gigs, cyberpsycho sightings, tarot, romances, every ending, and all of Phantom Liberty." />
+<title>The Merc's Shard — Cyberpunk 2077 Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  /* Night City after dark — the game's own yellow on near-black, with cyan for
+     netrunning and a hot red for anything that gets you killed. Deliberately
+     unlike every other journal in the suite: no parchment, no serif. */
+  :root {
+    --void: #08080C;
+    --plate-1: #101018;
+    --plate-2: #16161F;
+    --plate-3: #1E1E29;
+    --edge: #2C2C3A;
+    --edge-hot: #3D3D4F;
+
+    --yellow: #FCEE0A;
+    --yellow-dim: #C9BE08;
+    --cyan: #00E5FF;
+    --cyan-dim: #0A93A5;
+    --red: #FF2A4E;
+    --red-dim: #B01B36;
+    --magenta: #FF5EDB;
+    --green: #4DE07A;
+
+    --ink: #E6E6EE;
+    --ink-soft: #9A9AAE;
+    --ink-dim: #62627A;
+
+    --shadow: rgba(0,0,0,0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    background-image:
+      linear-gradient(rgba(252,238,10,0.022) 1px, transparent 1px),
+      radial-gradient(ellipse at 50% -10%, rgba(0,229,255,0.07), transparent 55%);
+    background-size: 100% 3px, 100% 100%;
+    color: var(--ink);
+    font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Rajdhani', 'Chakra Petch', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  a { color: var(--cyan); }
+
+  :focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+
+  /* ---------- shell ---------- */
+  .shell { display: flex; min-height: 100vh; }
+
+  aside.sidebar {
+    width: 232px; flex: none;
+    background: var(--plate-1);
+    border-right: 1px solid var(--edge);
+    padding: 18px 12px 40px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .brand { padding: 0 8px 16px; border-bottom: 1px solid var(--edge); margin-bottom: 14px; }
+  .brand .title {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px;
+    line-height: 1.1; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .brand .sub { font-size: 11.5px; color: var(--ink-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 4px; }
+
+  .nav-btn {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: transparent; border: 1px solid transparent; border-radius: 3px;
+    color: var(--ink-soft); font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    font-size: 14.5px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 8px 10px; margin-bottom: 2px; cursor: pointer; text-align: left;
+    transition: background .12s ease, color .12s ease;
+  }
+  .nav-btn .icon { font-size: 14px; width: 18px; text-align: center; flex: none; }
+  .nav-btn .tally { margin-left: auto; font-family: 'Chakra Petch', monospace; font-size: 11px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+  .nav-btn:hover { background: rgba(252,238,10,0.06); color: var(--ink); }
+  .nav-btn.active { background: rgba(252,238,10,0.11); border-color: var(--yellow-dim); color: var(--yellow); }
+  .nav-btn.active .tally { color: var(--yellow-dim); }
+
+  main.page { flex: 1; min-width: 0; padding: 26px 30px 90px; max-width: 1180px; }
+
+  /* ---------- header / toolbar ---------- */
+  .page-head { margin-bottom: 18px; }
+  .page-head h2 { font-size: 27px; text-transform: uppercase; color: var(--ink); }
+  .page-head .blurb { color: var(--ink-soft); font-size: 14.5px; margin-top: 4px; max-width: 76ch; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 16px 0 18px; }
+  .search-plate { flex: 1; min-width: 200px; position: relative; }
+  .search-plate input {
+    width: 100%; background: var(--plate-2); border: 1px solid var(--edge);
+    border-radius: 3px; color: var(--ink); font-family: inherit; font-size: 14.5px;
+    padding: 9px 12px 9px 32px;
+  }
+  .search-plate input:focus { border-color: var(--cyan-dim); outline: none; box-shadow: 0 0 0 1px var(--cyan-dim); }
+  .search-plate .mag { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-dim); font-size: 13px; }
+  .search-plate input::placeholder { color: var(--ink-dim); }
+
+  .filter-pill {
+    background: var(--plate-2); border: 1px solid var(--edge); border-radius: 999px;
+    color: var(--ink-soft); font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 7px 14px; cursor: pointer; min-height: 34px;
+  }
+  .filter-pill:hover { color: var(--ink); border-color: var(--edge-hot); }
+  .filter-pill.active { background: rgba(0,229,255,0.12); border-color: var(--cyan-dim); color: var(--cyan); }
+
+  /* ---------- sub tabs ---------- */
+  .subtabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+  .subtab {
+    background: var(--plate-2); border: 1px solid var(--edge); border-left: 3px solid var(--edge-hot);
+    border-radius: 2px; color: var(--ink-soft); font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 8px 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; min-height: 36px;
+  }
+  .subtab:hover { color: var(--ink); }
+  .subtab.active { border-left-color: var(--yellow); color: var(--yellow); background: var(--plate-3); }
+  .subtab .n { font-family: 'Chakra Petch', monospace; font-size: 11px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+  .subtab.active .n { color: var(--yellow-dim); }
+
+  /* ---------- entries ---------- */
+  .entries { display: flex; flex-direction: column; gap: 8px; }
+
+  .entry {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 4px 13px;
+    background: var(--plate-1); border: 1px solid var(--edge);
+    border-left: 3px solid var(--edge-hot); border-radius: 2px;
+    padding: 13px 15px; align-items: start;
+  }
+  .entry.done { border-left-color: var(--green); background: var(--plate-2); }
+  .entry.done .entry-name { color: var(--ink-dim); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .entry.missable { border-left-color: var(--red); }
+
+  .check {
+    width: 21px; height: 21px; flex: none; margin-top: 2px; cursor: pointer;
+    background: var(--plate-3); border: 1px solid var(--edge-hot); border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    color: transparent; font-size: 13px; font-weight: 700; padding: 0;
+  }
+  .check:hover { border-color: var(--yellow-dim); }
+  .entry.done .check { background: var(--green); border-color: var(--green); color: #08080C; }
+
+  .entry-main { min-width: 0; }
+  .entry-name { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 16.5px; letter-spacing: 0.015em; }
+  .entry-meta { display: flex; flex-wrap: wrap; gap: 5px 8px; margin-top: 5px; }
+  .entry-desc { color: var(--ink-soft); font-size: 13.5px; margin-top: 5px; overflow-wrap: anywhere; }
+
+  .tag {
+    font-family: 'Chakra Petch', monospace; font-size: 10.5px; letter-spacing: 0.07em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 2px;
+    background: var(--plate-3); color: var(--ink-soft); border: 1px solid var(--edge);
+  }
+  .tag.warn { color: var(--red); border-color: var(--red-dim); background: rgba(255,42,78,0.10); }
+  .tag.info { color: var(--cyan); border-color: var(--cyan-dim); background: rgba(0,229,255,0.08); }
+  .tag.gold { color: var(--yellow); border-color: var(--yellow-dim); background: rgba(252,238,10,0.09); }
+  .tag.rose { color: var(--magenta); border-color: #8A3577; background: rgba(255,94,219,0.09); }
+
+  .star {
+    background: transparent; border: none; cursor: pointer; padding: 3px;
+    color: var(--ink-dim); font-size: 16px; line-height: 1; align-self: start;
+  }
+  .star:hover { color: var(--yellow); }
+  .star.on { color: var(--yellow); }
+
+  /* ---------- counters ---------- */
+  .counter-note {
+    background: var(--plate-2); border: 1px solid var(--edge); border-left: 3px solid var(--cyan-dim);
+    border-radius: 2px; padding: 13px 15px; margin-bottom: 16px;
+    color: var(--ink-soft); font-size: 13.5px; max-width: 82ch;
+  }
+  .counter-note b { color: var(--cyan); font-weight: 600; }
+
+  .counter {
+    display: grid; grid-template-columns: 1fr auto; gap: 6px 14px;
+    background: var(--plate-1); border: 1px solid var(--edge);
+    border-left: 3px solid var(--cyan-dim); border-radius: 2px; padding: 13px 15px;
+    align-items: center;
+  }
+  .counter.full { border-left-color: var(--green); }
+  .counter-name { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 16.5px; }
+  .counter-sub { color: var(--ink-soft); font-size: 13px; margin-top: 3px; }
+  .counter-ctl { display: flex; align-items: center; gap: 8px; }
+  .counter-btn {
+    width: 34px; height: 34px; flex: none; cursor: pointer;
+    background: var(--plate-3); border: 1px solid var(--edge-hot); border-radius: 2px;
+    color: var(--ink); font-size: 17px; font-family: inherit; line-height: 1; padding: 0;
+  }
+  .counter-btn:hover:not(:disabled) { border-color: var(--yellow-dim); color: var(--yellow); }
+  .counter-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .counter-val {
+    font-family: 'Chakra Petch', monospace; font-variant-numeric: tabular-nums;
+    font-size: 15px; min-width: 62px; text-align: center; color: var(--ink);
+  }
+  .counter-val b { color: var(--yellow); font-weight: 700; }
+  .counter-bar { grid-column: 1 / -1; height: 3px; background: var(--plate-3); border-radius: 2px; overflow: hidden; }
+  .counter-bar i { display: block; height: 100%; background: var(--cyan); }
+  .counter.full .counter-bar i { background: var(--green); }
+
+  /* ---------- overview ---------- */
+  .ov-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .ov-card { background: var(--plate-1); border: 1px solid var(--edge); border-top: 2px solid var(--yellow-dim); border-radius: 2px; padding: 15px 16px; }
+  .ov-card .n { font-family: 'Rajdhani', sans-serif; font-size: 31px; font-weight: 700; color: var(--yellow); line-height: 1; font-variant-numeric: tabular-nums; }
+  .ov-card .l { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); margin-top: 5px; }
+
+  .prog-rows { background: var(--plate-1); border: 1px solid var(--edge); border-radius: 2px; padding: 8px 16px; margin-bottom: 20px; }
+  .prog-row { display: grid; grid-template-columns: 1fr 78px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--plate-3); }
+  .prog-row:last-child { border-bottom: none; }
+  .prog-row .nm { font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 15px; }
+  .prog-row .track { height: 5px; background: var(--plate-3); border-radius: 3px; overflow: hidden; margin-top: 5px; }
+  .prog-row .track i { display: block; height: 100%; background: var(--yellow); }
+  .prog-row .pct { font-family: 'Chakra Petch', monospace; font-size: 13px; color: var(--ink-soft); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .io-row { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 6px; }
+  .io-btn {
+    background: var(--plate-2); border: 1px solid var(--edge); border-radius: 2px;
+    color: var(--ink-soft); font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 9px 15px; cursor: pointer; min-height: 38px;
+  }
+  .io-btn:hover { color: var(--ink); border-color: var(--edge-hot); }
+  .io-btn.danger { color: var(--red); border-color: var(--red-dim); }
+  .io-btn.danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+  .io-status { font-size: 13px; color: var(--ink-soft); margin-top: 8px; min-height: 18px; }
+
+  .empty-state { text-align: center; padding: 44px 16px; color: var(--ink-dim); font-size: 14.5px; }
+
+  .spoiler-note {
+    background: rgba(255,42,78,0.08); border: 1px solid var(--red-dim);
+    border-radius: 2px; padding: 12px 15px; margin-bottom: 16px;
+    color: var(--ink-soft); font-size: 13.5px; max-width: 82ch;
+  }
+  .spoiler-note b { color: var(--red); }
+
+  footer.note {
+    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--edge);
+    text-align: center; font-size: 12px; letter-spacing: 0.06em;
+    color: var(--ink-dim); text-transform: uppercase;
+  }
+
+  /* ---------- mobile ---------- */
+  .nav-mobile { display: none; }
+
+  @media (max-width: 900px) {
+    .shell { flex-direction: column; }
+    aside.sidebar { display: none; }
+    .nav-mobile {
+      display: flex; gap: 6px; overflow-x: auto; padding: 10px 12px;
+      background: var(--plate-1); border-bottom: 1px solid var(--edge);
+      position: sticky; top: 0; z-index: 30;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .nav-mobile::-webkit-scrollbar { display: none; }
+    .nav-mobile .nav-btn { width: auto; flex: none; margin: 0; white-space: nowrap; border: 1px solid var(--edge); }
+    .nav-mobile .nav-btn .tally { display: none; }
+    main.page { padding: 18px 14px 80px; }
+    .mobile-brand { padding: 14px 14px 0; }
+    .mobile-brand .title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 19px; color: var(--yellow); text-transform: uppercase; }
+    .entry { grid-template-columns: auto 1fr auto; padding: 12px; }
+    .page-head h2 { font-size: 22px; }
+  }
+  @media (min-width: 901px) { .mobile-brand { display: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="mobile-brand"><div class="title">The Merc's Shard</div></div>
+<nav class="nav-mobile" id="navMobile" aria-label="Sections"></nav>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="title">The Merc's<br />Shard</div>
+      <div class="sub">Night City · 2077</div>
+    </div>
+    <nav id="navDesktop" aria-label="Sections"></nav>
+  </aside>
+
+  <main class="page">
+    <div class="page-head">
+      <h2 id="secTitle">Overview</h2>
+      <p class="blurb" id="secBlurb"></p>
+    </div>
+
+    <div id="secBody"></div>
+
+    <footer class="note">A record kept for one merc of Night City by JAW Digital</footer>
+  </main>
+</div>
+
+<script src="../sync.js?v=20260905"></script>
+<script src="../account.js?v=20260905"></script>
+<script>
+/* ============================================================================
+   The Merc's Shard — Cyberpunk 2077 + Phantom Liberty companion journal.
+
+   A note on completeness, because it matters for a tracker:
+
+   Named checklists below are content I can state accurately — main jobs across
+   all three acts and Phantom Liberty, the major side jobs and character arcs,
+   every ending, the romances, the tarot, and the cyberpsycho sightings.
+
+   Night City also holds roughly ninety gigs and a hundred-odd NCPD hustles.
+   Inventing plausible names for those would make this tracker actively
+   misleading, so they're COUNTERS instead — one per fixer and per district,
+   with the totals you're working toward. You tick off progress; the journal
+   doesn't pretend to know each one's name. Swap them for named lists any time.
+   ========================================================================= */
+
+const SECTIONS = [
+  { id: 'overview',    label: 'Overview',      icon: '📖', blurb: 'Where this playthrough stands, and backup for the progress stored in this browser.' },
+  { id: 'main',        label: 'Main Jobs',     icon: '🏙️', blurb: 'The critical path, act by act — plus Phantom Liberty’s Dogtown storyline.' },
+  { id: 'side',        label: 'Side Jobs',     icon: '📋', blurb: 'The character arcs and standalone jobs worth doing before the point of no return.' },
+  { id: 'gigs',        label: 'Gigs',          icon: '📡', blurb: 'Fixer work across Night City and Dogtown, tracked per fixer.' },
+  { id: 'ncpd',        label: 'NCPD Hustles',  icon: '🚨', blurb: 'Scanner hustles by district — the blue police markers.' },
+  { id: 'psycho',      label: 'Cyberpsychos',  icon: '🧠', blurb: 'Regina Jones’ cyberpsycho sightings. Leave them alive for the full story.' },
+  { id: 'endings',     label: 'Endings',       icon: '🎬', blurb: 'Every route out of Night City, and what each one costs.' },
+  { id: 'romance',     label: 'Romances',      icon: '💗', blurb: 'Who V can get close to, and what each one requires.' },
+  { id: 'tarot',       label: 'Tarot',         icon: '🃏', blurb: 'The Fool’s Journey — Misty’s graffiti hunt across Night City.' },
+  { id: 'gear',        label: 'Iconic Gear',   icon: '🔫', blurb: 'Signature weapons and the jobs that hand them over.' },
+  { id: 'cyberware',   label: 'Cyberware',     icon: '⚙️', blurb: 'The chrome worth planning a build around.' },
+];
+
+/* ---------------------------------------------------------------- main jobs */
+const MAIN = {
+  act1: [
+    { n: 'Prologue — lifepath', d: 'Nomad, Streetkid or Corpo. Sets your opening hour and unlocks lifepath-specific dialogue for the whole game.', t: ['Act 1'] },
+    { n: 'The Rescue', d: 'Pull Sandra Dorsett out of the Watson tub. Your first taste of Night City police work.', t: ['Act 1'] },
+    { n: 'The Ripperdoc', d: 'Viktor Vektor fits the Kiroshi optics. Scanner and cyberware slots come online here.', t: ['Act 1'] },
+    { n: 'The Ride', d: 'Jackie picks you up. Meet Dexter DeShawn and take the Konpeki job.', t: ['Act 1'] },
+    { n: 'The Pickup', d: 'Maelstrom and the Flathead. The bot can be bought, taken by force, or lifted with Militech’s credchip — and Royce lives or dies on it.', t: ['Act 1', 'Branches'] },
+    { n: 'The Information', d: 'Braindance with Evelyn Parker and T-Bug. Your first proper BD edit.', t: ['Act 1'] },
+    { n: 'The Heist', d: 'Konpeki Plaza. The Relic, Saburo, and the end of the life you had.', t: ['Act 1', 'No return'] },
+    { n: 'Love Like Fire', d: 'The fallout at the No-Tell Motel. Dex settles up.', t: ['Act 1'] },
+    { n: 'Playing for Time', d: 'Wake up with Johnny Silverhand in your head. Vik reads the scan.', t: ['Act 1'] },
+  ],
+  act2: [
+    { n: 'The Rescue of Evelyn — Automatic Love', d: 'Clouds, and the search for Evelyn Parker. Opens the Judy arc.', t: ['Act 2'] },
+    { n: 'The Space In Between', d: 'Fingers, and the Scavs’ trail. You can deck Fingers — it locks his stock for the rest of the run.', t: ['Act 2', 'Branches'] },
+    { n: 'Disasterpiece', d: 'The Scav hideout and the worst braindance in Night City.', t: ['Act 2'] },
+    { n: 'Double Life', d: 'Take the Relic problem to Takemura. The Arasaka thread starts here.', t: ['Act 2'] },
+    { n: 'M’ap Tann Pèlen', d: 'Placide, the Voodoo Boys, and Pacifica.', t: ['Act 2'] },
+    { n: 'I Walk the Line', d: 'The GIM mall and the Animals. Side with Placide or with NetWatch.', t: ['Act 2', 'Branches'] },
+    { n: 'Transmission', d: 'Into the Blackwall with Brigitte. Alt Cunningham, properly met.', t: ['Act 2'] },
+    { n: 'Life During Wartime', d: 'Takemura’s Arasaka lead — the Ebunike docks.', t: ['Act 2'] },
+    { n: 'Search and Destroy', d: 'Rescue Takemura, or leave him. Affects who stands with you at the end.', t: ['Act 2', 'Branches'] },
+    { n: 'Play It Safe', d: 'Oda, the parade, and Hanako. Oda can be spared.', t: ['Act 2', 'Branches'] },
+    { n: 'Gimme Danger', d: 'Case the Arasaka industrial park with Takemura.', t: ['Act 2'] },
+    { n: 'Ghost Town', d: 'Panam, Nash, and the Badlands. Opens the whole Aldecaldos line.', t: ['Act 2'] },
+    { n: 'Lightning Breaks', d: 'The Rogue and Johnny thread through the Nomad camp.', t: ['Act 2'] },
+    { n: 'Never Fade Away', d: 'Play Johnny in 2023 — the Arasaka Tower raid that made him a legend.', t: ['Act 2', 'Flashback'] },
+    { n: 'Tapeworm (all instalments)', d: 'Johnny’s recurring check-ins. They gate his relationship score, which decides which endings you’re offered.', t: ['Act 2', 'Gates endings'] },
+    { n: 'Nocturne Op55N1', d: 'The point of no return. Everything unfinished stays unfinished.', t: ['Act 3', 'No return'] },
+  ],
+  pl: [
+    { n: 'Dog Eat Dog', d: 'Songbird’s call, and the presidential crash landing in Dogtown.', t: ['Phantom Liberty'] },
+    { n: 'Hole in the Sky', d: 'Get Myers out of the stadium alive.', t: ['Phantom Liberty'] },
+    { n: 'Spy in the Jungle', d: 'Tail Alex’s contact through Dogtown.', t: ['Phantom Liberty'] },
+    { n: 'Lucretia My Reflection', d: 'The Black Sapphire job with Solomon Reed.', t: ['Phantom Liberty'] },
+    { n: 'You Know My Name', d: 'Reed, Songbird, and the shape of the deal.', t: ['Phantom Liberty'] },
+    { n: 'Get It Together', d: 'Regroup and plan the extraction.', t: ['Phantom Liberty'] },
+    { n: 'Birds with Broken Wings', d: 'Hansen’s Dogtown, and what Songbird has been hiding.', t: ['Phantom Liberty'] },
+    { n: 'Black Steel in the Hour of Chaos', d: 'The Voodoo Boys, Alex, and the cost of the truth.', t: ['Phantom Liberty'] },
+    { n: 'Firestarter', d: 'The branch point — commit to Reed, or to Songbird.', t: ['Phantom Liberty', 'Branches'] },
+    { n: 'Somewhat Damaged', d: 'The Cynosure bunker. Reed’s route, and the game’s best horror sequence.', t: ['Phantom Liberty', 'Reed route'] },
+    { n: 'The Killing Moon', d: 'Songbird’s route — get her to the moon.', t: ['Phantom Liberty', 'Songbird route'] },
+  ],
+};
+
+/* ---------------------------------------------------------------- side jobs */
+const SIDE = {
+  judy: [
+    { n: 'Both Sides, Now', d: 'Evelyn’s aftermath. Opens Judy’s arc.', t: ['Judy'] },
+    { n: 'Ex-Factor', d: 'Help Judy take Clouds off Tyger Claw hands.', t: ['Judy'] },
+    { n: 'Talkin’ ’Bout a Revolution', d: 'The Clouds takeover.', t: ['Judy'] },
+    { n: 'Pisces', d: 'Maiko’s offer. Refusing the payout is what keeps Judy’s romance alive.', t: ['Judy', 'Romance gate'] },
+    { n: 'Pyramid Song', d: 'The dive at Laguna Bend — the romance scene, female V only.', t: ['Judy', 'Romance'] },
+  ],
+  panam: [
+    { n: 'Ghost Town', d: 'Nash, and the first job with Panam.', t: ['Panam'] },
+    { n: 'Lightning Breaks', d: 'The Raffen Shiv and the Basilisk.', t: ['Panam'] },
+    { n: 'Life During Wartime', d: 'Aldecaldo business alongside the main thread.', t: ['Panam'] },
+    { n: 'Riders on the Storm', d: 'Rescue Saul from the Wraiths.', t: ['Panam'] },
+    { n: 'With a Little Help from My Friends', d: 'The Basilisk heist — the romance scene, male V only.', t: ['Panam', 'Romance'] },
+    { n: 'Queen of the Highway', d: 'Panam’s arc closes. Required for the Star ending.', t: ['Panam', 'Gates ending'] },
+  ],
+  river: [
+    { n: 'I Fought the Law', d: 'River Ward’s first case — the Peralez conspiracy opens too.', t: ['River'] },
+    { n: 'The Hunt', d: 'The Cassidy farm and Randy. Grim, and the best detective work in the game.', t: ['River'] },
+    { n: 'Following the River', d: 'Dinner with the family — the romance scene, female V only.', t: ['River', 'Romance'] },
+  ],
+  kerry: [
+    { n: 'Holdin’ On', d: 'Kerry Eurodyne, reachable once Johnny’s relationship is high enough.', t: ['Kerry'] },
+    { n: 'Second Conflict', d: 'Us Cracks, and a decision about the deal.', t: ['Kerry'] },
+    { n: 'A Like Supreme', d: 'Get the band back together.', t: ['Kerry'] },
+    { n: 'Rebel! Rebel!', d: 'Us Cracks again, with Kerry along.', t: ['Kerry'] },
+    { n: 'I Don’t Wanna Hear It', d: 'Deal with the man who stole Kerry’s sound.', t: ['Kerry'] },
+    { n: 'Off the Leash', d: 'The gig at the boat — the romance scene, male V only.', t: ['Kerry', 'Romance'] },
+  ],
+  johnny: [
+    { n: 'Chippin’ In', d: 'Recover Johnny’s body. Gates the Sun and Temperance endings.', t: ['Johnny', 'Gates ending'] },
+    { n: 'Blistering Love', d: 'The drive-in date with Rogue. Requires Johnny’s relationship high.', t: ['Johnny'] },
+    { n: 'A Like Supreme / Like a Supreme', d: 'Kerry’s reunion, with Johnny riding along.', t: ['Johnny'] },
+    { n: 'Tapeworm', d: 'The recurring Johnny conversations. Each one moves his relationship score.', t: ['Johnny', 'Gates ending'] },
+  ],
+  notable: [
+    { n: 'The Beast in Me (all races)', d: 'Claire’s racing arc. The final race carries a real choice about revenge.', t: ['Claire', 'Branches'] },
+    { n: 'Dream On', d: 'The Peralez conspiracy. Deliberately never resolved — the best unanswered question in the game.', t: ['Peralez'] },
+    { n: 'Sinnerman / They Won’t Go When I Go', d: 'The crucifixion braindance. Bleak, and unlike anything else here.', t: ['Standalone'] },
+    { n: 'Heroes', d: 'Jackie’s ofrenda. Short, and the emotional centre of the game.', t: ['Jackie'] },
+    { n: 'Happy Together', d: 'Talk Barry’s neighbour down. Easy to fail by walking away.', t: ['Missable'], missable: true },
+    { n: 'Big in Japan / Stadium Love', d: 'Standalone jobs across the districts.', t: ['Standalone'] },
+    { n: 'Every Breath You Take', d: 'The Bhinderwal job — hinges on how you handle the offer.', t: ['Branches'] },
+    { n: 'Cyberpsycho Sightings (all)', d: 'Regina’s full set. See the Cyberpsychos tab.', t: ['Regina'] },
+    { n: 'The Hunt for the Tarot', d: 'Misty’s graffiti hunt. See the Tarot tab.', t: ['Misty'] },
+  ],
+  pl: [
+    { n: 'Talkin’ ’Bout a Revolution (PL)', d: 'Dogtown’s own side thread.', t: ['Phantom Liberty'] },
+    { n: 'Money for Nothing', d: 'Mr. Hands’ introduction to Dogtown work.', t: ['Phantom Liberty'] },
+    { n: 'Prototype in the Scraper', d: 'The Militech prototype hunt.', t: ['Phantom Liberty'] },
+    { n: 'Somewhat Damaged (side thread)', d: 'The Cynosure follow-ups.', t: ['Phantom Liberty'] },
+    { n: 'Airdrops (all)', d: 'Dogtown’s recurring crate drops — a renewable source of iconic gear.', t: ['Phantom Liberty', 'Repeatable'] },
+  ],
+};
+
+/* -------------------------------------------------------------------- gigs */
+const GIGS = [
+  { n: 'Regina Jones', sub: 'Watson — Kabuki, Little China, Northside, Arasaka Waterfront', max: 20 },
+  { n: 'Wakako Okada', sub: 'Westbrook — Japantown, Charter Hill, North Oak', max: 16 },
+  { n: 'Sebastian "Padre" Ibarra', sub: 'Heywood — Vista del Rey, Wellsprings, The Glen', max: 17 },
+  { n: 'Mr. Hands', sub: 'Pacifica — Coastview, West Wind Estate', max: 11 },
+  { n: 'Dino Dinovic', sub: 'Santo Domingo — Rancho Coronado, Arroyo', max: 13 },
+  { n: 'Rogue Amendiares', sub: 'Night City — Afterlife contracts', max: 5 },
+  { n: 'Dakota Smith', sub: 'Badlands — Rocky Ridge, Jackson Plains', max: 12 },
+  { n: 'El Capitán', sub: 'Dogtown — Phantom Liberty vehicle contracts', max: 17 },
+];
+
+/* ------------------------------------------------------------------- NCPD */
+const NCPD = [
+  { n: 'Watson', sub: 'Kabuki, Little China, Northside, Arasaka Waterfront', max: 27 },
+  { n: 'Westbrook', sub: 'Japantown, Charter Hill, North Oak', max: 18 },
+  { n: 'Heywood', sub: 'Vista del Rey, Wellsprings, The Glen', max: 22 },
+  { n: 'City Center', sub: 'Corpo Plaza, Downtown', max: 10 },
+  { n: 'Pacifica', sub: 'Coastview, West Wind Estate', max: 12 },
+  { n: 'Santo Domingo', sub: 'Rancho Coronado, Arroyo', max: 18 },
+  { n: 'Badlands', sub: 'The outskirts, all sub-regions', max: 17 },
+];
+
+/* ----------------------------------------------------------- cyberpsychos */
+const PSYCHO = [
+  { n: 'Bloody Ritual', d: 'Northside, Watson.', t: ['Watson'] },
+  { n: 'Second Chances', d: 'Little China, Watson.', t: ['Watson'] },
+  { n: 'Where the Bodies Hit the Floor', d: 'Kabuki, Watson.', t: ['Watson'] },
+  { n: 'On Deaf Ears', d: 'Arasaka Waterfront, Watson.', t: ['Watson'] },
+  { n: 'Lex Talionis', d: 'Japantown, Westbrook.', t: ['Westbrook'] },
+  { n: 'Phantom of Night City', d: 'North Oak, Westbrook.', t: ['Westbrook'] },
+  { n: 'House on a Hill', d: 'Charter Hill, Westbrook.', t: ['Westbrook'] },
+  { n: 'Six Feet Under', d: 'Vista del Rey, Heywood.', t: ['Heywood'] },
+  { n: 'Discount Doc', d: 'Wellsprings, Heywood.', t: ['Heywood'] },
+  { n: 'Bloodsport', d: 'The Glen, Heywood.', t: ['Heywood'] },
+  { n: 'Smoke on the Water', d: 'Coastview, Pacifica.', t: ['Pacifica'] },
+  { n: 'Seaside Cafe', d: 'Coastview, Pacifica.', t: ['Pacifica'] },
+  { n: 'Under the Bridge', d: 'Arroyo, Santo Domingo.', t: ['Santo Domingo'] },
+  { n: 'Letter of the Law', d: 'Rancho Coronado, Santo Domingo.', t: ['Santo Domingo'] },
+  { n: 'Ticket to the Major Leagues', d: 'Rancho Coronado, Santo Domingo.', t: ['Santo Domingo'] },
+  { n: 'Bodies of Evidence', d: 'The Badlands.', t: ['Badlands'] },
+  { n: 'Demons of War', d: 'The Badlands.', t: ['Badlands'] },
+];
+
+/* ---------------------------------------------------------------- endings */
+const ENDINGS = [
+  { n: 'The Devil', d: 'Take Hanako’s deal and go up with Arasaka. The bleakest road, and the one the game most wants you to feel bad about.', t: ['Arasaka'] },
+  { n: 'The Star', d: 'Leave with Panam and the Aldecaldos. Requires Panam’s arc completed through Queen of the Highway.', t: ['Nomads', 'Needs Panam'] },
+  { n: 'The Sun', d: 'Storm Arasaka with Rogue and take the Afterlife legend route. Requires Chippin’ In.', t: ['Rogue', 'Needs Chippin’ In'] },
+  { n: 'Temperance', d: 'Let Johnny take the body. Reached by choosing Johnny at the rooftop.', t: ['Johnny'] },
+  { n: '(Don’t Fear) The Reaper', d: 'The secret solo assault. Only offered if Johnny’s relationship is high enough — wait out the rooftop conversation instead of picking.', t: ['Secret', 'Needs Johnny 70%+'] },
+  { n: 'New Dawn Fades', d: 'The Arasaka epilogue that follows the Devil route.', t: ['Epilogue'] },
+  { n: 'Path of Glory', d: 'The closing sequence on the Arasaka orbital route.', t: ['Epilogue'] },
+  { n: 'Phantom Liberty — Songbird’s route', d: 'Take Songbird to the moon in The Killing Moon. Closes off Reed’s route entirely.', t: ['Phantom Liberty', 'Branches'] },
+  { n: 'Phantom Liberty — Reed’s route', d: 'Side with Reed through Firestarter and Somewhat Damaged, and reach the cure. It changes V’s whole epilogue — read up before committing.', t: ['Phantom Liberty', 'Branches'] },
+];
+
+/* --------------------------------------------------------------- romances */
+const ROMANCE = [
+  { n: 'Judy Álvarez', d: 'Female V only. Complete her arc through Pyramid Song, and refuse Maiko’s payout in Pisces.', t: ['Female V'] },
+  { n: 'Panam Palmer', d: 'Male V only. Complete Ghost Town through With a Little Help from My Friends.', t: ['Male V'] },
+  { n: 'River Ward', d: 'Female V only. I Fought the Law, The Hunt, then Following the River.', t: ['Female V'] },
+  { n: 'Kerry Eurodyne', d: 'Male V only. Requires Johnny’s relationship high enough to unlock Holdin’ On, then through Off the Leash.', t: ['Male V'] },
+  { n: 'Songbird / Solomon Reed', d: 'Phantom Liberty’s relationships aren’t romances, but both carry a real attachment and a choice that ends one of them.', t: ['Phantom Liberty'] },
+  { n: 'Meredith Stout', d: 'One-off fling. Requires taking her credchip during The Pickup and keeping it clean.', t: ['Fling', 'Missable'], missable: true },
+  { n: 'Rogue Amendiares', d: 'Johnny’s romance, not V’s — Blistering Love, with his relationship high.', t: ['Johnny'] },
+];
+
+/* ------------------------------------------------------------------ tarot */
+const TAROT = [
+  { n: '0 — The Fool', d: 'Outside V’s megabuilding, where the journey starts.' },
+  { n: 'I — The Magician', d: 'Watson.' },
+  { n: 'II — The High Priestess', d: 'Watson.' },
+  { n: 'III — The Empress', d: 'Watson.' },
+  { n: 'IV — The Emperor', d: 'Watson.' },
+  { n: 'V — The Hierophant', d: 'Watson / Little China.' },
+  { n: 'VI — The Lovers', d: 'Westbrook.' },
+  { n: 'VII — The Chariot', d: 'Westbrook.' },
+  { n: 'VIII — Strength', d: 'Westbrook / Japantown.' },
+  { n: 'IX — The Hermit', d: 'Westbrook.' },
+  { n: 'X — Wheel of Fortune', d: 'City Center.' },
+  { n: 'XI — Justice', d: 'City Center.' },
+  { n: 'XII — The Hanged Man', d: 'Heywood.' },
+  { n: 'XIII — Death', d: 'Heywood.' },
+  { n: 'XIV — Temperance', d: 'Heywood / Vista del Rey.' },
+  { n: 'XV — The Devil', d: 'Pacifica.' },
+  { n: 'XVI — The Tower', d: 'Pacifica.' },
+  { n: 'XVII — The Star', d: 'Santo Domingo.' },
+  { n: 'XVIII — The Moon', d: 'Santo Domingo / Badlands.' },
+  { n: 'XIX — The Sun', d: 'Badlands.' },
+  { n: 'XX — Judgement', d: 'Badlands.' },
+];
+
+/* ------------------------------------------------------------------- gear */
+const GEAR = [
+  { n: 'Skippy', d: 'Talking smart pistol, found in an alley in Heywood. Its mode locks in after enough kills — choose carefully.', t: ['Pistol', 'Missable'], missable: true },
+  { n: 'Johnny’s Malorian Arms 3516', d: 'Johnny’s revolver. Given during Chippin’ In.', t: ['Pistol', 'Iconic'] },
+  { n: 'Johnny’s Samurai Jacket', d: 'The jacket. Where it comes from depends on your ending route.', t: ['Clothing', 'Iconic'] },
+  { n: 'Byakko', d: 'Iconic katana.', t: ['Blade'] },
+  { n: 'Satori', d: 'Katana on the AV during The Heist — easy to miss entirely.', t: ['Blade', 'Missable'], missable: true },
+  { n: 'Jinchu-Maru', d: 'Oda’s katana, from Play It Safe.', t: ['Blade'] },
+  { n: 'Scalpel', d: 'Iconic katana from Fingers’ clinic area.', t: ['Blade'] },
+  { n: 'Widow Maker', d: 'Iconic tech rifle from a Badlands cyberpsycho encounter.', t: ['Rifle'] },
+  { n: 'Comrade’s Hammer', d: 'Iconic power revolver from a Santo Domingo gig.', t: ['Pistol'] },
+  { n: 'Divided We Stand', d: 'Iconic tech rifle from a Santo Domingo gig.', t: ['Rifle'] },
+  { n: 'Overwatch', d: 'Panam’s sniper, from her arc.', t: ['Sniper', 'Needs Panam'] },
+  { n: 'Archangel', d: 'Kerry’s revolver, from his arc.', t: ['Pistol', 'Needs Kerry'] },
+  { n: 'Cocktail Stick', d: 'Iconic knife.', t: ['Blade'] },
+  { n: 'Gold-Plated Baseball Bat', d: 'Exactly what it says.', t: ['Blunt'] },
+  { n: 'Sir John Phallustiff', d: 'The joke weapon, and a genuinely good blunt option.', t: ['Blunt'] },
+  { n: 'Problem Solver', d: 'Iconic SMG from a Heywood gig.', t: ['SMG'] },
+  { n: 'Guts', d: 'Iconic shotgun from the Badlands.', t: ['Shotgun'] },
+  { n: 'Errata', d: 'Phantom Liberty iconic katana.', t: ['Blade', 'Phantom Liberty'] },
+  { n: 'Osprey', d: 'Phantom Liberty iconic — Dogtown airdrop territory.', t: ['Phantom Liberty'] },
+  { n: 'Order of the Cosmic Fire', d: 'Phantom Liberty iconic.', t: ['Phantom Liberty'] },
+];
+
+/* -------------------------------------------------------------- cyberware */
+const CYBERWARE = [
+  { n: 'Sandevistan (Militech Apogee)', d: 'Top-tier time dilation. The backbone of the melee/blade build.', t: ['Operating System'] },
+  { n: 'Berserk (Biodyne Mk.5)', d: 'Damage and recoil control. Pairs with blunt and shotgun builds.', t: ['Operating System'] },
+  { n: 'Cyberdeck (Tetratronic Rippler Mk.5)', d: 'The netrunner’s core — quickhack spread and RAM.', t: ['Operating System'] },
+  { n: 'Gorilla Arms', d: 'Melee damage and every strength check in the game.', t: ['Arms'] },
+  { n: 'Mantis Blades', d: 'The blade build’s signature.', t: ['Arms'] },
+  { n: 'Monowire', d: 'Long-reach melee that scales off cyberdeck stats.', t: ['Arms'] },
+  { n: 'Projectile Launch System', d: 'Arm-mounted launcher.', t: ['Arms'] },
+  { n: 'Reinforced Tendons', d: 'Double jump. Changes how you move through the whole city.', t: ['Legs'] },
+  { n: 'Fortified Ankles', d: 'Charged jump — the alternative traversal option.', t: ['Legs'] },
+  { n: 'Kerenzikov', d: 'Slow-motion while aiming during a dodge.', t: ['Nervous System'] },
+  { n: 'Second Heart', d: 'One free resurrection per fight.', t: ['Circulatory'] },
+  { n: 'Blood Pump', d: 'Active heal on a cooldown — the 2.0 survivability staple.', t: ['Circulatory'] },
+  { n: 'Subdermal Armor', d: 'Flat armour, always worth the slot.', t: ['Integumentary'] },
+  { n: 'Heal-On-Kill', d: 'Sustain for aggressive builds.', t: ['Integumentary'] },
+  { n: 'Kiroshi Optics (Mk.3)', d: 'Scanning and targeting.', t: ['Ocular'] },
+  { n: 'Militech Berserk / Chrome Compressor', d: 'Capacity management once you’re over-chromed.', t: ['Skeleton'] },
+  { n: 'Relic Skill Tree', d: 'Phantom Liberty only. Unlocked by finding Relic points in Dogtown.', t: ['Phantom Liberty'] },
+];
+
+/* ============================================================== app state */
+let favorites = new Set();
+let tracked = new Set();
+let counters = {};
+let activeSection = 'overview';
+let activeTab = {};
+let query = '';
+let favOnly = false;
+let hideCompleted = false;
+
+function storageKey(){ return 'cyberpunk-journal-progress'; }
+
+function loadProgress(){
+  try {
+    const raw = localStorage.getItem(storageKey());
+    if (raw) {
+      const p = JSON.parse(raw);
+      favorites = new Set(p.favorites || []);
+      tracked = new Set(p.tracked || []);
+      counters = p.counters || {};
+    }
+  } catch (e) { /* start fresh */ }
+}
+
+function saveProgress(){
+  try {
+    const state = {
+      favorites: Array.from(favorites),
+      tracked: Array.from(tracked),
+      counters: counters,
+      updatedAt: Date.now(),
+    };
+    const payload = JSON.stringify(state);
+    localStorage.setItem(storageKey(), payload);
+    if (window.JawSync) window.JawSync.save(storageKey(), payload);
+    if (window.JawAccount && window.JawAccount.isSignedIn()) window.JawAccount.save('cyberpunk', state);
+  } catch (e) { console.error('Could not save progress', e); }
+}
+
+function adopt(remote){
+  favorites = new Set(remote.favorites || []);
+  tracked = new Set(remote.tracked || []);
+  counters = remote.counters || {};
+  renderAll();
+}
+
+async function syncPullAndReconcile(){
+  if (!window.JawSync) return;
+  try {
+    const remote = await window.JawSync.pull(storageKey());
+    if (!remote) return;
+    const r = JSON.parse(remote);
+    const localRaw = localStorage.getItem(storageKey());
+    const l = localRaw ? JSON.parse(localRaw) : null;
+    if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) { localStorage.setItem(storageKey(), remote); adopt(r); }
+  } catch (e) { console.error('Sync pull failed', e); }
+}
+
+async function syncAccountPullAndReconcile(){
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const r = await window.JawAccount.load('cyberpunk');
+    if (!r) return;
+    const localRaw = localStorage.getItem(storageKey());
+    const l = localRaw ? JSON.parse(localRaw) : null;
+    if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) { localStorage.setItem(storageKey(), JSON.stringify(r)); adopt(r); }
+  } catch (e) { console.error('Account sync pull failed', e); }
+}
+
+/* ============================================================ data helpers */
+function tabsFor(section){
+  switch (section) {
+    case 'main': return [
+      { id: 'act1', label: 'Act 1', list: MAIN.act1 },
+      { id: 'act2', label: 'Act 2 & 3', list: MAIN.act2 },
+      { id: 'pl',   label: 'Phantom Liberty', list: MAIN.pl },
+    ];
+    case 'side': return [
+      { id: 'judy', label: 'Judy', list: SIDE.judy },
+      { id: 'panam', label: 'Panam', list: SIDE.panam },
+      { id: 'river', label: 'River', list: SIDE.river },
+      { id: 'kerry', label: 'Kerry', list: SIDE.kerry },
+      { id: 'johnny', label: 'Johnny', list: SIDE.johnny },
+      { id: 'notable', label: 'Notable', list: SIDE.notable },
+      { id: 'plside', label: 'Phantom Liberty', list: SIDE.pl },
+    ];
+    case 'psycho':   return [{ id: 'all', label: 'All sightings', list: PSYCHO }];
+    case 'endings':  return [{ id: 'all', label: 'All endings', list: ENDINGS }];
+    case 'romance':  return [{ id: 'all', label: 'All romances', list: ROMANCE }];
+    case 'tarot':    return [{ id: 'all', label: 'The Fool’s Journey', list: TAROT }];
+    case 'gear':     return [{ id: 'all', label: 'Iconic gear', list: GEAR }];
+    case 'cyberware':return [{ id: 'all', label: 'Cyberware', list: CYBERWARE }];
+    default: return [];
+  }
+}
+
+function allNamedLists(){
+  return [].concat(
+    MAIN.act1, MAIN.act2, MAIN.pl,
+    SIDE.judy, SIDE.panam, SIDE.river, SIDE.kerry, SIDE.johnny, SIDE.notable, SIDE.pl,
+    PSYCHO, ENDINGS, ROMANCE, TAROT, GEAR, CYBERWARE
+  );
+}
+
+function idFor(section, tab, name){ return section + '|' + tab + '|' + name; }
+
+function counterTotal(list){ return list.reduce(function (a, x) { return a + x.max; }, 0); }
+function counterDone(list, prefix){
+  return list.reduce(function (a, x) { return a + (counters[prefix + '|' + x.n] || 0); }, 0);
+}
+
+function sectionProgress(id){
+  if (id === 'gigs') return { done: counterDone(GIGS, 'gigs'), total: counterTotal(GIGS) };
+  if (id === 'ncpd') return { done: counterDone(NCPD, 'ncpd'), total: counterTotal(NCPD) };
+  const tabs = tabsFor(id);
+  if (!tabs.length) return null;
+  let done = 0, total = 0;
+  tabs.forEach(function (t) {
+    t.list.forEach(function (e) {
+      total++;
+      if (tracked.has(idFor(id, t.id, e.n))) done++;
+    });
+  });
+  return { done: done, total: total };
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+/* ================================================================ rendering */
+function renderNav(){
+  const html = SECTIONS.map(function (s) {
+    const p = sectionProgress(s.id);
+    const tally = p ? '<span class="tally">' + p.done + '/' + p.total + '</span>' : '';
+    return '<button class="nav-btn ' + (activeSection === s.id ? 'active' : '') + '" data-section="' + s.id + '">' +
+             '<span class="icon" aria-hidden="true">' + s.icon + '</span>' + s.label + tally +
+           '</button>';
+  }).join('');
+  document.getElementById('navDesktop').innerHTML = html;
+  document.getElementById('navMobile').innerHTML = html;
+  document.querySelectorAll('.nav-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      activeSection = b.dataset.section;
+      query = '';
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+  });
+}
+
+function toolbarHtml(){
+  return '<div class="toolbar">' +
+    '<div class="search-plate"><span class="mag" aria-hidden="true">⌕</span>' +
+    '<input type="text" id="search" placeholder="Search this journal…" value="' + escapeHtml(query) + '" aria-label="Search" /></div>' +
+    '<button class="filter-pill ' + (favOnly ? 'active' : '') + '" id="pillFav">★ Starred</button>' +
+    '<button class="filter-pill ' + (hideCompleted ? 'active' : '') + '" id="pillHide">Hide done</button>' +
+    '</div>';
+}
+
+function entryHtml(section, tab, e){
+  const id = idFor(section, tab, e.n);
+  const done = tracked.has(id);
+  const fav = favorites.has(id);
+  const tags = (e.t || []).map(function (t) {
+    let cls = '';
+    if (/missable|no return|branches/i.test(t)) cls = ' warn';
+    else if (/needs|gates|romance gate/i.test(t)) cls = ' gold';
+    else if (/phantom liberty/i.test(t)) cls = ' info';
+    else if (/romance|female v|male v|fling/i.test(t)) cls = ' rose';
+    return '<span class="tag' + cls + '">' + escapeHtml(t) + '</span>';
+  }).join('');
+
+  return '<div class="entry ' + (done ? 'done' : '') + (e.missable ? ' missable' : '') + '">' +
+    '<button class="check" data-toggle="' + escapeHtml(id) + '" aria-pressed="' + done + '" aria-label="Mark ' + escapeHtml(e.n) + ' done">✔</button>' +
+    '<div class="entry-main">' +
+      '<div class="entry-name">' + escapeHtml(e.n) + '</div>' +
+      (tags ? '<div class="entry-meta">' + tags + '</div>' : '') +
+      (e.d ? '<div class="entry-desc">' + escapeHtml(e.d) + '</div>' : '') +
+    '</div>' +
+    '<button class="star ' + (fav ? 'on' : '') + '" data-fav="' + escapeHtml(id) + '" aria-pressed="' + fav + '" aria-label="Star ' + escapeHtml(e.n) + '">' + (fav ? '★' : '☆') + '</button>' +
+  '</div>';
+}
+
+function counterHtml(prefix, item){
+  const key = prefix + '|' + item.n;
+  const val = counters[key] || 0;
+  const pct = item.max ? Math.round((val / item.max) * 100) : 0;
+  return '<div class="counter ' + (val >= item.max ? 'full' : '') + '">' +
+    '<div><div class="counter-name">' + escapeHtml(item.n) + '</div>' +
+    '<div class="counter-sub">' + escapeHtml(item.sub) + '</div></div>' +
+    '<div class="counter-ctl">' +
+      '<button class="counter-btn" data-dec="' + escapeHtml(key) + '" ' + (val <= 0 ? 'disabled' : '') + ' aria-label="One fewer for ' + escapeHtml(item.n) + '">−</button>' +
+      '<span class="counter-val"><b>' + val + '</b> / ' + item.max + '</span>' +
+      '<button class="counter-btn" data-inc="' + escapeHtml(key) + '" ' + (val >= item.max ? 'disabled' : '') + ' aria-label="One more for ' + escapeHtml(item.n) + '">+</button>' +
+    '</div>' +
+    '<div class="counter-bar"><i style="width:' + pct + '%"></i></div>' +
+  '</div>';
+}
+
+function renderCounterSection(prefix, list, note){
+  const total = counterTotal(list);
+  const done = counterDone(list, prefix);
+  return '<div class="counter-note">' + note + '</div>' +
+    '<div class="ov-grid"><div class="ov-card"><div class="n">' + done + ' / ' + total + '</div>' +
+    '<div class="l">Logged</div></div></div>' +
+    '<div class="entries">' + list.map(function (i) { return counterHtml(prefix, i); }).join('') + '</div>';
+}
+
+function renderOverview(){
+  const rows = SECTIONS.filter(function (s) { return s.id !== 'overview'; }).map(function (s) {
+    const p = sectionProgress(s.id);
+    if (!p) return '';
+    const pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
+    return '<div class="prog-row"><div><div class="nm">' + s.label + '</div>' +
+      '<div class="track"><i style="width:' + pct + '%"></i></div></div>' +
+      '<div class="pct">' + p.done + '/' + p.total + '</div></div>';
+  }).join('');
+
+  let gDone = 0, gTotal = 0;
+  SECTIONS.forEach(function (s) {
+    const p = sectionProgress(s.id);
+    if (p) { gDone += p.done; gTotal += p.total; }
+  });
+  const gPct = gTotal ? Math.round((gDone / gTotal) * 100) : 0;
+
+  return '<div class="ov-grid">' +
+      '<div class="ov-card"><div class="n">' + gPct + '%</div><div class="l">Overall</div></div>' +
+      '<div class="ov-card"><div class="n">' + gDone + '</div><div class="l">Logged</div></div>' +
+      '<div class="ov-card"><div class="n">' + gTotal + '</div><div class="l">Tracked total</div></div>' +
+      '<div class="ov-card"><div class="n">' + favorites.size + '</div><div class="l">Starred</div></div>' +
+    '</div>' +
+    '<div class="prog-rows">' + rows + '</div>' +
+    '<div class="spoiler-note"><b>Heads up.</b> The Endings tab names every route out of Night City, ' +
+      'including the secret one. It spoils the last hour of the game — skip that tab on a first run.</div>' +
+    '<div class="counter-note">Progress lives in this browser. Sign in with the account pill for cloud sync, ' +
+      'or take a JSON backup here before clearing site data.</div>' +
+    '<div class="io-row">' +
+      '<button class="io-btn" id="btnExport">Export backup</button>' +
+      '<button class="io-btn" id="btnImport">Import backup</button>' +
+      '<button class="io-btn danger" id="btnReset">Reset progress</button>' +
+    '</div><div class="io-status" id="ioStatus"></div>' +
+    '<input type="file" id="importFile" accept="application/json" style="display:none" />';
+}
+
+function renderSection(){
+  const sec = SECTIONS.find(function (s) { return s.id === activeSection; });
+  document.getElementById('secTitle').textContent = sec.label;
+  document.getElementById('secBlurb').textContent = sec.blurb;
+  const body = document.getElementById('secBody');
+
+  if (activeSection === 'overview') { body.innerHTML = renderOverview(); wireOverview(); return; }
+
+  if (activeSection === 'gigs') {
+    body.innerHTML = renderCounterSection('gigs', GIGS,
+      'Night City holds roughly <b>110 gigs</b> across eight fixers. Rather than invent names for ' +
+      'jobs this journal can’t verify, each fixer is a counter — tick them off as you clear their board. ' +
+      'Totals are approximate and shift with patches.');
+    wireCounters(); return;
+  }
+
+  if (activeSection === 'ncpd') {
+    body.innerHTML = renderCounterSection('ncpd', NCPD,
+      'The blue police markers — <b>Assaults in Progress</b>, <b>Organized Crime</b> and <b>Reported Crime</b>. ' +
+      'There are well over a hundred, so they’re tracked per district rather than named individually. ' +
+      'Counts are approximate.');
+    wireCounters(); return;
+  }
+
+  const tabs = tabsFor(activeSection);
+  if (!activeTab[activeSection]) activeTab[activeSection] = tabs[0].id;
+  const cur = tabs.find(function (t) { return t.id === activeTab[activeSection]; }) || tabs[0];
+
+  const subtabs = tabs.length > 1
+    ? '<div class="subtabs">' + tabs.map(function (t) {
+        const d = t.list.filter(function (e) { return tracked.has(idFor(activeSection, t.id, e.n)); }).length;
+        return '<button class="subtab ' + (t.id === cur.id ? 'active' : '') + '" data-tab="' + t.id + '">' +
+               escapeHtml(t.label) + '<span class="n">' + d + '/' + t.list.length + '</span></button>';
+      }).join('') + '</div>'
+    : '';
+
+  const q = query.trim().toLowerCase();
+  let list = cur.list.filter(function (e) {
+    if (q && (e.n + ' ' + (e.d || '') + ' ' + (e.t || []).join(' ')).toLowerCase().indexOf(q) === -1) return false;
+    const id = idFor(activeSection, cur.id, e.n);
+    if (favOnly && !favorites.has(id)) return false;
+    if (hideCompleted && tracked.has(id)) return false;
+    return true;
+  });
+
+  const entries = list.length
+    ? '<div class="entries">' + list.map(function (e) { return entryHtml(activeSection, cur.id, e); }).join('') + '</div>'
+    : '<div class="empty-state">Nothing matches those filters.</div>';
+
+  const spoiler = activeSection === 'endings'
+    ? '<div class="spoiler-note"><b>Spoilers below.</b> Every route out of Night City, including the secret one.</div>'
+    : '';
+
+  body.innerHTML = spoiler + toolbarHtml() + subtabs + entries;
+  wireSection();
+}
+
+/* ================================================================== wiring */
+function wireSection(){
+  const s = document.getElementById('search');
+  if (s) s.addEventListener('input', function (e) {
+    query = e.target.value;
+    renderSection();
+    const el = document.getElementById('search');
+    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  });
+
+  const pf = document.getElementById('pillFav');
+  if (pf) pf.addEventListener('click', function () { favOnly = !favOnly; renderSection(); });
+  const ph = document.getElementById('pillHide');
+  if (ph) ph.addEventListener('click', function () { hideCompleted = !hideCompleted; renderSection(); });
+
+  document.querySelectorAll('.subtab').forEach(function (t) {
+    t.addEventListener('click', function () { activeTab[activeSection] = t.dataset.tab; renderSection(); });
+  });
+
+  document.querySelectorAll('[data-toggle]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const id = b.dataset.toggle;
+      if (tracked.has(id)) tracked.delete(id); else tracked.add(id);
+      saveProgress();
+      renderSection();
+      renderNav();
+    });
+  });
+
+  document.querySelectorAll('[data-fav]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const id = b.dataset.fav;
+      if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+      saveProgress();
+      renderSection();
+    });
+  });
+}
+
+function wireCounters(){
+  document.querySelectorAll('[data-inc]').forEach(function (b) {
+    b.addEventListener('click', function () { bump(b.dataset.inc, 1); });
+  });
+  document.querySelectorAll('[data-dec]').forEach(function (b) {
+    b.addEventListener('click', function () { bump(b.dataset.dec, -1); });
+  });
+}
+
+function bump(key, delta){
+  const prefix = key.split('|')[0];
+  const name = key.split('|')[1];
+  const list = prefix === 'gigs' ? GIGS : NCPD;
+  const item = list.find(function (x) { return x.n === name; });
+  const max = item ? item.max : 999;
+  const next = Math.max(0, Math.min(max, (counters[key] || 0) + delta));
+  counters[key] = next;
+  saveProgress();
+  renderSection();
+  renderNav();
+}
+
+function wireOverview(){
+  const st = document.getElementById('ioStatus');
+
+  document.getElementById('btnExport').addEventListener('click', function () {
+    const blob = new Blob([localStorage.getItem(storageKey()) || '{}'], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cyberpunk-journal-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    st.textContent = 'Backup downloaded.';
+  });
+
+  document.getElementById('btnImport').addEventListener('click', function () {
+    document.getElementById('importFile').click();
+  });
+
+  document.getElementById('importFile').addEventListener('change', function (ev) {
+    const f = ev.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = function () {
+      try {
+        const d = JSON.parse(r.result);
+        if (!d.favorites && !d.tracked && !d.counters) throw new Error('shape');
+        adopt(d);
+        saveProgress();
+        st.textContent = 'Backup imported.';
+      } catch (e) { st.textContent = 'That file isn’t a Merc’s Shard backup.'; }
+    };
+    r.readAsText(f);
+    ev.target.value = '';
+  });
+
+  document.getElementById('btnReset').addEventListener('click', function () {
+    if (st.dataset.armed === '1') {
+      favorites = new Set(); tracked = new Set(); counters = {};
+      saveProgress(); renderAll();
+      st.textContent = 'Progress reset.';
+      return;
+    }
+    st.dataset.armed = '1';
+    st.textContent = 'Click Reset again to wipe every checkmark, star and counter. This can’t be undone.';
+    setTimeout(function () { st.dataset.armed = '0'; }, 6000);
+  });
+}
+
+function renderAll(){ renderNav(); renderSection(); }
+
+/* ==================================================================== init */
+loadProgress();
+renderAll();
+
+if (window.JawAccount && window.JawAccount.init) {
+  window.JawAccount.init().then(syncAccountPullAndReconcile).catch(function () {});
+}
+window.__jawAccountOnSignedIn = syncAccountPullAndReconcile;
+syncPullAndReconcile();
+</script>
+<script src="../studio-nav.js?v=20260905" defer></script>
+<script src="../journal-app.js?v=20260905" defer></script>
+</body>
+</html>

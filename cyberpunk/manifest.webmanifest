@@ -1,0 +1,16 @@
+{
+  "name": "The Merc's Shard",
+  "short_name": "Cyberpunk Journal",
+  "description": "Cyberpunk 2077 companion — main jobs, side jobs, gigs, cyberpsychos, tarot, romances and every ending, plus Phantom Liberty.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#08080C",
+  "theme_color": "#08080C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
