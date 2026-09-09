@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Site Trust Checker",
+  "version": "1.0.0",
+  "description": "Inspects the active tab's domain for phishing, spoofing, and reputation red flags.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://rdap.org/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Check Site Trust"
+  }
+}

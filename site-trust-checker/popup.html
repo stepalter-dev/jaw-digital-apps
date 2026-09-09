@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Site Trust Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 280px;
+      padding: 12px;
+      margin: 0;
+      background: #ffffff;
+    }
+    #domain {
+      font-weight: bold;
+      font-size: 13px;
+      word-break: break-all;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    #score-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    #score {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0f172a;
+    }
+    #badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .safe { background: #dcfce7; color: #15803d; }
+    .suspicious { background: #fef9c3; color: #854d0e; }
+    .danger { background: #fee2e2; color: #b91c1c; }
+    ul {
+      padding-left: 18px;
+      margin: 8px 0 0 0;
+      font-size: 12px;
+      color: #475569;
+    }
+    li { margin-bottom: 4px; }
+    li.flag { color: #b91c1c; }
+    li.ok { color: #15803d; }
+    #footer {
+      margin-top: 10px;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div id="domain">Scanning...</div>
+  <div id="score-row">
+    <span id="score">--</span>
+    <span id="badge">Checking</span>
+  </div>
+  <ul id="details"></ul>
+  <div id="footer">Heuristic scan only. Not a substitute for professional threat intelligence.</div>
+  <script src="popup.js"></script>
+</body>
+</html>
