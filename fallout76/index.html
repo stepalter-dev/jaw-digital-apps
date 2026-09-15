@@ -871,10 +871,18 @@ function renderNav(){
    RENDER: OVERVIEW
    ============================================================ */
 
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
 function renderOverview(){
   document.getElementById('page-title').textContent = 'Vault Dweller’s Almanac';
   document.getElementById('page-subtitle').textContent = '— a survival record for Appalachia —';
   document.getElementById('search-row').style.display = 'none';
+
+  let seasonY = '', seasonM = '', seasonD = '';
+  if (countdownSettings.seasonEndsAt) {
+    const [y, m, d] = countdownSettings.seasonEndsAt.split('-').map(Number);
+    seasonY = y; seasonM = m; seasonD = d;
+  }
 
   const ownedCount = ownedCards.size;
   const starredIncomplete = RESOURCES.filter(r => stockpile[r.id] && stockpile[r.id].starred && !stockpile[r.id].have).length;
@@ -931,7 +939,12 @@ function renderOverview(){
         ` : `<div class="card-desc">Check the in-game Seasons page for the current Season's end date and set it here to get a live countdown in your own timezone — no time conversion needed.</div>`}
         <div class="card-actions">
           <label class="field-label" style="margin:0;">Season ends</label>
-          <input type="date" id="season-date-input" value="${countdownSettings.seasonEndsAt || ''}">
+          <select id="season-month-input">
+            <option value="" ${!seasonY ? 'selected' : ''} disabled>Month</option>
+            ${MONTH_NAMES.map((name, i) => `<option value="${i+1}" ${seasonM===i+1?'selected':''}>${name}</option>`).join('')}
+          </select>
+          <input type="number" id="season-day-input" min="1" max="31" placeholder="DD" style="width:56px;" value="${seasonD || ''}">
+          <input type="number" id="season-year-input" min="2018" max="2099" placeholder="YYYY" style="width:76px;" value="${seasonY || ''}">
           ${countdownSettings.seasonEndsAt ? `<button class="btn small" id="clear-season-btn">Clear</button>` : ''}
         </div>
       </div>
@@ -953,11 +966,18 @@ function renderOverview(){
     countdownSettings.resetHourET = Math.max(0, Math.min(23, parseInt(resetHourInput.value) || 0));
     saveProgress(); tickCountdowns();
   });
-  const seasonDateInput = document.getElementById('season-date-input');
-  seasonDateInput.addEventListener('change', () => {
-    countdownSettings.seasonEndsAt = seasonDateInput.value;
+  const seasonMonthInput = document.getElementById('season-month-input');
+  const seasonDayInput = document.getElementById('season-day-input');
+  const seasonYearInput = document.getElementById('season-year-input');
+  const trySaveSeasonDate = () => {
+    const m = parseInt(seasonMonthInput.value, 10);
+    const d = parseInt(seasonDayInput.value, 10);
+    const y = parseInt(seasonYearInput.value, 10);
+    if (!m || !d || !y || y < 2000 || y > 2199) return; // wait until all three are filled in & sane
+    countdownSettings.seasonEndsAt = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     saveProgress(); renderOverview();
-  });
+  };
+  [seasonMonthInput, seasonDayInput, seasonYearInput].forEach(el => el.addEventListener('change', trySaveSeasonDate));
   const clearSeasonBtn = document.getElementById('clear-season-btn');
   if (clearSeasonBtn) clearSeasonBtn.addEventListener('click', () => {
     countdownSettings.seasonEndsAt = '';
