@@ -17,6 +17,7 @@
   let client = null;
   let session = null;
   let entitlements = new Set(); // games the signed-in user has cloud sync access to
+  let household = null; // { household_id, name, role, member_count } | null — see get_my_household()
 
   // Games where cloud sync is the paid feature (free codes / purchase required).
   // Anything not listed here stays free for everyone, signed in or not — add a
@@ -47,14 +48,20 @@
     });
     const { data } = await client.auth.getSession();
     session = data.session;
-    if (session) await refreshEntitlements();
+    if (session) { await refreshEntitlements(); await refreshHousehold(); }
     client.auth.onAuthStateChange(async (_event, s) => {
       session = s;
       entitlements = new Set();
-      if (session) await refreshEntitlements();
+      household = null;
+      if (session) { await refreshEntitlements(); await refreshHousehold(); }
       setStatus(session ? 'signed-in' : 'signed-out');
       emitSync(session ? 'signed-in' : 'signed-out');
       if (session && typeof window.__jawAccountOnSignedIn === 'function') window.__jawAccountOnSignedIn();
+      // If the sign-in modal is open when the magic link completes elsewhere (another
+      // tab, or this one after the redirect), refresh it straight to the signed-in view
+      // instead of leaving a stale "enter your email" form on screen.
+      const openModal = document.getElementById('jaw-account-modal');
+      if (session && openModal) { openModal.remove(); openPanel(); }
     });
     buildWidget();
     setStatus(session ? 'signed-in' : 'signed-out');
@@ -72,6 +79,64 @@
 
   function hasEntitlement(game) {
     return entitlements.has(game);
+  }
+
+  // Pulls the signed-in user's household (at most one), so load()/save() know
+  // whether to read/write the shared household_progress row instead of the
+  // user's own personal one. Never throws — a household is optional, and a
+  // failed lookup should just behave like "not in a household".
+  async function refreshHousehold() {
+    if (!client || !session) { household = null; return; }
+    try {
+      const { data, error } = await client.rpc('get_my_household');
+      if (error) throw error;
+      const row = (data || [])[0];
+      household = row ? { id: row.household_id, name: row.name, role: row.role, memberCount: row.member_count } : null;
+    } catch (e) {
+      console.error('JawAccount household lookup failed', e);
+      household = null;
+    }
+  }
+
+  function myHousehold() { return household; }
+
+  async function createHousehold(name) {
+    if (!client || !session) throw new Error('Sign in first.');
+    const { data, error } = await client.rpc('create_household', { p_name: name || 'My Household' });
+    if (error) throw new Error(error.message === 'already_in_household' ? 'You’re already in a household — leave it first.' : 'Could not create a household.');
+    await refreshHousehold();
+    return data;
+  }
+
+  async function createHouseholdInvite() {
+    if (!client || !session) throw new Error('Sign in first.');
+    const { data, error } = await client.rpc('create_household_invite');
+    if (error) throw new Error('Could not create an invite code.');
+    return data;
+  }
+
+  async function joinHousehold(code) {
+    if (!client || !session) throw new Error('Sign in first.');
+    const { data, error } = await client.rpc('join_household', { p_code: code });
+    if (error) throw error;
+    const messages = {
+      ok: null,
+      already_in_household: 'You’re already in a household — leave it first.',
+      invalid_code: 'That invite code isn’t valid.',
+      inactive_code: 'That invite code has been deactivated.',
+      exhausted_code: 'That invite code has already been used up.',
+      not_signed_in: 'Sign in first.',
+    };
+    if (data !== 'ok') throw new Error(messages[data] || 'Could not join that household.');
+    await refreshHousehold();
+    return true;
+  }
+
+  async function leaveHousehold() {
+    if (!client || !session) return;
+    const { error } = await client.rpc('leave_household');
+    if (error) throw new Error('Could not leave the household.');
+    household = null;
   }
 
   // Redeems a free-access code for `game`. Returns true on success; throws
@@ -137,9 +202,22 @@
   }
 
   // Pulls this game's progress row for the signed-in user, or null if signed out / no row yet.
+  // When the account is in a household, the shared household_progress row is preferred —
+  // falling back to the personal row only if the household hasn't saved this game yet, so
+  // joining a household never hides progress you already had.
   async function load(game) {
     if (!client || !session) return null;
     if (requiresEntitlement(game) && !hasEntitlement(game)) return null;
+    if (household) {
+      const { data, error } = await client
+        .from('household_progress')
+        .select('payload, updated_at')
+        .eq('household_id', household.id)
+        .eq('game', game)
+        .maybeSingle();
+      if (error) console.error('JawAccount household load failed', error);
+      else if (data) return Object.assign({}, data.payload, { updatedAt: new Date(data.updated_at).getTime() });
+    }
     const { data, error } = await client
       .from('progress')
       .select('payload, updated_at')
@@ -161,8 +239,9 @@
     } catch (e) { /* very old browser — status just stays neutral */ }
   }
 
-  // Upserts this game's progress row for the signed-in user. Payload should be a plain object
-  // (not yet JSON-stringified) — updated_at is set server-side via now().
+  // Upserts this game's progress row for the signed-in user (or, when in a household, the
+  // shared household row everyone in it reads from). Payload should be a plain object (not
+  // yet JSON-stringified) — updated_at is set server-side via now().
   async function save(game, payloadObj) {
     if (!client || !session) return;
     // Silently doing nothing here is what made sync look broken: signed in,
@@ -170,9 +249,15 @@
     // uploaded and the pill just sat at "off". Say so instead.
     if (requiresEntitlement(game) && !hasEntitlement(game)) { emitSync('locked', { game: game }); return; }
     emitSync('saving', { game: game });
-    const { error } = await client
-      .from('progress')
-      .upsert({ user_id: session.user.id, game, payload: payloadObj, updated_at: new Date().toISOString() }, { onConflict: 'user_id,game' });
+    const error = household
+      ? (await client
+          .from('household_progress')
+          .upsert({ household_id: household.id, game, payload: payloadObj, updated_at: new Date().toISOString() }, { onConflict: 'household_id,game' })
+        ).error
+      : (await client
+          .from('progress')
+          .upsert({ user_id: session.user.id, game, payload: payloadObj, updated_at: new Date().toISOString() }, { onConflict: 'user_id,game' })
+        ).error;
     if (error) {
       console.error('JawAccount save failed', error);
       emitSync('error', { game: game });
@@ -308,6 +393,35 @@
             </div>
             <div id="jaw-account-redeem-msg" class="jaw-acc-msg" style="margin-top:6px;margin-bottom:0;"></div>
           </div>`;
+
+      // Household sharing — rolled out to Home Maintenance first; add a game to this
+      // set to turn the same create/join/invite UI on for it (load/save already
+      // route through a household transparently once one exists, in account.js).
+      const HOUSEHOLD_ENABLED_GAMES = new Set(['home-maintenance']);
+      const householdSection = !HOUSEHOLD_ENABLED_GAMES.has(game) ? '' : household ? `
+          <div class="jaw-acc-divider">
+            <label class="jaw-acc-label">Household</label>
+            <p class="jaw-acc-p" style="margin-bottom:10px;">${escapeHtml(household.name)} — ${household.memberCount} member${household.memberCount === 1 ? '' : 's'} sharing this journal's progress.</p>
+            <div class="jaw-acc-row split">
+              <button id="jaw-account-invite-btn" class="jaw-acc-btn ghost">Get invite code</button>
+              <button id="jaw-account-leave-household-btn" class="jaw-acc-btn danger">Leave household</button>
+            </div>
+            <div id="jaw-account-household-msg" class="jaw-acc-msg" style="margin-top:8px;margin-bottom:0;"></div>
+          </div>` : `
+          <div class="jaw-acc-divider">
+            <label class="jaw-acc-label">Household — share this journal with others</label>
+            <p class="jaw-acc-p" style="margin-bottom:10px;">Start a household to sync one shared task list with someone else, or join one with a code they send you.</p>
+            <div class="jaw-acc-row split" style="margin-bottom:10px;">
+              <button id="jaw-account-create-household-btn" class="jaw-acc-btn primary">Start a household</button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <input id="jaw-account-join-code" class="jaw-acc-input" type="text" placeholder="Enter invite code" maxlength="24"
+                style="margin-bottom:0;flex:1;letter-spacing:1px;text-transform:uppercase;" />
+              <button id="jaw-account-join-household-btn" class="jaw-acc-btn ghost">Join</button>
+            </div>
+            <div id="jaw-account-household-msg" class="jaw-acc-msg" style="margin-top:8px;margin-bottom:0;"></div>
+          </div>`;
+
       const fixedName = overrideName();
       const nameSection = fixedName ? `
           <label class="jaw-acc-label">Character name</label>
@@ -334,6 +448,7 @@
           <p class="jaw-acc-p" style="margin-bottom:16px;">${session.user.email}</p>
           ${nameSection}
           ${syncSection}
+          ${householdSection}
           ${nameRow}
         </div>`;
       document.body.appendChild(modal);
@@ -373,22 +488,82 @@
           }
         });
       }
+
+      const createHhBtn = document.getElementById('jaw-account-create-household-btn');
+      if (createHhBtn) createHhBtn.addEventListener('click', async () => {
+        const msg = document.getElementById('jaw-account-household-msg');
+        setMsg(msg, 'Creating…');
+        try {
+          await createHousehold((displayName() || 'My') + '’s Household');
+          setMsg(msg, 'Household created — reopening…', 'ok');
+          setTimeout(() => { modal.remove(); openPanel(); }, 400);
+        } catch (e) {
+          console.error('Create household failed', e);
+          setMsg(msg, e.message || 'Could not create a household.', 'err');
+        }
+      });
+
+      const joinHhBtn = document.getElementById('jaw-account-join-household-btn');
+      if (joinHhBtn) joinHhBtn.addEventListener('click', async () => {
+        const codeInput = document.getElementById('jaw-account-join-code');
+        const msg = document.getElementById('jaw-account-household-msg');
+        const code = codeInput.value.trim();
+        if (!code) { setMsg(msg, 'Enter an invite code first.', 'err'); return; }
+        setMsg(msg, 'Joining…');
+        try {
+          await joinHousehold(code);
+          setMsg(msg, 'Joined! Reopening…', 'ok');
+          if (typeof window.__jawAccountOnSignedIn === 'function') window.__jawAccountOnSignedIn();
+          setTimeout(() => { modal.remove(); openPanel(); }, 500);
+        } catch (e) {
+          console.error('Join household failed', e);
+          setMsg(msg, e.message || 'Could not join that household.', 'err');
+        }
+      });
+
+      const inviteBtn = document.getElementById('jaw-account-invite-btn');
+      if (inviteBtn) inviteBtn.addEventListener('click', async () => {
+        const msg = document.getElementById('jaw-account-household-msg');
+        setMsg(msg, 'Creating invite code…');
+        try {
+          const code = await createHouseholdInvite();
+          setMsg(msg, `Invite code: ${code} — share it with whoever you want in your household.`, 'ok');
+        } catch (e) {
+          console.error('Create invite failed', e);
+          setMsg(msg, e.message || 'Could not create an invite code.', 'err');
+        }
+      });
+
+      const leaveHhBtn = document.getElementById('jaw-account-leave-household-btn');
+      if (leaveHhBtn) leaveHhBtn.addEventListener('click', async () => {
+        const msg = document.getElementById('jaw-account-household-msg');
+        setMsg(msg, 'Leaving…');
+        try {
+          await leaveHousehold();
+          setMsg(msg, 'Left the household — reopening…', 'ok');
+          if (typeof window.__jawAccountOnSignedIn === 'function') window.__jawAccountOnSignedIn();
+          setTimeout(() => { modal.remove(); openPanel(); }, 400);
+        } catch (e) {
+          console.error('Leave household failed', e);
+          setMsg(msg, e.message || 'Could not leave the household.', 'err');
+        }
+      });
       return;
     }
     modal.innerHTML = `
       <div class="jaw-acc-card">
         <h3 class="jaw-acc-h">Sign in</h3>
         <p id="jaw-account-step1-copy" class="jaw-acc-p">
-          Enter your email and we'll send you a sign-in code. No password
-          needed — your progress follows your account across any device.
+          Enter your email — no password needed. Your progress follows your
+          account across any device.
         </p>
         <input id="jaw-account-email" class="jaw-acc-input" type="email" placeholder="you@example.com" />
         <input id="jaw-account-code" class="jaw-acc-input code" type="text" inputmode="numeric" placeholder="Enter code" maxlength="12" />
         <div id="jaw-account-msg" class="jaw-acc-msg"></div>
-        <p class="jaw-acc-note">You'll stay signed in on this device until you sign out — no need to re-enter your email or code next time, unless your browser clears site data on close.</p>
+        <p id="jaw-account-step1-note" class="jaw-acc-note">You'll stay signed in on this device until you sign out — no need to re-enter your email next time, unless your browser clears site data on close.</p>
         <div class="jaw-acc-row">
           <button id="jaw-account-close" class="jaw-acc-btn ghost">Close</button>
-          <button id="jaw-account-send" class="jaw-acc-btn primary">Send code</button>
+          <button id="jaw-account-send" class="jaw-acc-btn primary">Send link</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
@@ -409,12 +584,14 @@
         try {
           await signIn(email);
           codeSentFor = email;
-          document.getElementById('jaw-account-step1-copy').textContent = 'Enter the code we just emailed you.';
+          document.getElementById('jaw-account-step1-copy').textContent = 'Check your email — click the link in it and this tab signs in automatically, no code needed.';
+          const note = document.getElementById('jaw-account-step1-note');
+          if (note) note.textContent = 'Link not working (e.g. it opened on your phone instead)? Enter the 6-digit code from the same email below instead.';
           document.getElementById('jaw-account-email').disabled = true;
           codeInput.style.display = 'block';
           codeInput.focus();
-          sendBtn.textContent = 'Verify';
-          setMsg(msg, 'Code sent — check your email.', 'ok');
+          sendBtn.textContent = 'Verify code';
+          setMsg(msg, 'Link and code sent — check your email.', 'ok');
         } catch (e) {
           console.error('Sign-in failed', e);
           setMsg(msg, 'Could not send code — try again.', 'err');
@@ -442,6 +619,9 @@
   // so the widget updates immediately instead of waiting for the next sign-in/out.
   function refresh() { setStatus(session ? 'signed-in' : 'signed-out'); }
 
-  window.JawAccount = { init, load, save, isSignedIn, hasEntitlement, syncsFor, redeem, refresh, openPanel };
+  window.JawAccount = {
+    init, load, save, isSignedIn, hasEntitlement, syncsFor, redeem, refresh, openPanel,
+    myHousehold, createHousehold, createHouseholdInvite, joinHousehold, leaveHousehold,
+  };
   document.addEventListener('DOMContentLoaded', init);
 })();

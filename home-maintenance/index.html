@@ -547,7 +547,7 @@
 
     <div id="view-root"></div>
 
-    <footer class="note">A record kept for one household by JAW Digital</footer>
+    <footer class="note">JAW Digital</footer>
   </main>
 </div>
 
@@ -591,6 +591,8 @@
   </div>
 </div>
 
+<script>window.JAW_GAME = 'home-maintenance';</script>
+<script src="../account.js?v=20260915"></script>
 <script>
 /* ============================= DATA ============================= */
 
@@ -600,6 +602,7 @@ const CATEGORIES = [
   { id: 'electrical',  label: 'Electrical',            icon: '⚡', color: 'graybrown' },
   { id: 'exterior',    label: 'Exterior & Gutters',    icon: '🏠', color: 'teal' },
   { id: 'appliances',  label: 'Appliances',            icon: '🔧', color: 'amber' },
+  { id: 'cleaning',    label: 'Cleaning',              icon: '🧹', color: 'coral' },
   { id: 'safety',      label: 'Safety',                icon: '🔔', color: 'coral' },
   { id: 'garden',      label: 'Garden & Irrigation',   icon: '🌱', color: 'teal' },
   { id: 'pest',        label: 'Pest Control',          icon: '🐜', color: 'graybrown' },
@@ -607,6 +610,8 @@ const CATEGORIES = [
 const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
 
 const FREQUENCIES = {
+  daily:     { label: 'Daily',     days: 1 },
+  weekly:    { label: 'Weekly',    days: 7 },
   monthly:   { label: 'Monthly',   months: 1 },
   quarterly: { label: 'Quarterly', months: 3 },
   biannual:  { label: 'Biannual',  months: 6 },
@@ -628,6 +633,7 @@ const todayISO = () => toISODate(new Date());
 const monthsAgoISO = n => { const d = new Date(); d.setMonth(d.getMonth() - n); return toISODate(d); };
 const daysAgoISO = n => { const d = new Date(); d.setDate(d.getDate() - n); return toISODate(d); };
 const addMonthsISO = (iso, months) => { const d = new Date(iso + 'T00:00:00'); d.setMonth(d.getMonth() + months); return toISODate(d); };
+const addDaysISO = (iso, days) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + days); return toISODate(d); };
 const fmtDate = iso => {
   if (!iso) return '—';
   const d = new Date(iso + 'T00:00:00');
@@ -703,6 +709,7 @@ function freshSeedTasks() { return JSON.parse(SEED_TASKS_JSON); }
 const TASKS_KEY = 'hmc_tasks';
 const LOG_KEY = 'hmc_completed_log';
 const THEME_KEY = 'hmc_theme';
+const UPDATED_KEY = 'hmc_updated_at';
 
 let tasks = [];
 let completedLog = [];
@@ -725,8 +732,38 @@ function loadState() {
   if (!Array.isArray(tasks) || tasks.length === 0) tasks = freshSeedTasks();
   if (!Array.isArray(completedLog)) completedLog = [];
 }
-function saveTasks() { try { localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); } catch (e) { console.error('Could not save tasks', e); } }
-function saveLog() { try { localStorage.setItem(LOG_KEY, JSON.stringify(completedLog)); } catch (e) { console.error('Could not save log', e); } }
+function saveTasks() { try { localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); } catch (e) { console.error('Could not save tasks', e); } bumpUpdated(); pushCloud(); }
+function saveLog() { try { localStorage.setItem(LOG_KEY, JSON.stringify(completedLog)); } catch (e) { console.error('Could not save log', e); } bumpUpdated(); pushCloud(); }
+
+/* ---------- cloud sync (sign in + optional shared household, via account.js) ---------- */
+function getLocalUpdatedAt() { try { return parseInt(localStorage.getItem(UPDATED_KEY) || '0', 10); } catch (e) { return 0; } }
+function bumpUpdated() { try { localStorage.setItem(UPDATED_KEY, String(Date.now())); } catch (e) {} }
+
+function pushCloud() {
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  window.JawAccount.save('home-maintenance', { tasks, completedLog, updatedAt: getLocalUpdatedAt() });
+}
+
+// Pulls whichever copy is newer — the signed-in user's own progress, or (once they're in a
+// household) the shared one everyone in it edits — and adopts it if it's ahead of what's
+// already on this device. Never overwrites local data with something older.
+async function pullCloudAndReconcile() {
+  if (!window.JawAccount || !window.JawAccount.isSignedIn()) return;
+  try {
+    const remote = await window.JawAccount.load('home-maintenance');
+    if (!remote || !Array.isArray(remote.tasks)) return;
+    if ((remote.updatedAt || 0) <= getLocalUpdatedAt()) return;
+    tasks = remote.tasks;
+    completedLog = Array.isArray(remote.completedLog) ? remote.completedLog : [];
+    try {
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+      localStorage.setItem(LOG_KEY, JSON.stringify(completedLog));
+      localStorage.setItem(UPDATED_KEY, String(remote.updatedAt));
+    } catch (e) {}
+    renderAll();
+  } catch (e) { console.error('Home Maintenance cloud pull failed', e); }
+}
+window.__jawAccountOnSignedIn = pullCloudAndReconcile;
 
 /* ---------- theme ---------- */
 function applyTheme(mode) {
@@ -753,8 +790,9 @@ function toggleTheme() {
 function nextDueFor(task) {
   if (task.frequency === 'oneoff') return null;
   if (!task.lastDone) return null;
-  const months = FREQUENCIES[task.frequency].months;
-  return addMonthsISO(task.lastDone, months);
+  const freq = FREQUENCIES[task.frequency];
+  if (freq.days) return addDaysISO(task.lastDone, freq.days);
+  return addMonthsISO(task.lastDone, freq.months);
 }
 function statusFor(task) {
   if (task.frequency === 'oneoff' && task.completed) return 'done';
@@ -1180,6 +1218,10 @@ document.getElementById('search').addEventListener('input', e => { searchQuery =
 loadTheme();
 loadState();
 renderAll();
+
+if (window.JawAccount && window.JawAccount.init) {
+  window.JawAccount.init().then(pullCloudAndReconcile).catch(() => {});
+}
 </script>
 <script src="../studio-nav.js?v=20260905" defer></script>
 <script src="../journal-app.js?v=20260905" defer></script>
