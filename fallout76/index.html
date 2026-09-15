@@ -774,16 +774,20 @@ function loadNavState(){
 const RESET_TZ = 'America/New_York';
 const DOW = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
 
-// Wall-clock fields for `date` as seen in RESET_TZ.
+// Wall-clock fields for `date` as seen in RESET_TZ, down to the second — the offset
+// calculation below compares this against date.getTime() (full ms precision), so it needs
+// matching precision or the "leftover" seconds within the current minute leak in as a fake
+// offset that changes every tick and makes the countdown's seconds jitter instead of
+// counting down steadily.
 function etParts(date){
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: RESET_TZ, weekday: 'short',
     year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
   });
   const parts = {};
   fmt.formatToParts(date).forEach(p => { if (p.type !== 'literal') parts[p.type] = p.value; });
-  return { weekday: parts.weekday, year: +parts.year, month: +parts.month, day: +parts.day, hour: +parts.hour, minute: +parts.minute };
+  return { weekday: parts.weekday, year: +parts.year, month: +parts.month, day: +parts.day, hour: +parts.hour, minute: +parts.minute, second: +parts.second };
 }
 
 // RESET_TZ's current offset from UTC, in minutes (negative = behind UTC). Recomputed from
@@ -791,7 +795,7 @@ function etParts(date){
 // ever targets a date within the current or next week.
 function etOffsetMinutes(date){
   const p = etParts(date);
-  const asIfUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, 0);
+  const asIfUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
   return (asIfUTC - date.getTime()) / 60000;
 }
 
