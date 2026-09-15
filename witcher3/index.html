@@ -24,31 +24,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+SC:wght@400;500;700;900&family=Grenze+Gotisch:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* canvas — oiled steel & wet leather, not warm like the Imperial/Nordic journals */
-    --void: #0A0C0F;
-    --stone-1: #10141A;
-    --stone-2: #161B22;
-    --stone-3: #1D242C;
-    --stone-4: #262F39;
-    --stone-5: #313D49;
-    --panel: rgba(22, 27, 34, 0.80);
+    /* a witcher's bestiary — cold swamp-iron and old silver, not warm leather */
+    --void: #07090A;
+    --stone-1: #0D1210;
+    --stone-2: #121A17;
+    --stone-3: #182420;
+    --stone-4: #22322B;
+    --stone-5: #2D4038;
+    --panel: rgba(18, 26, 23, 0.80);
     --panel-hi: rgba(255, 255, 255, 0.05);
-    --iron: #37424E;
-    --iron-light: #7C8CA0;
+    --iron: #33453D;
+    --iron-light: #6E8A7C;
     /* frost — Quen-shimmer icy blue, secondary interactive accent */
     --frost: #6FB8D9;
     --frost-dim: #3E7A93;
-    /* worn bronze/leather-strap gold — muted, not royal gold */
-    --gold: #B0824A;
-    --gold-bright: #D9AE6D;
-    --gold-dim: #7A5A32;
-    --heading: #ECEAE4;
-    --ink: #D6D3C8;
-    --ink-soft: #9CA0A8;
-    --ink-dim: #656B74;
+    /* tarnished silver — a witcher medallion, not royal gold */
+    --gold: #9FAAA8;
+    --gold-bright: #D6E0DC;
+    --gold-dim: #5C6A66;
+    --heading: #E7ECE9;
+    --ink: #C9D0CB;
+    --ink-soft: #8FA098;
+    --ink-dim: #5C6D65;
     --blood: #A22A2A;
     --sage-ok: #6FA35C;
-    --moss: #8A6A46;
+    --moss: #6E7D5C;
   }
 
   * { box-sizing: border-box; }
@@ -75,16 +75,17 @@
     overflow: hidden;
   }
 
-  /* ---------- SIDE NAV ---------- */
+  /* ---------- SPINE NAV — vertical, like tabs on a bound bestiary ---------- */
   .nav {
     display: flex;
     flex-direction: column;
     background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
-    padding: 28px 0 20px;
-    min-width: 210px;
+    padding: 20px 0;
+    width: 58px;
     flex-shrink: 0;
     position: relative;
     border-right: 1px solid var(--iron);
+    gap: 2px;
   }
   .nav::before {
     content: "";
@@ -94,14 +95,16 @@
     pointer-events: none;
   }
   .nav-brand {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
     font-family: 'Grenze Gotisch', 'Alegreya SC', serif;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--frost);
     text-align: center;
-    letter-spacing: 0.1em;
-    padding: 0 16px 20px;
+    letter-spacing: 0.14em;
+    padding: 16px 0 18px;
+    margin: 0 auto 6px;
     border-bottom: 1px solid var(--iron);
-    margin-bottom: 10px;
   }
 
   .nav-btn {
@@ -112,43 +115,50 @@
     align-items: center;
     gap: 10px;
     padding: 11px 18px;
-    margin: 1px 8px;
     color: var(--ink-soft);
     font-family: 'Alegreya SC', serif;
     font-weight: 500;
-    font-size: 11.5px;
+    font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     transition: background .15s ease, color .15s ease;
-    border-left: 2px solid transparent;
   }
-  .nav-btn .icon { font-size: 15px; filter: saturate(0.7); flex-shrink: 0; width: 18px; text-align: center; }
   .nav-btn:hover { background: rgba(111,184,217,0.06); color: var(--heading); }
-  .nav-btn.active {
-    background: rgba(176,130,74,0.09);
-    color: var(--gold-bright);
-    border-left-color: var(--gold);
-    text-shadow: 0 0 10px rgba(176,130,74,0.25);
+  .nav-btn.active { color: var(--gold-bright); }
+
+  /* only the desktop spine rail rotates its labels — the mobile bar stays horizontal */
+  #nav-desktop.nav .nav-btn {
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding: 16px 0;
+    border-top: 2px solid transparent;
+  }
+  #nav-desktop.nav .nav-btn .icon { display: none; }
+  #nav-desktop.nav .nav-btn.active {
+    background: rgba(159,170,168,0.1);
+    border-top-color: var(--gold);
+    text-shadow: 0 0 10px rgba(159,170,168,0.25);
   }
 
   .nav-mobile { display: none; }
 
-  /* ---------- PAGE — worn parchment, journal cover stays dark & steel ---------- */
+  /* ---------- PAGE — cold aged vellum, not warm parchment ---------- */
   .page {
-    --stone-2: #E8DEC8;
-    --panel: rgba(255, 250, 235, 0.55);
+    --stone-2: #DCE2DA;
+    --panel: rgba(250, 252, 249, 0.55);
     --panel-hi: rgba(255, 255, 255, 0.6);
-    --ink: #362C1E;
-    --ink-soft: #6B5F4C;
-    --ink-dim: #8C7F66;
-    --heading: #241C11;
-    --gold-bright: #8C6423;
+    --ink: #262E29;
+    --ink-soft: #59635C;
+    --ink-dim: #7C877F;
+    --heading: #171D19;
+    --gold-bright: #4B5C54;
     flex: 1;
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(176,130,74,0.08), transparent 45%),
-      radial-gradient(ellipse at 100% 100%, rgba(60,90,100,0.10), transparent 55%),
-      linear-gradient(165deg, #F2E7CC, #E8DEC8 60%, #DBC99C);
-    background-color: #E8DEC8;
+      radial-gradient(ellipse at 20% 0%, rgba(111,184,217,0.07), transparent 45%),
+      radial-gradient(ellipse at 100% 100%, rgba(60,80,70,0.10), transparent 55%),
+      linear-gradient(165deg, #EAEFE6, #DCE2DA 60%, #C9D2C6);
+    background-color: #DCE2DA;
     padding: 34px clamp(24px, 3.4vw, 54px) 50px;
     position: relative;
     min-height: 680px;
@@ -159,7 +169,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(rgba(90,75,50,0.08) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(50,65,58,0.08) 1px, transparent 1px);
     background-size: 3px 3px;
     opacity: 0.5;
     mix-blend-mode: multiply;
