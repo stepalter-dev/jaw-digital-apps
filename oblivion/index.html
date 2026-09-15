@@ -24,31 +24,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral+SC:wght@600&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* canvas — aged umber-leather journal cover, warm Imperial dusk instead of Skyrim's cold slate */
-    --void: #150F0A;
-    --stone-1: #1C130D;
-    --stone-2: #241A11;
-    --stone-3: #2D2116;
-    --stone-4: #37291A;
-    --stone-5: #453420;
-    /* card/panel surface + aged bronze borders + inner highlight */
-    --panel: rgba(37, 27, 18, 0.78);
+    /* canvas — Imperial burgundy & gold-leaf, a chancellery's ledger rather than a
+       leather adventurer's satchel. Deliberately richer/redder than Skyrim's cold
+       stone-and-frost so the two Elder Scrolls journals never read as siblings. */
+    --void: #170A0B;
+    --stone-1: #200D0E;
+    --stone-2: #2B1114;
+    --stone-3: #38161A;
+    --stone-4: #481C21;
+    --stone-5: #5A252B;
+    /* card/panel surface + gold-leaf borders + inner highlight */
+    --panel: rgba(43, 17, 20, 0.78);
     --panel-hi: rgba(255, 224, 170, 0.06);
-    --iron: #4E3A22;
-    --iron-light: #A3803F;
+    --iron: #6B2E30;
+    --iron-light: #C77A4A;
     /* verdigris — patina on Imperial bronze; the secondary interactive accent */
     --frost: #6FA394;
     --frost-dim: #466E62;
     /* Imperial gold — key highlights */
-    --gold: #C9A227;
-    --gold-bright: #E8C766;
-    --gold-dim: #8F7318;
+    --gold: #D4A72C;
+    --gold-bright: #F0CC6E;
+    --gold-dim: #97781C;
     /* text & headings — aged parchment cream; meta — faded ink-brown */
-    --heading: #F0E4C8;
-    --ink: #E8DBC0;
-    --ink-soft: #B0A181;
-    --ink-dim: #786B4E;
-    --blood: #A23B2E;
+    --heading: #F5E8C8;
+    --ink: #ECDCC0;
+    --ink-soft: #BB9E86;
+    --ink-dim: #856A5A;
+    --blood: #C23B3B;
     /* "done"/success accent — laurel-green, the Imperial victory wreath */
     --sage-ok: #8FA65C;
     /* muted warm bronze — used for a middle rarity tier between gold (rare) and stone-grey (common) */
@@ -74,68 +76,63 @@
     width: min(95vw, 1520px);
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
     gap: 0;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(78,58,34,0.7);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(107,46,48,0.7);
     border-radius: 0;
     overflow: hidden;
   }
 
-  /* ---------- SIDE NAV (desktop) ---------- */
+  /* ---------- WAX-SEAL NAV (horizontal row of chancellery seals) ---------- */
   .nav {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
+    overflow-x: auto;
+    align-items: flex-start;
     background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
-    padding: 28px 0 20px;
-    min-width: 210px;
-    flex-shrink: 0;
-    position: relative;
-    border-right: 1px solid var(--iron);
-  }
-  .nav::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
-    pointer-events: none;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--iron);
+    scrollbar-width: thin;
   }
   .nav-brand {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 15px;
-    color: var(--gold);
-    text-align: center;
-    letter-spacing: 0.1em;
-    padding: 0 16px 20px;
-    border-bottom: 1px solid var(--iron);
-    margin-bottom: 10px;
+    display: none;
   }
 
   .nav-btn {
     all: unset;
     cursor: pointer;
-    position: relative;
+    flex-shrink: 0;
+    width: 74px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 11px 18px;
-    margin: 1px 8px;
+    gap: 6px;
     color: var(--ink-soft);
     font-family: 'Cinzel', serif;
     font-weight: 500;
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    border-radius: 0;
-    transition: background .15s ease, color .15s ease;
-    border-left: 2px solid transparent;
+    text-align: center;
+    line-height: 1.15;
+    transition: color .15s ease;
   }
-  .nav-btn .icon { font-size: 15px; filter: saturate(0.7); flex-shrink: 0; width: 18px; text-align: center; }
-  .nav-btn:hover { background: rgba(111,163,148,0.06); color: var(--heading); }
-  .nav-btn.active {
-    background: rgba(201,162,39,0.09);
-    color: var(--gold-bright);
-    border-left-color: var(--gold);
-    text-shadow: 0 0 10px rgba(201,162,39,0.25);
+  .nav-btn .icon {
+    width: 46px; height: 46px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: radial-gradient(circle at 35% 30%, var(--stone-5), var(--stone-1) 75%);
+    border: 2px solid var(--iron);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.4);
+    transition: border-color .15s ease, transform .15s ease;
   }
+  .nav-btn:hover .icon { border-color: var(--gold-dim); transform: translateY(-1px); }
+  .nav-btn:hover { color: var(--heading); }
+  .nav-btn.active .icon {
+    border-color: var(--gold);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.3), 0 0 0 3px rgba(212,167,44,0.2), 0 3px 10px rgba(0,0,0,0.5);
+  }
+  .nav-btn.active { color: var(--gold-bright); }
 
   .nav-mobile { display: none; }
 
