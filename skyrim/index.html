@@ -815,6 +815,17 @@
   .map-deco.deco-snow { fill: var(--frost-dim); font-size: 9px; opacity: 0.55; }
   .map-deco.deco-forest { fill: var(--biome-forest); font-size: 10px; opacity: 0.6; filter: brightness(1.6); }
   .map-deco.deco-tundra { fill: var(--gold-dim); font-size: 9px; opacity: 0.55; }
+  /* Named mountain ranges (Throat of the World, Velothi, Druadach) — bigger, brighter peaks than the
+     ambient per-hold decoration, plus a small-caps label, so these read as real landmarks. */
+  .map-range-peak { opacity: 0.8; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.6)); }
+  .map-range-label { font-family: 'Cinzel', serif; font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--heading); opacity: 0.75; pointer-events: none; paint-order: stroke; stroke: var(--void); stroke-width: 3px; }
+  .map-river-label { font-family: 'EB Garamond', serif; font-style: italic; font-size: 9px; fill: var(--frost); opacity: 0.65; pointer-events: none; paint-order: stroke; stroke: var(--void); stroke-width: 3px; }
+  /* Hold names, set directly on the map itself (not just in the filter pills above it) */
+  .map-hold-label { paint-order: stroke; stroke: var(--void); stroke-width: 4px; }
+  .map-hold-label.dimmed { opacity: 0.2; }
+  /* A dungeon pin's icon becomes a single letter for its real type (F/C/R/M/...) instead of a shared
+     glyph — bold and a touch larger so it stays legible at this size. */
+  .map-pin-icon-letter { font-family: 'Cinzel', serif; font-weight: 700; font-size: 8px; }
   /* hold borders read as mountain ridgelines — a soft dark shadow stroke under a pale broken crest
      line — rather than a flat color fill per hold, which was the "coded diagram" look being replaced */
   .map-hold-ridge-shadow { fill: none; stroke: rgba(0,0,0,0.35); stroke-width: 3.5; stroke-linejoin: round; }
@@ -871,6 +882,7 @@
   .map-pin:hover .map-pin-label, .map-pin:focus .map-pin-label { opacity: 1; }
   .map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 14px; font-size: 11.5px; color: var(--ink-soft); align-items: center; }
   .map-legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1.5px solid var(--void); }
+  .map-legend b { font-family: 'Cinzel', serif; color: var(--gold-bright); margin-right: 3px; }
 
   footer.note {
     margin-top: 32px;
@@ -8661,11 +8673,49 @@ const MAP_ROAD_PAIRS = [
 
 const MAP_DECO_ICON = { snow: '▲', forest: '♣', tundra: '⹏' };
 
+// Three named, denser mountain massifs (drawn as a small cluster of larger peak glyphs plus a label)
+// at Skyrim's real major ranges — the Throat of the World astride Whiterun/Eastmarch/Falkreath, the
+// Velothi range along the eastern border with Morrowind, and the Druadach range walling off The Reach.
+const MAP_RANGES = [
+  { name: 'The Throat of the World', cx: 560, cy: 415, spread: 34 },
+  { name: 'The Velothi Mountains',   cx: 900, cy: 245, spread: 30 },
+  { name: 'The Druadach Mountains',  cx: 100, cy: 330, spread: 28 },
+];
+
+// A couple of the rivers get a name label along their course — just the two most game-recognizable.
+const MAP_RIVER_LABELS = [
+  { name: 'White River', x: 512, y: 330, rotate: -60 },
+  { name: 'Yorgrim River', x: 700, y: 288, rotate: 12 },
+];
+
 // Bounding box of a HOLD_MAP_SHAPES points string, used to scatter decorative terrain glyphs.
 function mapPolyBounds(pointsStr){
   const pts = pointsStr.split(' ').map(pair => pair.split(',').map(Number));
   const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
   return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
+}
+
+// Centroid (vertex average — close enough for these hand-placed convex-ish shapes) of a
+// HOLD_MAP_SHAPES points string, used to place each hold's name label on the map itself.
+function mapPolyCentroid(pointsStr){
+  const pts = pointsStr.split(' ').map(pair => pair.split(',').map(Number));
+  const n = pts.length;
+  return { x: pts.reduce((s, p) => s + p[0], 0) / n, y: pts.reduce((s, p) => s + p[1], 0) / n };
+}
+
+// A single-letter badge for a dungeon's real UESP `type` string, so a glance at the map tells you
+// what kind of place a pin is (Fort vs. Cave vs. Nordic Ruin vs. Mine...) instead of every non-capital,
+// non-POI, non-housing pin sharing one generic "dungeon" glyph — the actual thing this map is for:
+// matching a marker here to what you're standing in front of in-game.
+const DUNGEON_TYPE_GLYPH = [
+  [/dragon lair/i, 'D'], [/daedric/i, 'S'], [/dwarven/i, 'W'], [/camp/i, 'K'],
+  [/mountain pass|\bpass\b/i, 'P'], [/shipwreck/i, 'V'], [/tower/i, 'T'],
+  [/dwelling/i, 'N'], [/ruin/i, 'R'], [/fort/i, 'F'], [/mine/i, 'M'], [/cave/i, 'C'],
+];
+function dungeonTypeGlyph(type){
+  if (!type) return '✦';
+  for (const [re, glyph] of DUNGEON_TYPE_GLYPH) { if (re.test(type)) return glyph; }
+  return '✦';
 }
 
 function renderLocationMapBody(){
@@ -8680,9 +8730,9 @@ function renderLocationMapBody(){
     return `<polygon class="map-biome biome-${biome} ${shown ? '' : 'dimmed'}" points="${shape.points}"></polygon>`;
   }).join('');
 
-  // Sparse, deterministic decorative glyphs (tiny mountains/trees/grass) scattered inside each hold's
-  // bounding box — purely visual texture, not real location data, so a fixed seed per hold keeps them
-  // stable between renders instead of jumping around.
+  // Denser, still-deterministic decorative glyphs (tiny mountains/trees/grass) scattered inside each
+  // hold's bounding box, plus that hold's own name — purely visual texture and labeling, not real
+  // location data, so a fixed seed per hold keeps them stable between renders instead of jumping around.
   const holdDecoSvg = LOCATION_HOLDS.map((hold, hi) => {
     const shape = HOLD_MAP_SHAPES[hold];
     const biome = HOLD_BIOME[hold];
@@ -8691,15 +8741,42 @@ function renderLocationMapBody(){
     const icon = MAP_DECO_ICON[biome];
     const seedBase = hi * 97 + 11;
     let out = '';
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 12; i++) {
       const hx = mapHash01(seedBase + i * 13.7);
       const hy = mapHash01(seedBase + i * 31.3 + 5);
+      const scale = 0.75 + mapHash01(seedBase + i * 5.1 + 2) * 0.55;
       const x = b.minX + hx * (b.maxX - b.minX);
       const y = b.minY + hy * (b.maxY - b.minY);
-      out += `<text class="map-deco deco-${biome}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${icon}</text>`;
+      out += `<text class="map-deco deco-${biome}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" style="font-size:${(scale * 10).toFixed(1)}px;">${icon}</text>`;
     }
     return out;
   }).join('');
+
+  const holdLabelSvg = LOCATION_HOLDS.map(hold => {
+    const shape = HOLD_MAP_SHAPES[hold];
+    if (!shape) return '';
+    const c = mapPolyCentroid(shape.points);
+    const shown = !activeMapHolds || activeMapHolds.has(hold);
+    return `<text class="map-hold-label ${shown ? '' : 'dimmed'}" x="${c.x.toFixed(1)}" y="${c.y.toFixed(1)}" text-anchor="middle">${hold}</text>`;
+  }).join('');
+
+  // Named mountain ranges: a denser cluster of larger peak glyphs plus a rotated label, at Skyrim's
+  // three real major ranges (see MAP_RANGES) — bigger and more deliberate than the ambient per-hold
+  // decoration above, so these read as actual landmarks rather than texture.
+  const rangeSvg = MAP_RANGES.map((r, ri) => {
+    let peaks = '';
+    for (let i = 0; i < 9; i++) {
+      const a = mapHash01(ri * 53 + i * 7.3) * Math.PI * 2;
+      const d = r.spread * (0.3 + mapHash01(ri * 53 + i * 17.1 + 3) * 0.7);
+      const x = r.cx + Math.cos(a) * d;
+      const y = r.cy + Math.sin(a) * d * 0.7;
+      const scale = 10 + mapHash01(ri * 53 + i * 3.7) * 6;
+      peaks += `<text class="map-deco deco-snow map-range-peak" x="${x.toFixed(1)}" y="${y.toFixed(1)}" style="font-size:${scale.toFixed(1)}px;">▲</text>`;
+    }
+    return `${peaks}<text class="map-range-label" x="${r.cx}" y="${(r.cy + r.spread * 0.85).toFixed(1)}" text-anchor="middle">${r.name}</text>`;
+  }).join('');
+
+  const riverLabelSvg = MAP_RIVER_LABELS.map(r => `<text class="map-river-label" x="${r.x}" y="${r.y}" transform="rotate(${r.rotate} ${r.x} ${r.y})" text-anchor="middle">${r.name}</text>`).join('');
 
   const riverSvg = MAP_RIVERS.map(r => `<path class="map-river" d="${r.d}" stroke-width="${r.w}"></path>`).join('');
   const lakeSvg = MAP_LAKES.map(l => `
@@ -8743,13 +8820,17 @@ function renderLocationMapBody(){
     const isCapital = p.category === 'capital';
     const holeY = isCapital ? -20.5 : -16.5;
     const labelOffset = isCapital ? 12 : 9;
+    // Every dungeon pin gets a letter for its real type (Fort/Cave/Ruin/Mine/...) instead of one
+    // generic crossed-swords glyph, so the map itself tells you what kind of place you're looking at.
+    const icon = p.category === 'dungeon' ? dungeonTypeGlyph(p.type) : (PIN_ICON[p.category] || '✦');
+    const iconClass = p.category === 'dungeon' ? 'map-pin-icon map-pin-icon-letter' : 'map-pin-icon';
     return `
       <g class="map-pin ${catClass} ${visitedClass} ${dimClass}" data-pin-id="${p.id}" data-pin-hold="${p.hold || ''}" data-pin-category="${p.category}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" tabindex="0">
         <ellipse class="map-pin-shadow" cx="0" cy="1" rx="3.2" ry="1.3"></ellipse>
         <path class="map-pin-shape" d="${isCapital ? CAPITAL_PIN : PIN}"></path>
         <circle class="map-pin-hole" cx="0" cy="${holeY}" r="${isCapital ? 4.2 : 3.2}"></circle>
-        <text class="map-pin-icon" x="0" y="${holeY}">${PIN_ICON[p.category] || '✦'}</text>
-        <text class="map-pin-label" x="${labelOffset}" y="${holeY + 3}">${p.name}</text>
+        <text class="${iconClass}" x="0" y="${holeY}">${icon}</text>
+        <text class="map-pin-label" x="${labelOffset}" y="${holeY + 3}">${p.name}${p.category === 'dungeon' ? ' — ' + p.type : ''}</text>
         <title>${p.name} — ${p.type}${p.hold ? ' (' + p.hold + ')' : ''} — ${tracked.has(p.id) ? 'Visited/cleared' : 'Not yet visited'}</title>
       </g>`;
   }).join('');
@@ -8761,6 +8842,12 @@ function renderLocationMapBody(){
       <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--gold); width:13px; height:13px;"></span>${PIN_ICON.capital} Hold capital</span>
       <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--frost); width:13px; height:13px;"></span>${PIN_ICON.poi} Notable location</span>
       <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--gold-dim); width:13px; height:13px;"></span>${PIN_ICON.housing} Housing</span>
+    </div>
+    <div class="map-legend" style="margin-top:-8px;">
+      <span style="opacity:0.75;">Dungeon pin letter:</span>
+      <span><b>F</b> Fort</span><span><b>C</b> Cave</span><span><b>R</b> Nordic Ruin</span><span><b>N</b> Nordic Dwelling</span>
+      <span><b>M</b> Mine</span><span><b>T</b> Tower</span><span><b>W</b> Dwarven Ruin</span><span><b>D</b> Dragon Lair</span>
+      <span><b>S</b> Daedric Shrine</span><span><b>K</b> Camp</span><span><b>P</b> Mountain Pass</span><span><b>V</b> Shipwreck</span>
     </div>`;
 
   const shownCount = pins.filter(p => p.inset || !activeMapHolds || activeMapHolds.has(p.hold)).length;
@@ -8806,8 +8893,11 @@ function renderLocationMapBody(){
             ${lakeSvg}
             ${roadSvg}
             ${holdDecoSvg}
+            ${rangeSvg}
+            ${riverLabelSvg}
           </g>
           ${holdRidgesSvg}
+          ${holdLabelSvg}
           <g class="map-compass" transform="translate(66,686)">
             <circle r="24" cx="0" cy="0"></circle>
             <path class="compass-point" d="M0,-24 L5,-4 L0,0 L-5,-4 Z"></path>
