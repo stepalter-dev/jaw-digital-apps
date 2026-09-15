@@ -279,16 +279,25 @@
   }
 
   .dash-card {
-    background: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.4);
     border: 1px solid rgba(60,45,20,0.15);
-    border-left: 4px solid var(--gold);
     border-radius: 2px;
-    padding: 16px;
+    padding: 18px 16px 16px;
     cursor: pointer;
+    position: relative;
+    transform: rotate(-0.5deg);
     transition: transform .12s ease, box-shadow .12s ease;
   }
+  .dash-card:nth-child(even) { transform: rotate(0.5deg); }
+  .dash-card::before {
+    content: "";
+    position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 8px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d9836a, var(--rust) 70%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
   .dash-card:hover {
-    transform: translateY(-2px);
+    transform: rotate(0deg) translateY(-2px);
     box-shadow: 2px 4px 10px rgba(60,45,20,0.15);
   }
   .dash-card-top {
@@ -354,17 +363,31 @@
     opacity: 0.75;
   }
 
+  /* pinned-notice board, not another bordered card grid — each entry sits slightly
+     askew like a real handbill tacked to a wall, with a pushpin marking it. */
   .entry {
-    background: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.4);
     border: 1px solid rgba(60,45,20,0.15);
-    border-left: 4px solid var(--gold);
     border-radius: 2px;
-    padding: 16px 16px 14px;
+    padding: 20px 16px 14px;
     position: relative;
-    box-shadow: 2px 3px 8px rgba(60,45,20,0.08);
+    box-shadow: 2px 3px 8px rgba(60,45,20,0.12);
+    transform: rotate(-0.6deg);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .entry:nth-child(even) { transform: rotate(0.6deg); }
+  .entry:nth-child(3n) { transform: rotate(-0.3deg); }
+  .entry:hover { transform: rotate(0deg) translateY(-2px); box-shadow: 3px 6px 14px rgba(60,45,20,0.18); }
+  .entry::before {
+    content: "";
+    position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+    width: 9px; height: 9px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d9836a, var(--rust) 70%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
   }
 
-  .entry.tracked { border-left-color: var(--sage); }
+  .entry.tracked { background: rgba(92,102,71,0.14); }
+  .entry.tracked::before { background: radial-gradient(circle at 35% 30%, #9db384, var(--sage) 70%); }
 
   .entry-top {
     display: flex;
