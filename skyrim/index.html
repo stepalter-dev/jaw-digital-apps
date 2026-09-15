@@ -60,6 +60,12 @@
     /* Fishing rarity tags only — a clearly blue/green/grey trio (Rare reuses --frost) */
     --tag-uncommon: #7FA35E;
     --tag-common: #929A93;
+    /* Interactive map biome washes — night-lit, not the bright daytime greens/tans of an in-game
+       map, but three real terrain hues (snow / forest / tundra) instead of one flat stone tint or a
+       rainbow of one-per-hold colors. Applied as a low-opacity overlay on the map's base rock gradient. */
+    --biome-snow: #A9C0CC;
+    --biome-forest: #4F7A57;
+    --biome-tundra: #9C8A54;
   }
 
   * { box-sizing: border-box; }
@@ -793,6 +799,22 @@
   .map-sea-texture { fill: url(#seaWaves); opacity: 0.5; }
   .map-landmass { fill: url(#landTerrain); stroke: var(--gold-dim); stroke-width: 2.5; stroke-linejoin: round; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)); }
   .map-landmass-grain { fill: url(#landGrain); opacity: 0.5; pointer-events: none; }
+  /* Biome washes — snow/forest/tundra tints over the same nine hold polygons, low-opacity so the
+     night-lit rock gradient still shows through, giving three real terrain colors instead of either
+     one flat stone tint or the old rainbow of one-color-per-hold. */
+  .map-biome { stroke: none; opacity: 0.4; pointer-events: none; transition: opacity 0.25s; }
+  .map-biome.dimmed { opacity: 0.08; }
+  .map-biome.biome-snow { fill: var(--biome-snow); }
+  .map-biome.biome-forest { fill: var(--biome-forest); }
+  .map-biome.biome-tundra { fill: var(--biome-tundra); }
+  .map-lake { fill: var(--stone-1); stroke: var(--frost-dim); stroke-width: 1; opacity: 0.85; }
+  .map-lake-texture { fill: url(#seaWaves); opacity: 0.4; pointer-events: none; }
+  .map-river { fill: none; stroke: var(--frost-dim); stroke-linecap: round; stroke-linejoin: round; opacity: 0.7; pointer-events: none; }
+  .map-road { fill: none; stroke: var(--gold-dim); stroke-width: 1.4; stroke-dasharray: 5 4; stroke-linecap: round; opacity: 0.55; pointer-events: none; }
+  .map-deco { pointer-events: none; text-anchor: middle; dominant-baseline: central; }
+  .map-deco.deco-snow { fill: var(--frost-dim); font-size: 9px; opacity: 0.55; }
+  .map-deco.deco-forest { fill: var(--biome-forest); font-size: 10px; opacity: 0.6; filter: brightness(1.6); }
+  .map-deco.deco-tundra { fill: var(--gold-dim); font-size: 9px; opacity: 0.55; }
   /* hold borders read as mountain ridgelines — a soft dark shadow stroke under a pale broken crest
      line — rather than a flat color fill per hold, which was the "coded diagram" look being replaced */
   .map-hold-ridge-shadow { fill: none; stroke: rgba(0,0,0,0.35); stroke-width: 3.5; stroke-linejoin: round; }
@@ -8601,9 +8623,100 @@ function renderLocations(){
 // read/write (no separate tracking system) for status color-coding, and carry the same `nav` shape the
 // global search index uses so click-to-navigate reuses navigateToResult()'s existing scroll+flash
 // pattern. The hold filter (activeMapHolds) and legend are wired up in renderLocationsInner/CSS.
+// Which real-world Skyrim terrain band each hold sits in — used only to tint the map (Haafingar/
+// Hjaalmarch/The Pale/Winterhold's snow, Eastmarch/Whiterun's open tundra, The Rift/The Reach/
+// Falkreath's forest), matching UESP's terrain map rather than assigning an arbitrary color per hold.
+const HOLD_BIOME = {
+  'Haafingar': 'snow', 'Hjaalmarch': 'snow', 'The Pale': 'snow', 'Winterhold': 'snow',
+  'Eastmarch': 'tundra', 'Whiterun Hold': 'tundra',
+  'The Rift': 'forest', 'The Reach': 'forest', 'Falkreath Hold': 'forest',
+};
+
+// A handful of hand-drawn watercourses (White River through Whiterun, the Karth past Markarth, the
+// Hjaalmarch marsh channel, the Yorgrim/Darkwater past Windhelm, and the Rift's feed into Lake
+// Honrich) — not a precise trace, just enough interior water to break up the landmass visually.
+const MAP_RIVERS = [
+  { d: 'M540,462 C520,420 500,382 500,346 C500,310 540,290 580,270 C616,252 646,232 652,204', w: 3.2 },
+  { d: 'M195,405 C168,382 140,360 120,330 C100,300 90,262 80,222', w: 2.4 },
+  { d: 'M300,262 C260,256 220,246 190,220 C160,195 130,172 100,157', w: 2.2 },
+  { d: 'M652,266 C692,276 726,286 748,300 C782,312 815,300 840,280', w: 2.6 },
+  { d: 'M700,468 C712,494 726,520 745,545', w: 2 },
+];
+
+// Two named lakes plus one unlabeled — small enough not to compete with the pins around them.
+const MAP_LAKES = [
+  { cx: 655, cy: 200, rx: 20, ry: 13, label: '' },
+  { cx: 705, cy: 558, rx: 25, ry: 15, label: 'Lake Honrich' },
+  { cx: 330, cy: 560, rx: 19, ry: 11, label: 'Lake Ilinalta' },
+];
+
+// A capital-to-capital road web (each pair rendered as a gently bowed dashed line) — not the real
+// in-game road layout, just enough of a network that the map reads as inhabited/charted, not empty.
+const MAP_ROAD_PAIRS = [
+  ['Haafingar','Hjaalmarch'], ['Hjaalmarch','The Reach'], ['Hjaalmarch','The Pale'],
+  ['The Pale','Winterhold'], ['Winterhold','Eastmarch'], ['Eastmarch','Whiterun Hold'],
+  ['Eastmarch','The Rift'], ['Whiterun Hold','The Reach'], ['Whiterun Hold','Falkreath Hold'],
+  ['Whiterun Hold','The Rift'], ['The Reach','Falkreath Hold'], ['Falkreath Hold','The Rift'],
+];
+
+const MAP_DECO_ICON = { snow: '▲', forest: '♣', tundra: '⹏' };
+
+// Bounding box of a HOLD_MAP_SHAPES points string, used to scatter decorative terrain glyphs.
+function mapPolyBounds(pointsStr){
+  const pts = pointsStr.split(' ').map(pair => pair.split(',').map(Number));
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
+}
+
 function renderLocationMapBody(){
-  // Hold borders now read as mountain ridgelines (a dark shadow stroke under a pale broken crest)
-  // instead of nine flat, saturated fill colors — the same HOLD_MAP_SHAPES points, drawn as strokes.
+  // Hold borders read as mountain ridgelines (a dark shadow stroke under a pale broken crest) and a
+  // biome-tinted wash (snow/forest/tundra, see HOLD_BIOME) — the same HOLD_MAP_SHAPES points as before,
+  // just no longer nine flat, arbitrarily-colored fills.
+  const holdBiomeSvg = LOCATION_HOLDS.map(hold => {
+    const shape = HOLD_MAP_SHAPES[hold];
+    const biome = HOLD_BIOME[hold];
+    if (!shape || !biome) return '';
+    const shown = !activeMapHolds || activeMapHolds.has(hold);
+    return `<polygon class="map-biome biome-${biome} ${shown ? '' : 'dimmed'}" points="${shape.points}"></polygon>`;
+  }).join('');
+
+  // Sparse, deterministic decorative glyphs (tiny mountains/trees/grass) scattered inside each hold's
+  // bounding box — purely visual texture, not real location data, so a fixed seed per hold keeps them
+  // stable between renders instead of jumping around.
+  const holdDecoSvg = LOCATION_HOLDS.map((hold, hi) => {
+    const shape = HOLD_MAP_SHAPES[hold];
+    const biome = HOLD_BIOME[hold];
+    if (!shape || !biome) return '';
+    const b = mapPolyBounds(shape.points);
+    const icon = MAP_DECO_ICON[biome];
+    const seedBase = hi * 97 + 11;
+    let out = '';
+    for (let i = 0; i < 7; i++) {
+      const hx = mapHash01(seedBase + i * 13.7);
+      const hy = mapHash01(seedBase + i * 31.3 + 5);
+      const x = b.minX + hx * (b.maxX - b.minX);
+      const y = b.minY + hy * (b.maxY - b.minY);
+      out += `<text class="map-deco deco-${biome}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${icon}</text>`;
+    }
+    return out;
+  }).join('');
+
+  const riverSvg = MAP_RIVERS.map(r => `<path class="map-river" d="${r.d}" stroke-width="${r.w}"></path>`).join('');
+  const lakeSvg = MAP_LAKES.map(l => `
+    <ellipse class="map-lake" cx="${l.cx}" cy="${l.cy}" rx="${l.rx}" ry="${l.ry}"></ellipse>
+    <ellipse class="map-lake-texture" cx="${l.cx}" cy="${l.cy}" rx="${l.rx}" ry="${l.ry}"></ellipse>
+    ${l.label ? `<text class="map-inset-label" x="${l.cx}" y="${l.cy + l.ry + 10}" text-anchor="middle">${l.label}</text>` : ''}
+  `).join('');
+  const roadSvg = MAP_ROAD_PAIRS.map(([a, b], i) => {
+    const ca = HOLD_CAPITAL_COORDS[a], cb = HOLD_CAPITAL_COORDS[b];
+    if (!ca || !cb) return '';
+    const mx = (ca.x + cb.x) / 2, my = (ca.y + cb.y) / 2;
+    const dx = cb.x - ca.x, dy = cb.y - ca.y;
+    const bow = (mapHash01(i * 7 + 3) - 0.5) * 0.3;
+    const cx = mx - dy * bow, cy = my + dx * bow;
+    return `<path class="map-road" d="M${ca.x},${ca.y} Q${cx.toFixed(1)},${cy.toFixed(1)} ${cb.x},${cb.y}"></path>`;
+  }).join('');
+
   const holdRidgesSvg = LOCATION_HOLDS.map(hold => {
     const shape = HOLD_MAP_SHAPES[hold];
     if (!shape) return '';
@@ -8681,11 +8794,19 @@ function renderLocationMapBody(){
             <pattern id="landGrain" width="1000" height="750" patternUnits="userSpaceOnUse">
               <rect width="1000" height="750" filter="url(#landGrainFilter)"></rect>
             </pattern>
+            <clipPath id="landClip"><path d="${SKYRIM_COASTLINE}"></path></clipPath>
           </defs>
           <rect class="map-sea" x="0" y="0" width="1000" height="750"></rect>
           <rect class="map-sea-texture" x="0" y="0" width="1000" height="750"></rect>
           <path class="map-landmass" d="${SKYRIM_COASTLINE}"></path>
           <path class="map-landmass-grain" d="${SKYRIM_COASTLINE}"></path>
+          <g clip-path="url(#landClip)">
+            ${holdBiomeSvg}
+            ${riverSvg}
+            ${lakeSvg}
+            ${roadSvg}
+            ${holdDecoSvg}
+          </g>
           ${holdRidgesSvg}
           <g class="map-compass" transform="translate(66,686)">
             <circle r="24" cx="0" cy="0"></circle>
