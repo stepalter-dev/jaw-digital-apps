@@ -18,6 +18,9 @@
 <meta name="twitter:description" content="A warm, simple household maintenance tracker — HVAC, plumbing, appliances, safety, garden and more, all in one place." />
 <title>Home Maintenance Companion</title>
 <meta name="description" content="A warm, simple household maintenance tracker — HVAC, plumbing, appliances, safety, garden and more, all in one place." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     /* warm cream, light mode */
@@ -99,67 +102,69 @@
     margin: 0;
     background: var(--bg);
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.55;
     min-height: 100vh;
   }
   a { color: inherit; }
   button { font-family: inherit; }
 
-  .shell { display: flex; min-height: 100vh; }
+  .shell { display: block; min-height: 100vh; }
 
-  /* ---------- SIDE NAV (desktop) ---------- */
+  /* ---------- TOP TOOLBAR NAV (one row: brand, section pills, theme toggle) ---------- */
   .nav {
     display: flex;
-    flex-direction: column;
-    width: 220px;
-    flex-shrink: 0;
-    padding: 26px 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
     background: var(--bg-soft);
-    border-right: 1px solid var(--border-soft);
-    gap: 4px;
+    border-bottom: 1px solid var(--border-soft);
+    padding: 12px clamp(18px, 3vw, 44px);
   }
   .nav-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 8px 20px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid var(--border-soft);
+    gap: 8px;
+    margin-right: 10px;
+    padding-right: 14px;
+    border-right: 1px solid var(--border-soft);
   }
-  .nav-brand .mark { font-size: 22px; }
-  .nav-brand .word { font-weight: 700; font-size: 14.5px; color: var(--heading); line-height: 1.25; }
-  .nav-brand .word span { display: block; font-weight: 400; font-size: 10.5px; color: var(--ink-soft); letter-spacing: 0.04em; text-transform: uppercase; }
+  .nav-brand .mark { font-size: 19px; }
+  .nav-brand .word { font-weight: 800; font-size: 13.5px; color: var(--heading); line-height: 1.2; letter-spacing: -0.01em; white-space: nowrap; }
+  .nav-brand .word span { display: inline; font-weight: 500; font-size: 12px; color: var(--ink-soft); }
+  .nav-brand .word span::before { content: " · "; }
 
   .nav-btn {
     all: unset;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 12px;
+    gap: 7px;
+    padding: 8px 13px;
+    border-radius: 8px;
     color: var(--ink-soft);
-    font-size: 13.5px;
-    font-weight: 500;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
     transition: background .15s ease, color .15s ease;
   }
-  .nav-btn .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+  .nav-btn .icon { font-size: 14px; flex-shrink: 0; }
   .nav-btn:hover { background: var(--panel-hi); color: var(--heading); }
-  .nav-btn.active { background: var(--amber-bg); color: var(--amber); font-weight: 700; }
-  .nav-footer { margin-top: auto; padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .nav-btn.active { background: var(--amber); color: #fff; }
+  .nav-footer { margin-left: auto; }
   .theme-toggle {
     all: unset;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 9px 12px;
+    gap: 6px;
+    padding: 7px 12px;
     border-radius: 999px;
     border: 1px solid var(--border);
     color: var(--ink-soft);
-    font-size: 12.5px;
+    font-size: 12px;
+    flex-shrink: 0;
   }
   .theme-toggle:hover { color: var(--heading); border-color: var(--ink-dim); }
 
@@ -167,8 +172,8 @@
 
   /* ---------- MAIN ---------- */
   .page {
-    flex: 1;
-    min-width: 0;
+    max-width: 980px;
+    margin: 0 auto;
     padding: 28px clamp(18px, 3vw, 44px) 60px;
   }
 
@@ -192,13 +197,12 @@
     color: #fff;
     font-weight: 700;
     font-size: 13px;
-    padding: 11px 18px;
-    border-radius: 999px;
-    box-shadow: var(--shadow);
+    padding: 10px 16px;
+    border-radius: 8px;
     flex-shrink: 0;
     transition: transform .12s ease, box-shadow .12s ease;
   }
-  .add-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+  .add-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 
   .search-row {
     display: flex;
@@ -338,15 +342,14 @@
   .reset-btn.armed { background: var(--coral); color: #fff; }
   .reset-hint { font-size: 11.5px; color: var(--ink-soft); }
 
-  /* task cards */
-  .task-list { display: flex; flex-direction: column; gap: 12px; }
+  /* task rows */
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
   .task-card {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-left: 4px solid var(--ink-dim);
-    border-radius: 16px;
-    padding: 16px 18px;
-    box-shadow: var(--shadow);
+    border-left: 3px solid var(--ink-dim);
+    border-radius: 10px;
+    padding: 14px 16px;
   }
   .task-card.cat-amber { border-left-color: var(--amber); }
   .task-card.cat-teal { border-left-color: var(--teal); }
