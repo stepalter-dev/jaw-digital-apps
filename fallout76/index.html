@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="Fallout 76 survival guide — S.P.E.C.I.A.L. cards, CAMP builds, story &amp; repeatable quests, creature POIs, and junk stockpile." />
 <link rel="canonical" href="https://stepalter-dev.github.io/jaw-digital-apps/fallout76/" />
-<meta name="theme-color" content="#030b06" />
+<meta name="theme-color" content="#f5efe2" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E📻%3C/text%3E%3C/svg%3E" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="icon-192.png" />
@@ -21,89 +21,97 @@
 <meta name="twitter:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/fallout76.jpg" />
 <title>Vault Dweller's Almanac — Fallout 76 Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Pip-Boy CRT — near-black green screen, phosphor glow */
-    --void: #030b06;
-    --stone-1: #071a0f;
-    --stone-2: #0b2416;
-    --stone-3: #10301c;
-    --stone-4: #163d24;
-    --stone-5: #1d4c2e;
-    --panel: rgba(11, 36, 22, 0.62);
-    --panel-hi: rgba(157, 255, 190, 0.05);
-    --iron: #1f5c38;
-    --iron-light: #3f8f5c;
-    /* amber — the alternate Pip-Boy mode color, used sparingly for warnings/rare */
-    --amber: #ffb000;
-    --amber-dim: #b37c00;
-    /* phosphor green — key highlights */
-    --gold: #6dffa0;
-    --gold-bright: #b7ffd2;
-    --gold-dim: #3f9e68;
+    /* Editorial almanac — warm paper, ink, rust & olive field-guide accents */
+    --void: #f2ebda;
+    --stone-1: #eee5d0;
+    --stone-2: #e7dabd;
+    --stone-3: #ddccA5;
+    --stone-4: #d0bb8c;
+    --stone-5: #bfa877;
+    --panel: rgba(255, 253, 246, 0.86);
+    --panel-hi: rgba(34, 26, 15, 0.035);
+    --iron: #ddccA5;
+    --iron-light: #c9a876;
+    /* olive — secondary accent, used for favorites/stars */
+    --amber: #6a7a45;
+    --amber-dim: #4e5b33;
+    /* rust — primary accent, key highlights */
+    --gold: #a84e2a;
+    --gold-bright: #7d3a1f;
+    --gold-dim: #c98a5e;
     /* text */
-    --heading: #d4ffe4;
-    --ink: #b9ffcf;
-    --ink-soft: #6fbd8e;
-    --ink-dim: #3d7a56;
-    --blood: #ff5555;
-    --sage-ok: #6dffa0;
-    --moss: #4f9e6f;
+    --heading: #201a10;
+    --ink: #3c3521;
+    --ink-soft: #756b4e;
+    --ink-dim: #9c8f6c;
+    --blood: #a3402b;
+    --sage-ok: #5f7440;
+    --moss: #6a7a45;
   }
 
   * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
 
   body {
     margin: 0;
     background: var(--void);
     background-image:
-      radial-gradient(ellipse at 50% -10%, rgba(109,255,160,0.06), transparent 40%),
-      radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.65) 100%),
-      repeating-linear-gradient(180deg, rgba(0,0,0,0.16) 0px, transparent 1px, transparent 3px);
-    font-family: 'Share Tech Mono', monospace;
+      radial-gradient(ellipse at 20% -10%, rgba(168,78,42,0.05), transparent 45%),
+      radial-gradient(ellipse at 100% 0%, rgba(106,122,69,0.05), transparent 40%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--ink);
     min-height: 100vh;
-    padding: 24px 16px 60px;
+    padding: 0 0 60px;
+    -webkit-font-smoothing: antialiased;
   }
 
   .tome {
-    width: min(95vw, 1520px);
+    width: min(94vw, 980px);
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
     gap: 0;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(31,92,56,0.7), 0 0 40px rgba(109,255,160,0.05);
-    overflow: hidden;
   }
 
-  /* ---------- SIDE NAV (desktop) ---------- */
+  /* ---------- TOP NAV (single bar, all breakpoints) ---------- */
   .nav {
     display: flex;
-    flex-direction: column;
-    background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
-    padding: 28px 0 20px;
-    min-width: 220px;
-    flex-shrink: 0;
-    position: relative;
-    border-right: 1px solid var(--iron);
+    align-items: stretch;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 2px;
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    border-radius: 10px;
+    padding: 6px;
+    margin: 22px 0 0;
+    position: sticky;
+    top: 12px;
+    z-index: 30;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 24px rgba(60, 44, 20, 0.06);
   }
-  .nav::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
-    pointer-events: none;
-  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav::before { content: none; }
   .nav-brand {
-    font-family: 'VT323', monospace;
-    font-size: 22px;
-    color: var(--gold);
-    text-align: center;
-    letter-spacing: 0.08em;
-    padding: 0 16px 20px;
-    border-bottom: 1px solid var(--iron);
-    margin-bottom: 10px;
-    text-shadow: 0 0 8px rgba(109,255,160,0.35);
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--gold-bright);
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.02em;
+    padding: 0 14px;
+    margin-right: 4px;
+    border-right: 1px solid var(--iron);
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .nav-btn {
@@ -112,98 +120,103 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 11px 18px;
-    margin: 1px 8px;
+    gap: 7px;
+    padding: 9px 14px;
     color: var(--ink-soft);
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'Inter', sans-serif;
     font-weight: 500;
     font-size: 11.5px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     transition: background .15s ease, color .15s ease;
-    border-left: 2px solid transparent;
+    border-radius: 7px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .nav-btn .icon { font-size: 15px; filter: saturate(0.8); flex-shrink: 0; width: 18px; text-align: center; }
-  .nav-btn:hover { background: rgba(109,255,160,0.06); color: var(--heading); }
+  .nav-btn .icon { font-size: 14px; flex-shrink: 0; width: 16px; text-align: center; }
+  .nav-btn:hover { background: rgba(168,78,42,0.08); color: var(--heading); }
   .nav-btn.active {
-    background: rgba(109,255,160,0.1);
-    color: var(--gold-bright);
-    border-left-color: var(--gold);
-    text-shadow: 0 0 6px rgba(109,255,160,0.4);
+    background: var(--gold);
+    color: #fff8ee;
   }
 
-  .nav-mobile { display: none; }
+  .nav-mobile { display: none !important; }
 
   /* ---------- MAIN PAGE ---------- */
   .page {
     flex: 1;
     min-width: 0;
-    padding: 32px 40px 60px;
-    background: linear-gradient(180deg, var(--stone-1), var(--void) 60%);
+    padding: 36px 4px 60px;
   }
 
   .title-block { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
   .title-block h1 {
-    font-family: 'VT323', monospace;
-    font-size: 34px;
-    letter-spacing: 0.03em;
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 40px;
+    letter-spacing: -0.01em;
     color: var(--heading);
-    margin: 0 0 2px;
-    text-shadow: 0 0 10px rgba(109,255,160,0.3);
+    margin: 0 0 4px;
+    line-height: 1.08;
   }
-  .subtitle { font-size: 12.5px; color: var(--ink-dim); letter-spacing: 0.04em; }
+  .subtitle { font-size: 13px; color: var(--ink-soft); letter-spacing: 0.02em; font-style: italic; }
   .seal {
-    font-family: 'VT323', monospace;
-    font-size: 13px;
-    color: var(--gold-dim);
-    border: 1px solid var(--iron);
-    padding: 8px 12px;
-    text-align: center;
-    line-height: 1.3;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 10.5px;
     letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    border: 1px solid var(--iron);
+    border-radius: 999px;
+    background: var(--panel);
+    padding: 8px 14px;
+    text-align: center;
+    line-height: 1.5;
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .rune-divider {
     height: 1px;
-    margin: 18px 0 22px;
-    background: linear-gradient(90deg, transparent, var(--iron) 15%, var(--iron) 85%, transparent);
+    margin: 20px 0 26px;
+    background: linear-gradient(90deg, var(--iron), var(--iron) 100%);
   }
 
-  .search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
   .search-plate {
     display: flex; align-items: center; gap: 8px;
     background: var(--panel);
     border: 1px solid var(--iron);
-    padding: 9px 14px;
+    border-radius: 9px;
+    padding: 10px 14px;
     min-width: 220px;
     flex: 1;
   }
   .search-plate input {
     background: transparent; border: none; outline: none;
-    color: var(--ink); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 100%;
+    color: var(--ink); font-family: 'Inter', sans-serif; font-size: 13.5px; width: 100%;
   }
   .search-plate input::placeholder { color: var(--ink-dim); }
 
   .filter-pill {
-    font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
-    padding: 8px 12px; border: 1px solid var(--iron); color: var(--ink-soft);
-    cursor: pointer; user-select: none; white-space: nowrap;
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 9px 13px; border: 1px solid var(--iron); border-radius: 999px; color: var(--ink-soft);
+    cursor: pointer; user-select: none; white-space: nowrap; background: var(--panel);
   }
-  .filter-pill.active { border-color: var(--gold-dim); color: var(--gold-bright); background: rgba(109,255,160,0.08); }
+  .filter-pill.active { border-color: var(--gold); color: #fff8ee; background: var(--gold); }
 
   .btn {
     all: unset; cursor: pointer;
-    font-family: 'Share Tech Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 9px 16px; border: 1px solid var(--iron); color: var(--ink-soft);
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11.5px; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 10px 18px; border: 1px solid var(--iron); border-radius: 8px; color: var(--ink-soft); background: var(--panel);
   }
-  .btn:hover { color: var(--gold-bright); border-color: var(--gold-dim); background: rgba(109,255,160,0.06); }
-  .btn.primary { border-color: var(--gold-dim); color: var(--gold-bright); }
-  .btn.primary:hover { background: rgba(109,255,160,0.12); }
-  .btn.danger { border-color: #7a2a2a; color: #ff8a8a; }
-  .btn.danger:hover { background: rgba(255,80,80,0.08); }
-  .btn.small { padding: 5px 10px; font-size: 10px; }
+  .btn:hover { color: var(--gold-bright); border-color: var(--gold-dim); background: #fffdf7; }
+  .btn.primary { border-color: var(--gold); color: #fff8ee; background: var(--gold); }
+  .btn.primary:hover { background: var(--gold-bright); border-color: var(--gold-bright); color: #fff8ee; }
+  .btn.danger { border-color: #d3ada0; color: var(--blood); }
+  .btn.danger:hover { background: rgba(163,64,43,0.08); }
+  .btn.small { padding: 6px 11px; font-size: 10px; }
 
   /* ---------- GRIDS / CARDS ---------- */
   .entries { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -212,74 +225,76 @@
   .card {
     background: var(--panel);
     border: 1px solid var(--iron);
-    padding: 16px 18px;
+    border-radius: 10px;
+    padding: 17px 19px;
     position: relative;
+    box-shadow: 0 1px 2px rgba(60,44,20,0.03);
   }
-  .card.owned { border-color: var(--gold-dim); box-shadow: inset 0 0 0 1px rgba(109,255,160,0.15); }
+  .card.owned { border-color: var(--gold-dim); box-shadow: inset 0 0 0 1px rgba(168,78,42,0.18), 0 1px 2px rgba(60,44,20,0.03); }
   .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
-  .card-title { font-family: 'VT323', monospace; font-size: 19px; color: var(--heading); letter-spacing: 0.02em; }
-  .card-tag { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-dim); border: 1px solid var(--iron); padding: 2px 7px; }
-  .card-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; margin: 4px 0 10px; }
+  .card-title { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 19px; color: var(--heading); letter-spacing: -0.005em; }
+  .card-tag { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-bright); border: 1px solid var(--iron); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+  .card-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin: 4px 0 10px; }
   .card-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11px; color: var(--ink-dim); margin-bottom: 10px; }
   .card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
   .checkbox {
-    width: 18px; height: 18px; border: 1px solid var(--iron); cursor: pointer;
+    width: 19px; height: 19px; border: 1px solid var(--iron); border-radius: 5px; cursor: pointer;
     display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-    color: var(--gold-bright); font-size: 12px; background: var(--panel);
+    color: #fff8ee; font-size: 12px; background: var(--panel);
   }
-  .checkbox.checked { border-color: var(--gold); background: rgba(109,255,160,0.15); }
+  .checkbox.checked { border-color: var(--gold); background: var(--gold); }
 
   .rank-stepper { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink-soft); }
   .rank-stepper button {
-    all: unset; cursor: pointer; width: 20px; height: 20px; text-align: center;
-    border: 1px solid var(--iron); color: var(--gold-bright); line-height: 18px;
+    all: unset; cursor: pointer; width: 21px; height: 21px; text-align: center;
+    border: 1px solid var(--iron); border-radius: 5px; color: var(--gold-bright); line-height: 19px;
   }
-  .rank-stepper button:hover { background: rgba(109,255,160,0.1); }
+  .rank-stepper button:hover { background: rgba(168,78,42,0.08); }
 
   input[type=number], input[type=text], textarea, select {
-    background: var(--panel); border: 1px solid var(--iron); color: var(--ink);
-    font-family: 'Share Tech Mono', monospace; font-size: 12.5px; padding: 7px 10px; outline: none;
+    background: var(--panel); border: 1px solid var(--iron); border-radius: 7px; color: var(--ink);
+    font-family: 'Inter', sans-serif; font-size: 13px; padding: 8px 11px; outline: none;
   }
   input[type=number] { width: 64px; }
-  textarea { width: 100%; resize: vertical; min-height: 70px; }
+  textarea { width: 100%; resize: vertical; min-height: 70px; font-family: 'Inter', sans-serif; }
   input:focus, textarea:focus, select:focus { border-color: var(--gold-dim); }
-  label.field-label { display: block; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 5px; }
+  label.field-label { display: block; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 6px; font-weight: 600; }
 
-  .form-panel { background: var(--panel); border: 1px solid var(--iron); padding: 20px; margin-bottom: 16px; }
-  .form-row { margin-bottom: 14px; }
+  .form-panel { background: var(--panel); border: 1px solid var(--iron); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+  .form-row { margin-bottom: 16px; }
   .form-grid7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
   .form-grid7 .stat-box { text-align: center; }
-  .form-grid7 .stat-box label { display:block; font-size: 10px; color: var(--gold-dim); margin-bottom: 4px; letter-spacing: 0.06em; }
+  .form-grid7 .stat-box label { display:block; font-size: 10px; color: var(--gold-bright); margin-bottom: 5px; letter-spacing: 0.05em; font-weight: 600; }
   .form-grid7 input { width: 100%; text-align: center; }
 
   .stat-group-head {
-    font-family: 'VT323', monospace; font-size: 18px; color: var(--gold-bright);
-    display: flex; align-items: center; gap: 8px; margin: 22px 0 10px; letter-spacing: 0.04em;
-    border-bottom: 1px solid var(--iron); padding-bottom: 6px;
+    font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 20px; color: var(--heading);
+    display: flex; align-items: center; gap: 8px; margin: 26px 0 12px; letter-spacing: -0.005em;
+    border-bottom: 1px solid var(--iron); padding-bottom: 8px;
   }
   .stat-group-head:first-child { margin-top: 0; }
-  .stat-points { font-size: 11px; color: var(--ink-dim); font-weight: normal; text-transform: none; letter-spacing: normal; }
+  .stat-points { font-size: 11px; color: var(--ink-dim); font-weight: normal; text-transform: none; letter-spacing: normal; font-family: 'Inter', sans-serif; }
   .stat-points.over { color: var(--blood); }
 
-  .empty-state { color: var(--ink-dim); font-size: 13px; padding: 30px 10px; text-align: center; border: 1px dashed var(--iron); }
+  .empty-state { color: var(--ink-dim); font-size: 13px; padding: 34px 10px; text-align: center; border: 1px dashed var(--iron); border-radius: 10px; }
 
-  .progress-tally { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--sage-ok); }
+  .progress-tally { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11px; color: var(--sage-ok); }
 
-  .note-card { background: var(--panel); border: 1px solid var(--iron); padding: 16px 18px; }
-  .note-card h3 { font-family: 'VT323', monospace; font-size: 19px; color: var(--heading); margin: 0 0 4px; }
+  .note-card { background: var(--panel); border: 1px solid var(--iron); border-radius: 10px; padding: 17px 19px; }
+  .note-card h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 19px; color: var(--heading); margin: 0 0 4px; }
   .note-card .note-date { font-size: 10.5px; color: var(--ink-dim); margin-bottom: 8px; }
-  .note-card .note-body { font-size: 12.5px; color: var(--ink-soft); white-space: pre-wrap; line-height: 1.5; }
+  .note-card .note-body { font-size: 13px; color: var(--ink-soft); white-space: pre-wrap; line-height: 1.55; }
 
-  .stat-tally-row { display: flex; gap: 22px; flex-wrap: wrap; margin: 18px 0 4px; }
+  .stat-tally-row { display: flex; gap: 26px; flex-wrap: wrap; margin: 22px 0 4px; }
   .stat-tally { text-align: center; }
-  .stat-tally .n { font-family: 'VT323', monospace; font-size: 30px; color: var(--gold-bright); text-shadow: 0 0 8px rgba(109,255,160,0.35); }
-  .stat-tally .l { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+  .stat-tally .n { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 32px; color: var(--gold-bright); }
+  .stat-tally .l { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
 
-  .overview-lede { font-size: 13px; color: var(--ink-soft); line-height: 1.7; max-width: 640px; }
-  .overview-lede code { color: var(--gold-bright); }
+  .overview-lede { font-size: 14.5px; color: var(--ink-soft); line-height: 1.75; max-width: 640px; }
+  .overview-lede code { color: var(--gold-bright); font-family: 'Inter', sans-serif; font-weight: 600; background: rgba(168,78,42,0.08); padding: 1px 5px; border-radius: 4px; }
 
-  .star-btn { all: unset; cursor: pointer; font-size: 15px; color: var(--ink-dim); }
+  .star-btn { all: unset; cursor: pointer; font-size: 16px; color: var(--ink-dim); }
   .star-btn.active { color: var(--amber); }
 
   .back-to-top {
@@ -289,27 +304,41 @@
     background: var(--panel); backdrop-filter: blur(4px);
     border: 1px solid var(--iron); color: var(--gold-bright); cursor: pointer;
     opacity: 0; pointer-events: none; transition: opacity .2s ease;
+    box-shadow: 0 8px 20px rgba(60,44,20,0.1);
   }
   .back-to-top.show { opacity: 1; pointer-events: auto; }
 
-  footer.note { text-align: center; font-size: 11px; color: var(--ink-dim); margin-top: 40px; letter-spacing: 0.04em; }
+  footer.note { text-align: center; font-size: 11px; color: var(--ink-dim); margin-top: 44px; letter-spacing: 0.02em; }
+
+  /* ---------- FINDER ---------- */
+  .finder-hero { margin-bottom: 22px; }
+  .finder-searchbar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel); border: 1px solid var(--iron); border-radius: 12px;
+    padding: 16px 18px; box-shadow: 0 8px 24px rgba(60,44,20,0.06);
+  }
+  .finder-searchbar span.icon { font-size: 18px; }
+  .finder-searchbar input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--ink); font-family: 'Fraunces', Georgia, serif; font-size: 19px; font-weight: 500;
+  }
+  .finder-searchbar input::placeholder { color: var(--ink-dim); font-style: italic; }
+  .finder-hint { font-size: 12px; color: var(--ink-dim); margin-top: 10px; padding: 0 4px; line-height: 1.5; }
+  .finder-result { cursor: pointer; transition: border-color .15s ease, transform .1s ease; }
+  .finder-result:hover { border-color: var(--gold-dim); }
 
   @media (min-width: 900px) { .grid2.wide { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); } }
 
   @media (max-width: 780px) {
-    .tome { flex-direction: column; width: 100%; }
-    .nav { display: none; }
-    .nav-mobile {
-      display: flex; overflow-x: auto; gap: 6px; padding: 12px; background: var(--stone-1);
-    }
-    .nav-mobile .nav-btn { margin: 0; flex-shrink: 0; }
-    .page { padding: 24px 18px 40px; }
+    .tome { width: 100%; }
+    .page { padding: 28px 18px 40px; }
+    .title-block h1 { font-size: 32px; }
     .form-grid7 { grid-template-columns: repeat(4, 1fr); }
   }
 
   /* ---- shared accessibility defaults (JAW Digital suite) ---- */
   :focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid var(--gold);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -328,10 +357,9 @@
 
 <div class="tome">
   <nav class="nav" id="nav-desktop"></nav>
+  <nav class="nav-mobile" id="nav-mobile"></nav>
 
   <main class="page">
-    <nav class="nav-mobile" id="nav-mobile"></nav>
-
     <header class="title-block">
       <div>
         <h1 id="page-title">Vault Dweller's Almanac</h1>
@@ -360,8 +388,8 @@
 <button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
 
 <script>window.JAW_GAME = 'fallout76';</script>
-<script src="../sync.js?v=20260905"></script>
-<script src="../account.js?v=20260905"></script>
+<script src="../sync.js?v=20260915"></script>
+<script src="../account.js?v=20260915"></script>
 <script>
 
 /* ============================================================
@@ -370,6 +398,7 @@
 
 const SECTIONS = [
   { id: 'overview',  label: 'Overview',           icon: '📻' },
+  { id: 'finder',    label: 'Finder',             icon: '🔎' },
   { id: 'special',   label: 'S.P.E.C.I.A.L. Cards', icon: '🃏' },
   { id: 'builds',    label: 'CAMP & Builds',       icon: '🏕️' },
   { id: 'story',     label: 'Story Quests',        icon: '📜' },
@@ -460,39 +489,58 @@ const PERKS = [
 ];
 
 // Common crafting junk components worth stockpiling, with the usual bottleneck items starred by default.
+// "usedFor" is a rough tag list of what each component tends to feed — used by the Finder to
+// connect junk you found to the crafting categories (and, loosely, the perks) it matters for.
 const RESOURCES = [
-  { id:'adhesive',   name:'Adhesive',        icon:'🧴', starDefault:true,  note:'Constant drain — mods, chems, cooking.' },
-  { id:'aluminum',   name:'Aluminum',        icon:'🥫', starDefault:false, note:'' },
-  { id:'antiseptic', name:'Antiseptic',      icon:'🩹', starDefault:false, note:'' },
-  { id:'asbestos',   name:'Asbestos',        icon:'🧱', starDefault:false, note:'' },
-  { id:'ballistic-fiber', name:'Ballistic Fiber', icon:'🦺', starDefault:true, note:'Armor mods — scarce, from clipboards/pouches/leather.' },
-  { id:'black-titanium', name:'Black Titanium', icon:'⬛', starDefault:true, note:'Power armor/rare mods — limited spawns.' },
-  { id:'bone',       name:'Bone',            icon:'🦴', starDefault:false, note:'' },
-  { id:'ceramic',    name:'Ceramic',         icon:'🏺', starDefault:false, note:'' },
-  { id:'circuitry',  name:'Circuitry',       icon:'🔌', starDefault:false, note:'' },
-  { id:'cloth',      name:'Cloth',           icon:'🧵', starDefault:false, note:'' },
-  { id:'concrete',   name:'Concrete',        icon:'🧱', starDefault:false, note:'' },
-  { id:'copper',     name:'Copper',          icon:'🟠', starDefault:false, note:'' },
-  { id:'cork',       name:'Cork',            icon:'🍾', starDefault:false, note:'' },
-  { id:'crystal',    name:'Crystal',         icon:'💎', starDefault:true,  note:'Energy weapon mods — scarce, from pre-war watches/lasers.' },
-  { id:'fiber-optics', name:'Fiber Optics',  icon:'🔦', starDefault:true,  note:'High-tier mods — limited spawns.' },
-  { id:'fiberglass', name:'Fiberglass',      icon:'🎣', starDefault:false, note:'' },
-  { id:'gears',      name:'Gears',           icon:'⚙️', starDefault:false, note:'' },
-  { id:'glass',      name:'Glass',           icon:'🍶', starDefault:false, note:'' },
-  { id:'gold',       name:'Gold',            icon:'🟡', starDefault:false, note:'' },
-  { id:'lead',       name:'Lead',            icon:'⚫', starDefault:false, note:'Ammo crafting.' },
-  { id:'leather',    name:'Leather',         icon:'🧥', starDefault:false, note:'' },
-  { id:'nuclear-material', name:'Nuclear Material', icon:'☢️', starDefault:true, note:'High-tier crafting — scarce.' },
-  { id:'oil',        name:'Oil',             icon:'🛢️', starDefault:false, note:'' },
-  { id:'plastic',    name:'Plastic',         icon:'🧴', starDefault:false, note:'' },
-  { id:'rubber',     name:'Rubber',          icon:'⚫', starDefault:false, note:'' },
-  { id:'screw',      name:'Screw',           icon:'🔩', starDefault:true,  note:'Constant drain — weapon mods.' },
-  { id:'silver',     name:'Silver',          icon:'⚪', starDefault:false, note:'' },
-  { id:'spring',     name:'Spring',          icon:'🌀', starDefault:true,  note:'Constant drain — weapon mods.' },
-  { id:'steel',      name:'Steel',           icon:'🔧', starDefault:false, note:'' },
-  { id:'sugar',      name:'Sugar',           icon:'🍬', starDefault:false, note:'' },
-  { id:'wood',       name:'Wood',            icon:'🪵', starDefault:false, note:'' },
+  { id:'adhesive',   name:'Adhesive',        icon:'🧴', starDefault:true,  note:'Constant drain — mods, chems, cooking.', usedFor:['weapon mods','armor mods','chems','cooking'] },
+  { id:'aluminum',   name:'Aluminum',        icon:'🥫', starDefault:false, note:'', usedFor:['armor mods','power armor'] },
+  { id:'antiseptic', name:'Antiseptic',      icon:'🩹', starDefault:false, note:'', usedFor:['chems','first aid'] },
+  { id:'asbestos',   name:'Asbestos',        icon:'🧱', starDefault:false, note:'', usedFor:['armor mods','camp'] },
+  { id:'ballistic-fiber', name:'Ballistic Fiber', icon:'🦺', starDefault:true, note:'Armor mods — scarce, from clipboards/pouches/leather.', usedFor:['armor mods'] },
+  { id:'black-titanium', name:'Black Titanium', icon:'⬛', starDefault:true, note:'Power armor/rare mods — limited spawns.', usedFor:['power armor','weapon mods'] },
+  { id:'bone',       name:'Bone',            icon:'🦴', starDefault:false, note:'', usedFor:['weapon mods','camp'] },
+  { id:'ceramic',    name:'Ceramic',         icon:'🏺', starDefault:false, note:'', usedFor:['armor mods'] },
+  { id:'circuitry',  name:'Circuitry',       icon:'🔌', starDefault:false, note:'', usedFor:['weapon mods','power armor','robotics'] },
+  { id:'cloth',      name:'Cloth',           icon:'🧵', starDefault:false, note:'', usedFor:['armor mods','camp'] },
+  { id:'concrete',   name:'Concrete',        icon:'🧱', starDefault:false, note:'', usedFor:['camp'] },
+  { id:'copper',     name:'Copper',          icon:'🟠', starDefault:false, note:'', usedFor:['weapon mods','power armor'] },
+  { id:'cork',       name:'Cork',            icon:'🍾', starDefault:false, note:'', usedFor:['camp'] },
+  { id:'crystal',    name:'Crystal',         icon:'💎', starDefault:true,  note:'Energy weapon mods — scarce, from pre-war watches/lasers.', usedFor:['energy weapon mods'] },
+  { id:'fiber-optics', name:'Fiber Optics',  icon:'🔦', starDefault:true,  note:'High-tier mods — limited spawns.', usedFor:['energy weapon mods','power armor'] },
+  { id:'fiberglass', name:'Fiberglass',      icon:'🎣', starDefault:false, note:'', usedFor:['camp'] },
+  { id:'gears',      name:'Gears',           icon:'⚙️', starDefault:false, note:'', usedFor:['weapon mods','robotics','camp'] },
+  { id:'glass',      name:'Glass',           icon:'🍶', starDefault:false, note:'', usedFor:['chems','camp'] },
+  { id:'gold',       name:'Gold',            icon:'🟡', starDefault:false, note:'', usedFor:['energy weapon mods'] },
+  { id:'lead',       name:'Lead',            icon:'⚫', starDefault:false, note:'Ammo crafting.', usedFor:['ammo crafting'] },
+  { id:'leather',    name:'Leather',         icon:'🧥', starDefault:false, note:'', usedFor:['armor mods'] },
+  { id:'nuclear-material', name:'Nuclear Material', icon:'☢️', starDefault:true, note:'High-tier crafting — scarce.', usedFor:['power armor','energy weapon mods'] },
+  { id:'oil',        name:'Oil',             icon:'🛢️', starDefault:false, note:'', usedFor:['weapon mods','robotics'] },
+  { id:'plastic',    name:'Plastic',         icon:'🧴', starDefault:false, note:'', usedFor:['weapon mods','armor mods'] },
+  { id:'rubber',     name:'Rubber',          icon:'⚫', starDefault:false, note:'', usedFor:['weapon mods','armor mods'] },
+  { id:'screw',      name:'Screw',           icon:'🔩', starDefault:true,  note:'Constant drain — weapon mods.', usedFor:['weapon mods'] },
+  { id:'silver',     name:'Silver',          icon:'⚪', starDefault:false, note:'', usedFor:['energy weapon mods'] },
+  { id:'spring',     name:'Spring',          icon:'🌀', starDefault:true,  note:'Constant drain — weapon mods.', usedFor:['weapon mods'] },
+  { id:'steel',      name:'Steel',           icon:'🔧', starDefault:false, note:'', usedFor:['weapon mods','armor mods','camp'] },
+  { id:'sugar',      name:'Sugar',           icon:'🍬', starDefault:false, note:'', usedFor:['cooking','chems'] },
+  { id:'wood',       name:'Wood',            icon:'🪵', starDefault:false, note:'', usedFor:['camp'] },
 ];
+
+// Maps the loose crafting-category tags above (and a few keyword hints) to the perk cards that
+// most directly benefit from crafting or using items in that category. This is intentionally a
+// rough field-guide association, not an exhaustive simulation of the perk system — Bethesda's
+// actual mechanics are more layered than this. Use it as a starting point, not gospel.
+const CRAFT_TAG_TO_PERKS = {
+  'weapon mods':          ['a1','a2','a3','a4'],
+  'armor mods':           ['e2','s5'],
+  'energy weapon mods':   ['i1'],
+  'power armor':          ['s7'],
+  'chems':                ['i2','s6'],
+  'cooking':              ['e5'],
+  'ammo crafting':        ['p6'],
+  'first aid':            ['i3'],
+  'robotics':             ['i5'],
+  'camp':                 [],
+};
 
 // The one-time main story questlines, in order. Fallout 76 launched in Nov 2018 with NO
 // living human NPCs — the whole story was told through robots, terminals, and holotapes.
@@ -585,6 +633,7 @@ const CREATURE_POIS = [
 let activeSection = 'overview';
 let searchTerm = '';
 let ownedOnly = false;
+let finderTerm = '';
 
 let ownedCards = new Set();   // perk ids the player owns
 let cardRank = {};            // perk id -> current rank (>=1 once owned)
@@ -700,8 +749,7 @@ function renderNav(){
   const btns = SECTIONS.map(s => `<button class="nav-btn ${activeSection===s.id?'active':''}" data-section="${s.id}">
       <span class="icon">${s.icon}</span><span>${s.label}</span>
     </button>`).join('');
-  document.getElementById('nav-desktop').innerHTML = `<div class="nav-brand">PIP-BOY 3000</div>` + btns;
-  document.getElementById('nav-mobile').innerHTML = btns;
+  document.getElementById('nav-desktop').innerHTML = `<div class="nav-brand">Almanac</div>` + btns;
   document.querySelectorAll('[data-section]').forEach(b => {
     b.addEventListener('click', () => { activeSection = b.dataset.section; saveNavState(); renderAll(); });
   });
@@ -731,6 +779,10 @@ function renderOverview(){
       it lives in this browser, and if you’ve set up sync or signed in below, it follows you to other
       devices too.
       <br/><br/>
+      Found something out in the wasteland and not sure what it's for? Open <code>Finder</code> in the
+      nav above — it searches every card, resource, quest and creature in this almanac (plus your own
+      builds & field notes) at once.
+      <br/><br/>
       Card levels, event details & creature spawn notes are all <code>approximate</code> —
       Bethesda rebalances and rotates content regularly. Use the star/note fields to correct
       anything that’s drifted from what you see in-game.
@@ -745,6 +797,125 @@ function renderOverview(){
       <div class="stat-tally"><div class="n">${notesList.length}</div><div class="l">Field Log Entries</div></div>
     </div>
   `;
+}
+
+/* ============================================================
+   RENDER: FINDER — search everything in the almanac at once
+   ============================================================ */
+
+// Builds a flat searchable index across every dataset (reference content + the player's
+// own plans & field notes) so one search box can answer "I found X, what's it for /
+// does it matter to anything I'm tracking?" without needing a live game connection.
+function buildFinderIndex(){
+  const idx = [];
+
+  PERKS.forEach(p => idx.push({
+    section: 'special', icon: '🃏', type: 'S.P.E.C.I.A.L. Card',
+    title: p.name, desc: p.desc + (p.note ? ' ' + p.note : ''),
+    meta: `${specialInfo(p.special).name} • Lvl ~${p.lvl} • ${ownedCards.has(p.id) ? 'Owned' : 'Not owned'}`,
+  }));
+
+  RESOURCES.forEach(r => {
+    const s = stockpile[r.id];
+    const usedFor = (r.usedFor || []).join(', ');
+    const relatedPerks = Array.from(new Set((r.usedFor || []).flatMap(tag => CRAFT_TAG_TO_PERKS[tag] || [])))
+      .map(id => PERKS.find(p => p.id === id)).filter(Boolean);
+    idx.push({
+      section: 'stockpile', icon: r.icon, type: 'Junk / Resource',
+      title: r.name,
+      desc: (r.note ? r.note + ' ' : '') + (usedFor ? `Feeds: ${usedFor}.` : 'General crafting component.') +
+        (relatedPerks.length ? ` Pairs well with perks like ${relatedPerks.map(p=>p.name).join(', ')}.` : ''),
+      meta: s && s.starred ? '★ Bottleneck resource' : '',
+    });
+  });
+
+  REPEATABLES.forEach(q => idx.push({
+    section: 'quests', icon: '🔁', type: 'Repeatable Quest',
+    title: q.name, desc: q.desc + (q.creature ? ` Notable creature: ${q.creature}.` : ''), meta: q.category,
+  }));
+
+  CREATURE_POIS.forEach(c => idx.push({
+    section: 'creatures', icon: '👹', type: 'Creature POI',
+    title: c.name, desc: c.desc, meta: c.region,
+  }));
+
+  STORY_QUESTS.forEach(q => idx.push({
+    section: 'story', icon: '📜', type: 'Story Quest',
+    title: q.title, desc: q.desc,
+    meta: (STORYLINES.find(l => l.id === q.line) || {}).label || '',
+  }));
+
+  plans.forEach(pl => idx.push({
+    section: 'builds', icon: '🏕️', type: 'Your Build Plan',
+    title: pl.name || 'Untitled Plan', desc: pl.notes || 'No notes yet.', meta: 'Personal',
+  }));
+
+  notesList.forEach(n => idx.push({
+    section: 'notes', icon: '📝', type: 'Field Log Entry',
+    title: n.title || 'Untitled', desc: n.body || '', meta: 'Personal',
+  }));
+
+  return idx;
+}
+
+function renderFinderResults(){
+  const term = finderTerm.trim().toLowerCase();
+  const box = document.getElementById('finder-results');
+  if (!box) return;
+  if (!term) {
+    box.innerHTML = `<div class="empty-state">Start typing — try an item you picked up ("screw", "crystal"), a playstyle ("stealth", "heavy gun"), or a creature name.</div>`;
+    return;
+  }
+  const idx = buildFinderIndex();
+  const words = term.split(/\s+/).filter(Boolean);
+  const matches = idx.filter(e => {
+    const hay = (e.title + ' ' + e.desc + ' ' + e.meta + ' ' + e.type).toLowerCase();
+    return words.every(w => hay.includes(w));
+  });
+  if (!matches.length) {
+    box.innerHTML = `<div class="empty-state">No matches for “${finderTerm}” — try a shorter or different word.</div>`;
+    return;
+  }
+  box.innerHTML = `<div class="entries">` + matches.map(m => `
+    <div class="card finder-result" data-goto-section="${m.section}">
+      <div class="card-head">
+        <span class="card-title">${m.icon} ${m.title}</span>
+        <span class="card-tag">${m.type}</span>
+      </div>
+      <div class="card-desc">${m.desc}</div>
+      ${m.meta ? `<div class="card-meta"><span>${m.meta}</span></div>` : ''}
+    </div>`).join('') + `</div>`;
+  box.querySelectorAll('[data-goto-section]').forEach(el => {
+    el.addEventListener('click', () => {
+      activeSection = el.dataset.gotoSection;
+      saveNavState();
+      renderAll();
+    });
+  });
+}
+
+function renderFinder(){
+  document.getElementById('page-title').textContent = 'Finder';
+  document.getElementById('page-subtitle').textContent = '— search cards, junk, quests, creatures, your builds & field notes at once —';
+  document.getElementById('search-row').style.display = 'none';
+
+  document.getElementById('content').innerHTML = `
+    <div class="finder-hero">
+      <div class="finder-searchbar">
+        <span class="icon">🔎</span>
+        <input id="finder-input" type="text" autocomplete="off" placeholder="What did you find, or what are you trying to build?" value="${finderTerm.replace(/"/g,'&quot;')}">
+      </div>
+      <div class="finder-hint">
+        This searches everything already in the almanac — it can't read your live inventory (Fallout 76 doesn't expose one to outside apps),
+        but it will connect an item to the crafting categories &amp; perks it feeds, surface matching quests/creatures, and search your own build notes too.
+      </div>
+    </div>
+    <div id="finder-results"></div>
+  `;
+  const input = document.getElementById('finder-input');
+  input.addEventListener('input', () => { finderTerm = input.value; renderFinderResults(); });
+  input.focus();
+  renderFinderResults();
 }
 
 /* ============================================================
@@ -1283,6 +1454,7 @@ function renderAll(){
   editingPlanId = activeSection === 'builds' ? editingPlanId : null;
   editingNoteId = activeSection === 'notes' ? editingNoteId : null;
   if (activeSection === 'overview') renderOverview();
+  else if (activeSection === 'finder') renderFinder();
   else if (activeSection === 'special') renderLibrary();
   else if (activeSection === 'builds') renderBuilds();
   else if (activeSection === 'story') renderStory();
@@ -1307,7 +1479,7 @@ loadProgress();
 renderAll();
 syncPullAndReconcile();
 </script>
-<script src="../studio-nav.js?v=20260905" defer></script>
-<script src="../journal-app.js?v=20260905" defer></script>
+<script src="../studio-nav.js?v=20260915" defer></script>
+<script src="../journal-app.js?v=20260915" defer></script>
 </body>
 </html>
