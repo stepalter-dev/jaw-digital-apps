@@ -294,6 +294,11 @@
   .overview-lede { font-size: 14.5px; color: var(--ink-soft); line-height: 1.75; max-width: 640px; }
   .overview-lede code { color: var(--gold-bright); font-family: 'Inter', sans-serif; font-weight: 600; background: rgba(168,78,42,0.08); padding: 1px 5px; border-radius: 4px; }
 
+  .countdown-display {
+    font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 30px;
+    color: var(--gold-bright); margin: 8px 0 4px; font-variant-numeric: tabular-nums;
+  }
+
   .star-btn { all: unset; cursor: pointer; font-size: 16px; color: var(--ink-dim); }
   .star-btn.active { color: var(--amber); }
 
@@ -647,6 +652,13 @@ let storyProgress = {};       // story quest id -> {done, note}
 let editingPlanId = null;     // plan currently open in the builder form, or 'new'
 let editingNoteId = null;
 
+// Countdown settings. resetHourET is the hour (0-23, Eastern Time) the weekly reset lands on —
+// widely reported as around midday ET, but Bethesda doesn't publish an exact time and it can
+// drift, so it's editable rather than hardcoded as fact. seasonEndsAt is a plain YYYY-MM-DD the
+// player enters themselves (checked in-game / on the Seasons page) since there's no live feed
+// of the current Season's end date to pull from.
+let countdownSettings = { resetHourET: 12, seasonEndsAt: '' };
+
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
 /* ============================================================
@@ -669,6 +681,7 @@ function loadProgress(){
       questProgress = parsed.questProgress || {};
       creatureProgress = parsed.creatureProgress || {};
       storyProgress = parsed.storyProgress || {};
+      countdownSettings = Object.assign({ resetHourET: 12, seasonEndsAt: '' }, parsed.countdownSettings || {});
     }
   } catch (e) { /* start fresh */ }
   // seed default stars for resources not yet touched
@@ -697,6 +710,7 @@ function saveProgress(){
       questProgress,
       creatureProgress,
       storyProgress,
+      countdownSettings,
       updatedAt: Date.now(),
     };
     const payload = JSON.stringify(state);
@@ -739,6 +753,78 @@ function loadNavState(){
     const raw = localStorage.getItem(navStateKey());
     if (raw) { const p = JSON.parse(raw); if (p.section) activeSection = p.section; }
   } catch(e){}
+}
+
+/* ============================================================
+   COUNTDOWNS — weekly reset & Season end, computed against Eastern Time
+   without any date library, using the Intl API to read ET wall-clock
+   time regardless of the visitor's own timezone.
+   ============================================================ */
+
+const RESET_TZ = 'America/New_York';
+const DOW = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+
+// Wall-clock fields for `date` as seen in RESET_TZ.
+function etParts(date){
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: RESET_TZ, weekday: 'short',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  });
+  const parts = {};
+  fmt.formatToParts(date).forEach(p => { if (p.type !== 'literal') parts[p.type] = p.value; });
+  return { weekday: parts.weekday, year: +parts.year, month: +parts.month, day: +parts.day, hour: +parts.hour, minute: +parts.minute };
+}
+
+// RESET_TZ's current offset from UTC, in minutes (negative = behind UTC). Recomputed from
+// "now" each call so it tracks EST/EDT automatically; good enough for a countdown that only
+// ever targets a date within the current or next week.
+function etOffsetMinutes(date){
+  const p = etParts(date);
+  const asIfUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, 0);
+  return (asIfUTC - date.getTime()) / 60000;
+}
+
+// Absolute timestamp (ms) for a given calendar date at `hour`:00:00 Eastern Time.
+function etDateTimeToMs(year, month, day, hour){
+  const offsetMin = etOffsetMinutes(new Date());
+  return Date.UTC(year, month - 1, day, hour, 0, 0) - offsetMin * 60000;
+}
+
+// Next occurrence of the weekly reset (Tuesdays at resetHourET, Eastern Time).
+function nextWeeklyResetMs(resetHourET){
+  const now = new Date();
+  const p = etParts(now);
+  let daysUntil = (DOW.Tue - DOW[p.weekday] + 7) % 7;
+  if (daysUntil === 0 && (p.hour * 60 + p.minute) >= resetHourET * 60) daysUntil = 7;
+  const baseUTC = Date.UTC(p.year, p.month - 1, p.day) + daysUntil * 86400000;
+  const target = new Date(baseUTC);
+  return etDateTimeToMs(target.getUTCFullYear(), target.getUTCMonth() + 1, target.getUTCDate(), resetHourET);
+}
+
+function pad2(n){ return n.toString().padStart(2, '0'); }
+
+function formatCountdown(ms){
+  if (ms <= 0) return 'Resetting…';
+  const totalSec = Math.floor(ms / 1000);
+  const days = Math.floor(totalSec / 86400);
+  const hours = Math.floor((totalSec % 86400) / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  return (days > 0 ? `${days}d ` : '') + `${pad2(hours)}:${pad2(mins)}:${pad2(secs)}`;
+}
+
+// Updates the two countdown displays in place (no full re-render) — called every second and
+// right after the Overview renders. No-ops harmlessly on any other page.
+function tickCountdowns(){
+  const weeklyEl = document.getElementById('cd-weekly');
+  if (weeklyEl) weeklyEl.textContent = formatCountdown(nextWeeklyResetMs(countdownSettings.resetHourET) - Date.now());
+
+  const seasonEl = document.getElementById('cd-season');
+  if (seasonEl && countdownSettings.seasonEndsAt) {
+    const [y, m, d] = countdownSettings.seasonEndsAt.split('-').map(Number);
+    seasonEl.textContent = formatCountdown(etDateTimeToMs(y, m, d, countdownSettings.resetHourET) - Date.now());
+  }
 }
 
 /* ============================================================
@@ -787,6 +873,39 @@ function renderOverview(){
       Bethesda rebalances and rotates content regularly. Use the star/note fields to correct
       anything that’s drifted from what you see in-game.
     </div>
+
+    <div class="stat-group-head">⏱️ Countdowns</div>
+    <div class="grid2 wide">
+      <div class="card countdown-card">
+        <div class="card-head">
+          <span class="card-title">Weekly Reset</span>
+          <span class="card-tag">Every Tuesday</span>
+        </div>
+        <div class="countdown-display" id="cd-weekly">--</div>
+        <div class="card-desc">Daily Ops rotation, weekly challenges & S.C.O.R.E. bonuses roll over at the weekly reset.</div>
+        <div class="card-actions">
+          <label class="field-label" style="margin:0;">Reset hour (ET)</label>
+          <input type="number" id="reset-hour-input" min="0" max="23" value="${countdownSettings.resetHourET}">
+          <span style="font-size:11px; color:var(--ink-dim);">:00 — commonly reported as ~midday ET; adjust if you see it land elsewhere.</span>
+        </div>
+      </div>
+      <div class="card countdown-card">
+        <div class="card-head">
+          <span class="card-title">Season End</span>
+          <span class="card-tag">${countdownSettings.seasonEndsAt ? 'Set' : 'Not set'}</span>
+        </div>
+        ${countdownSettings.seasonEndsAt ? `
+          <div class="countdown-display" id="cd-season">--</div>
+          <div class="card-desc">Ends ${new Date(countdownSettings.seasonEndsAt + 'T12:00:00').toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'})}, at the reset hour above.</div>
+        ` : `<div class="card-desc">Check the in-game Seasons page for the current Season's end date and set it here to get a live countdown.</div>`}
+        <div class="card-actions">
+          <label class="field-label" style="margin:0;">Season ends</label>
+          <input type="date" id="season-date-input" value="${countdownSettings.seasonEndsAt || ''}">
+          ${countdownSettings.seasonEndsAt ? `<button class="btn small" id="clear-season-btn">Clear</button>` : ''}
+        </div>
+      </div>
+    </div>
+
     <div class="stat-tally-row">
       <div class="stat-tally"><div class="n">${ownedCount}</div><div class="l">Cards Owned</div></div>
       <div class="stat-tally"><div class="n">${plans.length}</div><div class="l">Build Plans</div></div>
@@ -797,6 +916,24 @@ function renderOverview(){
       <div class="stat-tally"><div class="n">${notesList.length}</div><div class="l">Field Log Entries</div></div>
     </div>
   `;
+
+  const resetHourInput = document.getElementById('reset-hour-input');
+  resetHourInput.addEventListener('change', () => {
+    countdownSettings.resetHourET = Math.max(0, Math.min(23, parseInt(resetHourInput.value) || 0));
+    saveProgress(); tickCountdowns();
+  });
+  const seasonDateInput = document.getElementById('season-date-input');
+  seasonDateInput.addEventListener('change', () => {
+    countdownSettings.seasonEndsAt = seasonDateInput.value;
+    saveProgress(); renderOverview();
+  });
+  const clearSeasonBtn = document.getElementById('clear-season-btn');
+  if (clearSeasonBtn) clearSeasonBtn.addEventListener('click', () => {
+    countdownSettings.seasonEndsAt = '';
+    saveProgress(); renderOverview();
+  });
+
+  tickCountdowns();
 }
 
 /* ============================================================
@@ -1473,6 +1610,8 @@ document.querySelectorAll('.filter-pill[data-fav]').forEach(p => {
 const backToTop = document.getElementById('back-to-top');
 window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 600); });
 backToTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+setInterval(tickCountdowns, 1000);
 
 loadNavState();
 loadProgress();
