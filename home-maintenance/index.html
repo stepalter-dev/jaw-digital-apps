@@ -427,6 +427,47 @@
   }
   .empty-state .e-icon { font-size: 30px; margin-bottom: 10px; }
 
+  /* ---------- calendar ---------- */
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .cal-month { margin: 0; font-size: 16px; color: var(--heading); font-weight: 800; }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .cal-weekday { text-align: center; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); padding-bottom: 6px; }
+  .cal-cell {
+    all: unset; box-sizing: border-box; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px;
+    aspect-ratio: 1 / 1; min-height: 44px;
+    border-radius: 10px; border: 1px solid transparent;
+    padding: 6px 2px 4px;
+  }
+  .cal-cell.cal-pad { visibility: hidden; cursor: default; }
+  .cal-cell:hover:not(.cal-pad) { background: var(--bg-soft); }
+  .cal-daynum { font-size: 12px; font-weight: 600; color: var(--ink); }
+  .cal-cell.cal-today .cal-daynum { color: var(--amber); font-weight: 800; }
+  .cal-cell.cal-today { border-color: var(--amber); }
+  .cal-cell.cal-overdue .cal-daynum { color: var(--coral); }
+  .cal-cell.cal-selected { background: var(--amber-bg); border-color: var(--amber); }
+  .cal-dots { display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: wrap; min-height: 8px; }
+  .cal-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .cal-dot.c-amber { background: var(--amber); }
+  .cal-dot.c-teal { background: var(--teal); }
+  .cal-dot.c-graybrown { background: var(--graybrown); }
+  .cal-dot.c-coral { background: var(--coral); }
+  .cal-more { font-size: 9px; color: var(--ink-soft); }
+
+  @media (max-width: 520px) {
+    .cal-cell { min-height: 36px; }
+    .cal-daynum { font-size: 11px; }
+  }
+
   /* modal */
   .modal-overlay {
     position: fixed; inset: 0;
@@ -622,6 +663,7 @@ const FREQUENCIES = {
 const SECTIONS = [
   { id: 'upcoming',  label: 'Home / Upcoming', icon: '🏡' },
   { id: 'category',  label: 'By Category',     icon: '🗂️' },
+  { id: 'calendar',  label: 'Calendar',        icon: '📅' },
   { id: 'log',       label: 'Completed Log',   icon: '📋' },
   { id: 'overview',  label: 'Overview',        icon: '📊' },
 ];
@@ -718,6 +760,8 @@ let activeCategory = null;
 let searchQuery = '';
 let editingTaskId = null;
 let resetArmed = false;
+let calendarCursor = (() => { const d = new Date(); d.setDate(1); return d; })(); // first-of-month being viewed
+let calendarSelected = todayISO();
 let resetTimer = null;
 
 function loadState() {
@@ -1024,6 +1068,79 @@ function renderCategory(root) {
   });
 }
 
+function renderCalendar(root) {
+  document.getElementById('page-title').textContent = 'Calendar';
+  document.getElementById('page-subtitle').textContent = 'Every upcoming due date, laid out by month.';
+
+  const year = calendarCursor.getFullYear();
+  const month = calendarCursor.getMonth();
+  const monthLabel = calendarCursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+  // Map ISO date -> tasks due that day (active tasks only; a one-off already marked
+  // done has no next due date, so it naturally drops off the calendar).
+  const byDate = {};
+  tasks.filter(isActive).forEach(t => {
+    const due = nextDueFor(t);
+    if (!due) return;
+    (byDate[due] = byDate[due] || []).push(t);
+  });
+
+  const firstOfMonth = new Date(year, month, 1);
+  const startWeekday = firstOfMonth.getDay(); // 0 = Sunday
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = todayISO();
+
+  const weekdayHeaders = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="cal-weekday">${d}</div>`).join('');
+
+  let cells = '';
+  for (let i = 0; i < startWeekday; i++) cells += `<div class="cal-cell cal-pad"></div>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const iso = toISODate(new Date(year, month, day));
+    const dueHere = byDate[iso] || [];
+    const isToday = iso === today;
+    const isOverdue = iso < today && dueHere.length > 0;
+    const isSelected = iso === calendarSelected;
+    const dots = dueHere.slice(0, 4).map(t => `<span class="cal-dot c-${CAT_BY_ID[t.category].color}"></span>`).join('');
+    const more = dueHere.length > 4 ? `<span class="cal-more">+${dueHere.length - 4}</span>` : '';
+    cells += `
+      <button type="button" class="cal-cell ${isToday ? 'cal-today' : ''} ${isOverdue ? 'cal-overdue' : ''} ${isSelected ? 'cal-selected' : ''}" data-cal-day="${iso}">
+        <span class="cal-daynum">${day}</span>
+        <span class="cal-dots">${dots}${more}</span>
+      </button>`;
+  }
+
+  const selectedTasks = (byDate[calendarSelected] || []).slice().sort((a, b) => a.name.localeCompare(b.name));
+  const selectedLabel = new Date(calendarSelected + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  const detailHTML = selectedTasks.length
+    ? `<div class="task-list">${selectedTasks.map(taskCard).join('')}</div>`
+    : emptyState('📅', `Nothing due ${calendarSelected === today ? 'today' : 'on ' + selectedLabel}.`);
+
+  root.innerHTML = `
+    <div class="cal-header">
+      <button type="button" class="icon-btn" id="cal-prev">‹ Prev</button>
+      <h3 class="cal-month">${monthLabel}</h3>
+      <button type="button" class="icon-btn" id="cal-next">Next ›</button>
+    </div>
+    <div class="cal-grid">${weekdayHeaders}${cells}</div>
+    <div class="panel-block" style="margin-top:18px;">
+      <h3>${selectedLabel}</h3>
+      ${detailHTML}
+    </div>
+  `;
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    calendarCursor = new Date(year, month - 1, 1);
+    renderAll();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    calendarCursor = new Date(year, month + 1, 1);
+    renderAll();
+  });
+  document.querySelectorAll('[data-cal-day]').forEach(btn => {
+    btn.addEventListener('click', () => { calendarSelected = btn.dataset.calDay; renderAll(); });
+  });
+}
+
 function renderLog(root) {
   document.getElementById('page-title').textContent = 'Completed Log';
   document.getElementById('page-subtitle').textContent = 'A history of everything that\'s been ticked off.';
@@ -1111,6 +1228,7 @@ function renderAll() {
   const root = document.getElementById('view-root');
   if (activeSection === 'upcoming') renderUpcoming(root);
   else if (activeSection === 'category') renderCategory(root);
+  else if (activeSection === 'calendar') renderCalendar(root);
   else if (activeSection === 'log') renderLog(root);
   else renderOverview(root);
 
