@@ -15,8 +15,15 @@
 --     falls back to their personal row otherwise (so joining a household
 --     never deletes/hides progress you already had — it's just not the row
 --     being synced anymore while you're in the household).
+--
+-- All four tables are created first, then RLS is turned on and every policy
+-- added, then the functions. Order matters here: a policy's USING clause is
+-- bound to real tables at CREATE POLICY time, so every table a policy (or a
+-- SQL-language function) refers to has to exist already — households' own
+-- policy refers to household_members, for instance — so tables-then-policies
+-- avoids a "relation does not exist" error partway through the script.
 
--- ── households ──────────────────────────────────────────────────────────
+-- ── tables ──────────────────────────────────────────────────────────────
 create table if not exists public.households (
   id         uuid primary key default gen_random_uuid(),
   name       text not null default 'My Household',
@@ -24,17 +31,6 @@ create table if not exists public.households (
   created_at timestamptz not null default now()
 );
 
-alter table public.households enable row level security;
-
-drop policy if exists "households: read own" on public.households;
-create policy "households: read own"
-  on public.households for select
-  using (id in (select household_id from public.household_members where user_id = auth.uid()));
-
--- No insert/update/delete policies for clients — households are only ever
--- created via create_household() below (SECURITY DEFINER).
-
--- ── household_members ──────────────────────────────────────────────────
 create table if not exists public.household_members (
   household_id uuid not null references public.households(id) on delete cascade,
   user_id      uuid not null references auth.users(id) on delete cascade,
@@ -48,8 +44,44 @@ create table if not exists public.household_members (
 create unique index if not exists household_members_one_per_user
   on public.household_members (user_id);
 
-alter table public.household_members enable row level security;
+-- Same "fully inaccessible directly" pattern as redeem_codes in
+-- oblivion-entitlements.sql — reachable only through the functions below.
+create table if not exists public.household_invites (
+  code         text primary key,
+  household_id uuid not null references public.households(id) on delete cascade,
+  created_by   uuid not null references auth.users(id) on delete cascade,
+  max_uses     int not null default 1,
+  used_count   int not null default 0,
+  active       bool not null default true,
+  created_at   timestamptz not null default now()
+);
 
+-- Mirrors the shape of the existing `progress` table (payload + updated_at),
+-- just keyed by household instead of by user.
+create table if not exists public.household_progress (
+  household_id uuid not null references public.households(id) on delete cascade,
+  game         text not null,
+  payload      jsonb not null default '{}'::jsonb,
+  updated_at   timestamptz not null default now(),
+  primary key (household_id, game)
+);
+
+-- ── row level security ──────────────────────────────────────────────────
+alter table public.households enable row level security;
+alter table public.household_members enable row level security;
+alter table public.household_invites enable row level security;
+alter table public.household_progress enable row level security;
+
+-- households: read own — no insert/update/delete policies for clients,
+-- households are only ever created via create_household() (SECURITY DEFINER).
+drop policy if exists "households: read own" on public.households;
+create policy "households: read own"
+  on public.households for select
+  using (id in (select household_id from public.household_members where user_id = auth.uid()));
+
+-- household_members: see your fellow members, and leave on your own.
+-- No insert policy — joining happens only through join_household() below,
+-- so invite codes stay the sole path in.
 drop policy if exists "household_members: read fellow members" on public.household_members;
 create policy "household_members: read fellow members"
   on public.household_members for select
@@ -63,38 +95,10 @@ create policy "household_members: leave own"
   on public.household_members for delete
   using (user_id = auth.uid());
 
--- No insert policy — joining happens only through join_household() below,
--- so invite codes stay the sole path in.
+-- household_invites: no policies at all — fully inaccessible to
+-- anon/authenticated directly, reachable only through the functions below.
 
--- ── household_invites ───────────────────────────────────────────────────
--- Same "fully inaccessible directly" pattern as redeem_codes in
--- oblivion-entitlements.sql — reachable only through the functions below.
-create table if not exists public.household_invites (
-  code         text primary key,
-  household_id uuid not null references public.households(id) on delete cascade,
-  created_by   uuid not null references auth.users(id) on delete cascade,
-  max_uses     int not null default 1,
-  used_count   int not null default 0,
-  active       bool not null default true,
-  created_at   timestamptz not null default now()
-);
-
-alter table public.household_invites enable row level security;
--- No policies at all: fully inaccessible to anon/authenticated directly.
-
--- ── household_progress ──────────────────────────────────────────────────
--- Mirrors the shape of the existing `progress` table (payload + updated_at),
--- just keyed by household instead of by user.
-create table if not exists public.household_progress (
-  household_id uuid not null references public.households(id) on delete cascade,
-  game         text not null,
-  payload      jsonb not null default '{}'::jsonb,
-  updated_at   timestamptz not null default now(),
-  primary key (household_id, game)
-);
-
-alter table public.household_progress enable row level security;
-
+-- household_progress: any member of the household can read/write its row.
 drop policy if exists "household_progress: household members read" on public.household_progress;
 create policy "household_progress: household members read"
   on public.household_progress for select
