@@ -784,27 +784,41 @@
   }
   .quest.flash-highlight { animation: flashHighlight 2.2s ease-out; }
 
-  /* ---- Interactive Map (Locations > Map tab) ---- */
-  .skyrim-map-wrap { position: relative; border: 1px solid var(--iron); border-radius: 6px; background: var(--stone-2); padding: 16px; }
+  /* ---- Interactive Map (Locations > Map tab) — a hand-etched relief map, not a color-coded chart:
+     holds are told apart by fine mountain-ridge boundary lines, not by a rainbow of fill colors, and
+     every pin is a proper map marker (a pointed teardrop with a tiny carved icon) instead of a dot. ---- */
+  .skyrim-map-wrap { position: relative; border: 1px solid var(--iron); border-radius: 10px; background: var(--stone-2); padding: 16px; box-shadow: inset 0 1px 0 var(--panel-hi); }
   .skyrim-map-svg { width: 100%; height: auto; display: block; }
   .map-sea { fill: var(--stone-1); }
-  .map-landmass { fill: var(--stone-3); stroke: var(--iron-light); stroke-width: 2.5; stroke-linejoin: round; }
-  .map-hold-shape { stroke: var(--iron); stroke-width: 1.25; fill-opacity: 0.16; stroke-linejoin: round; transition: fill-opacity 0.25s, opacity 0.25s; }
-  .map-hold-shape.dimmed { opacity: 0.12; fill-opacity: 0.05; }
+  .map-sea-texture { fill: url(#seaWaves); opacity: 0.5; }
+  .map-landmass { fill: url(#landTerrain); stroke: var(--gold-dim); stroke-width: 2.5; stroke-linejoin: round; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)); }
+  .map-landmass-grain { fill: url(#landGrain); opacity: 0.5; pointer-events: none; }
+  /* hold borders read as mountain ridgelines — a soft dark shadow stroke under a pale broken crest
+     line — rather than a flat color fill per hold, which was the "coded diagram" look being replaced */
+  .map-hold-ridge-shadow { fill: none; stroke: rgba(0,0,0,0.35); stroke-width: 3.5; stroke-linejoin: round; }
+  .map-hold-ridge { fill: none; stroke: var(--iron-light); stroke-width: 1.1; stroke-linejoin: round; stroke-dasharray: 1 5; stroke-linecap: round; opacity: 0.8; transition: opacity 0.25s; }
+  .map-hold-shape { fill: var(--ink); fill-opacity: 0; stroke: none; transition: fill-opacity 0.2s; }
+  .map-hold-shape:hover { fill-opacity: 0.05; }
+  .map-hold-shape.dimmed ~ .map-hold-ridge,
+  .map-hold-ridge.dimmed { opacity: 0.2; }
   .map-hold-label { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.09em; fill: var(--ink-soft); text-transform: uppercase; pointer-events: none; opacity: 0.85; }
-  .map-compass { fill: none; stroke: var(--gold-dim); stroke-width: 1; opacity: 0.6; }
+  .map-compass { fill: none; stroke: var(--gold-dim); stroke-width: 1; opacity: 0.7; }
+  .map-compass .compass-point { fill: var(--gold-dim); stroke: none; }
   .map-compass text { font-family: 'Cinzel', serif; fill: var(--gold-dim); font-size: 11px; }
   .map-pin { cursor: pointer; }
   .map-pin.dimmed { opacity: 0.15; pointer-events: none; }
-  .map-pin .map-pin-dot { fill: var(--frost-dim); stroke: var(--void); stroke-width: 1.5; transition: fill 0.15s, r 0.15s, stroke-width 0.15s; }
-  .map-pin.is-visited .map-pin-dot { fill: var(--gold-bright); }
-  .map-pin.is-capital .map-pin-dot { r: 8; stroke: var(--gold); stroke-width: 2; }
-  .map-pin.is-capital.is-visited .map-pin-dot { fill: var(--gold-bright); }
-  .map-pin.is-dungeon .map-pin-dot { r: 3.4; }
-  .map-pin.is-poi .map-pin-dot { r: 5; stroke: var(--frost); }
-  .map-pin.is-housing .map-pin-dot { r: 5; stroke: var(--gold-dim); }
-  .map-pin:hover .map-pin-dot, .map-pin:focus .map-pin-dot { stroke: var(--frost); stroke-width: 2.5; }
-  .map-inset-box { fill: var(--stone-2); stroke: var(--iron-light); stroke-width: 1; stroke-dasharray: 4 3; rx: 4; }
+  .map-pin-shadow { fill: rgba(0,0,0,0.4); }
+  .map-pin-shape { fill: var(--frost-dim); stroke: var(--void); stroke-width: 1.5; transition: fill 0.15s, stroke-width 0.15s, filter 0.15s; }
+  .map-pin-hole { fill: var(--void); opacity: 0.82; pointer-events: none; }
+  .map-pin-icon { font-size: 6.5px; fill: var(--heading); text-anchor: middle; pointer-events: none; dominant-baseline: central; }
+  .map-pin.is-visited .map-pin-shape { fill: var(--gold-bright); }
+  .map-pin.is-capital .map-pin-shape { stroke: var(--gold); stroke-width: 2; }
+  .map-pin.is-capital.is-visited .map-pin-shape { fill: var(--gold-bright); }
+  .map-pin.is-capital .map-pin-icon { font-size: 8.5px; }
+  .map-pin.is-poi .map-pin-shape { stroke: var(--frost); }
+  .map-pin.is-housing .map-pin-shape { stroke: var(--gold-dim); }
+  .map-pin:hover .map-pin-shape, .map-pin:focus .map-pin-shape { stroke: var(--frost); stroke-width: 2.5; filter: drop-shadow(0 0 5px rgba(159,219,207,0.6)); }
+  .map-inset-box { fill: var(--stone-3); stroke: var(--iron-light); stroke-width: 1; stroke-dasharray: 4 3; rx: 6; }
   .map-inset-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.08em; fill: var(--ink-dim); text-transform: uppercase; pointer-events: none; }
   .map-popup {
     position: absolute;
@@ -8588,13 +8602,23 @@ function renderLocations(){
 // global search index uses so click-to-navigate reuses navigateToResult()'s existing scroll+flash
 // pattern. The hold filter (activeMapHolds) and legend are wired up in renderLocationsInner/CSS.
 function renderLocationMapBody(){
-  const holdShapesSvg = LOCATION_HOLDS.map(hold => {
+  // Hold borders now read as mountain ridgelines (a dark shadow stroke under a pale broken crest)
+  // instead of nine flat, saturated fill colors — the same HOLD_MAP_SHAPES points, drawn as strokes.
+  const holdRidgesSvg = LOCATION_HOLDS.map(hold => {
     const shape = HOLD_MAP_SHAPES[hold];
     if (!shape) return '';
     const shown = !activeMapHolds || activeMapHolds.has(hold);
-    return `<polygon class="map-hold-shape ${shown ? '' : 'dimmed'}" points="${shape.points}" style="fill: var(${shape.fillVar});" data-hold-shape="${hold}"><title>${hold}</title></polygon>`;
+    const dim = shown ? '' : 'dimmed';
+    return `<polygon class="map-hold-ridge-shadow ${dim}" points="${shape.points}"></polygon>`
+         + `<polygon class="map-hold-ridge ${dim}" points="${shape.points}"></polygon>`
+         + `<polygon class="map-hold-shape ${dim}" points="${shape.points}" data-hold-shape="${hold}"><title>${hold}</title></polygon>`;
   }).join('');
 
+  // Each map marker is a real pin (a pointed teardrop + carved "hole" + tiny glyph for its category)
+  // instead of a plain colored dot — CAPITAL_PIN/PIN paths below are drawn tip-down at the local origin.
+  const PIN = 'M0,0C0,0 -6,-11.5 -6,-16.5A6,6 0 1,1 6,-16.5C6,-11.5 0,0 0,0Z';
+  const CAPITAL_PIN = 'M0,0C0,0 -8,-14.5 -8,-20.5A8,8 0 1,1 8,-20.5C8,-14.5 0,0 0,0Z';
+  const PIN_ICON = { capital: '♜', dungeon: '⚔', poi: '✦', housing: '⌂' };
   const pins = buildMapPins();
   mapPinIndex = {};
   const pinSvg = pins.map(p => {
@@ -8603,11 +8627,16 @@ function renderLocationMapBody(){
     const visitedClass = tracked.has(p.id) ? 'is-visited' : '';
     const shown = p.inset || !activeMapHolds || activeMapHolds.has(p.hold);
     const dimClass = shown ? '' : 'dimmed';
-    const labelOffset = p.category === 'capital' ? 11 : 8;
+    const isCapital = p.category === 'capital';
+    const holeY = isCapital ? -20.5 : -16.5;
+    const labelOffset = isCapital ? 12 : 9;
     return `
       <g class="map-pin ${catClass} ${visitedClass} ${dimClass}" data-pin-id="${p.id}" data-pin-hold="${p.hold || ''}" data-pin-category="${p.category}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" tabindex="0">
-        <circle class="map-pin-dot" cx="0" cy="0"></circle>
-        <text class="map-pin-label" x="${labelOffset}" y="4">${p.name}</text>
+        <ellipse class="map-pin-shadow" cx="0" cy="1" rx="3.2" ry="1.3"></ellipse>
+        <path class="map-pin-shape" d="${isCapital ? CAPITAL_PIN : PIN}"></path>
+        <circle class="map-pin-hole" cx="0" cy="${holeY}" r="${isCapital ? 4.2 : 3.2}"></circle>
+        <text class="map-pin-icon" x="0" y="${holeY}">${PIN_ICON[p.category] || '✦'}</text>
+        <text class="map-pin-label" x="${labelOffset}" y="${holeY + 3}">${p.name}</text>
         <title>${p.name} — ${p.type}${p.hold ? ' (' + p.hold + ')' : ''} — ${tracked.has(p.id) ? 'Visited/cleared' : 'Not yet visited'}</title>
       </g>`;
   }).join('');
@@ -8616,9 +8645,9 @@ function renderLocationMapBody(){
     <div class="map-legend">
       <span><span class="swatch" style="background: var(--gold-bright); border-color: var(--gold);"></span>Visited / cleared</span>
       <span><span class="swatch" style="background: var(--frost-dim);"></span>Not yet visited</span>
-      <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--gold); width:13px; height:13px;"></span>Hold capital</span>
-      <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--frost); width:13px; height:13px;"></span>Notable location</span>
-      <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--gold-dim); width:13px; height:13px;"></span>Housing</span>
+      <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--gold); width:13px; height:13px;"></span>${PIN_ICON.capital} Hold capital</span>
+      <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--frost); width:13px; height:13px;"></span>${PIN_ICON.poi} Notable location</span>
+      <span><span class="swatch" style="background: var(--frost-dim); border-color: var(--gold-dim); width:13px; height:13px;"></span>${PIN_ICON.housing} Housing</span>
     </div>`;
 
   const shownCount = pins.filter(p => p.inset || !activeMapHolds || activeMapHolds.has(p.hold)).length;
@@ -8635,18 +8664,40 @@ function renderLocationMapBody(){
       ${legendHtml}
       <div class="skyrim-map-wrap">
         <svg class="skyrim-map-svg" viewBox="0 0 1000 750" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="seaWaves" width="46" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(-4)">
+              <path d="M0,8 Q11.5,2 23,8 T46,8" fill="none" stroke="var(--frost-dim)" stroke-width="1"></path>
+              <path d="M0,21 Q11.5,15 23,21 T46,21" fill="none" stroke="var(--frost-dim)" stroke-width="0.75"></path>
+            </pattern>
+            <radialGradient id="landTerrain" cx="38%" cy="30%" r="80%">
+              <stop offset="0%" stop-color="var(--stone-5)"></stop>
+              <stop offset="55%" stop-color="var(--stone-4)"></stop>
+              <stop offset="100%" stop-color="var(--stone-3)"></stop>
+            </radialGradient>
+            <filter id="landGrainFilter" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="noise"></feTurbulence>
+              <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"></feColorMatrix>
+            </filter>
+            <pattern id="landGrain" width="1000" height="750" patternUnits="userSpaceOnUse">
+              <rect width="1000" height="750" filter="url(#landGrainFilter)"></rect>
+            </pattern>
+          </defs>
           <rect class="map-sea" x="0" y="0" width="1000" height="750"></rect>
+          <rect class="map-sea-texture" x="0" y="0" width="1000" height="750"></rect>
           <path class="map-landmass" d="${SKYRIM_COASTLINE}"></path>
-          ${holdShapesSvg}
-          <g class="map-compass" transform="translate(70,690)">
-            <circle r="22" cx="0" cy="0"></circle>
-            <line x1="0" y1="-22" x2="0" y2="22"></line>
-            <line x1="-22" y1="0" x2="22" y2="0"></line>
-            <text x="-4" y="-27">N</text>
+          <path class="map-landmass-grain" d="${SKYRIM_COASTLINE}"></path>
+          ${holdRidgesSvg}
+          <g class="map-compass" transform="translate(66,686)">
+            <circle r="24" cx="0" cy="0"></circle>
+            <path class="compass-point" d="M0,-24 L5,-4 L0,0 L-5,-4 Z"></path>
+            <path d="M0,24 L5,4 L0,0 L-5,4 Z" fill="none" stroke="var(--gold-dim)" stroke-width="1"></path>
+            <path d="M24,0 L4,5 L0,0 L4,-5 Z" fill="none" stroke="var(--gold-dim)" stroke-width="1"></path>
+            <path d="M-24,0 L-4,5 L0,0 L-4,-5 Z" fill="none" stroke="var(--gold-dim)" stroke-width="1"></path>
+            <text x="-4" y="-30">N</text>
           </g>
-          <rect class="map-inset-box" x="862" y="10" width="128" height="112" rx="4"></rect>
+          <rect class="map-inset-box" x="862" y="10" width="128" height="112" rx="6"></rect>
           <text class="map-inset-label" x="868" y="24">Solstheim</text>
-          <rect class="map-inset-box" x="862" y="638" width="128" height="82" rx="4"></rect>
+          <rect class="map-inset-box" x="862" y="638" width="128" height="82" rx="6"></rect>
           <text class="map-inset-label" x="868" y="652">Other Realms</text>
           ${pinSvg}
         </svg>
