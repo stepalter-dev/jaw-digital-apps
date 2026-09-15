@@ -880,6 +880,14 @@
   .map-popup .mp-goto:hover { color: var(--frost-dim); border-color: var(--frost); }
   .map-pin-label { font-family: 'EB Garamond', serif; font-size: 9.5px; fill: var(--ink); paint-order: stroke; stroke: var(--void); stroke-width: 3px; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
   .map-pin:hover .map-pin-label, .map-pin:focus .map-pin-label { opacity: 1; }
+  /* A hold capital's name stays on the map permanently (like a real atlas), not just on hover —
+     these are the 9 anchor points you'd actually navigate by, so they earn a standing label. */
+  .map-pin.is-capital .map-pin-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; fill: var(--heading); opacity: 0.9; }
+  .map-pin.is-capital.dimmed .map-pin-label { opacity: 0; }
+  /* Cartographic corner ticks + a scale bar, purely decorative "surveyed map" texture */
+  .map-graticule { stroke: var(--iron-light); stroke-width: 1; opacity: 0.3; }
+  .map-scale-bar { stroke: var(--gold-dim); stroke-width: 1.5; }
+  .map-scale-label { font-family: 'EB Garamond', serif; font-style: italic; font-size: 8.5px; fill: var(--ink-soft); opacity: 0.7; }
   .map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 14px; font-size: 11.5px; color: var(--ink-soft); align-items: center; }
   .map-legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1.5px solid var(--void); }
   .map-legend b { font-family: 'Cinzel', serif; color: var(--gold-bright); margin-right: 3px; }
@@ -8653,6 +8661,11 @@ const MAP_RIVERS = [
   { d: 'M300,262 C260,256 220,246 190,220 C160,195 130,172 100,157', w: 2.2 },
   { d: 'M652,266 C692,276 726,286 748,300 C782,312 815,300 840,280', w: 2.6 },
   { d: 'M700,468 C712,494 726,520 745,545', w: 2 },
+  // Tributaries feeding the two main rivers above — thinner, shorter, no separate label.
+  { d: 'M480,410 C470,390 465,368 480,350', w: 1.4 },
+  { d: 'M420,290 C440,275 460,260 490,250', w: 1.3 },
+  { d: 'M235,320 C220,300 210,278 220,255', w: 1.3 },
+  { d: 'M780,340 C770,320 760,300 748,285', w: 1.4 },
 ];
 
 // Two named lakes plus one unlabeled — small enough not to compete with the pins around them.
@@ -8778,6 +8791,16 @@ function renderLocationMapBody(){
 
   const riverLabelSvg = MAP_RIVER_LABELS.map(r => `<text class="map-river-label" x="${r.x}" y="${r.y}" transform="rotate(${r.rotate} ${r.x} ${r.y})" text-anchor="middle">${r.name}</text>`).join('');
 
+  // Cartographic border ticks every 50 units along all four edges, like a surveyed atlas page —
+  // purely decorative, drawn out in the sea margin so they never compete with anything on the land.
+  let graticuleSvg = '';
+  for (let x = 0; x <= 1000; x += 50) {
+    graticuleSvg += `<line class="map-graticule" x1="${x}" y1="0" x2="${x}" y2="7"></line><line class="map-graticule" x1="${x}" y1="750" x2="${x}" y2="743"></line>`;
+  }
+  for (let y = 0; y <= 750; y += 50) {
+    graticuleSvg += `<line class="map-graticule" x1="0" y1="${y}" x2="7" y2="${y}"></line><line class="map-graticule" x1="1000" y1="${y}" x2="993" y2="${y}"></line>`;
+  }
+
   const riverSvg = MAP_RIVERS.map(r => `<path class="map-river" d="${r.d}" stroke-width="${r.w}"></path>`).join('');
   const lakeSvg = MAP_LAKES.map(l => `
     <ellipse class="map-lake" cx="${l.cx}" cy="${l.cy}" rx="${l.rx}" ry="${l.ry}"></ellipse>
@@ -8885,6 +8908,7 @@ function renderLocationMapBody(){
           </defs>
           <rect class="map-sea" x="0" y="0" width="1000" height="750"></rect>
           <rect class="map-sea-texture" x="0" y="0" width="1000" height="750"></rect>
+          ${graticuleSvg}
           <path class="map-landmass" d="${SKYRIM_COASTLINE}"></path>
           <path class="map-landmass-grain" d="${SKYRIM_COASTLINE}"></path>
           <g clip-path="url(#landClip)">
@@ -8905,6 +8929,13 @@ function renderLocationMapBody(){
             <path d="M24,0 L4,5 L0,0 L4,-5 Z" fill="none" stroke="var(--gold-dim)" stroke-width="1"></path>
             <path d="M-24,0 L-4,5 L0,0 L-4,-5 Z" fill="none" stroke="var(--gold-dim)" stroke-width="1"></path>
             <text x="-4" y="-30">N</text>
+          </g>
+          <g transform="translate(112,702)">
+            <line class="map-scale-bar" x1="0" y1="0" x2="60" y2="0"></line>
+            <line class="map-scale-bar" x1="0" y1="-3" x2="0" y2="3"></line>
+            <line class="map-scale-bar" x1="30" y1="-2" x2="30" y2="2"></line>
+            <line class="map-scale-bar" x1="60" y1="-3" x2="60" y2="3"></line>
+            <text class="map-scale-label" x="30" y="13" text-anchor="middle">~40 miles</text>
           </g>
           <rect class="map-inset-box" x="862" y="10" width="128" height="112" rx="6"></rect>
           <text class="map-inset-label" x="868" y="24">Solstheim</text>
