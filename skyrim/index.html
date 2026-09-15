@@ -21,44 +21,45 @@
 <meta name="twitter:image" content="https://stepalter-dev.github.io/jaw-digital-apps/screenshots/skyrim.jpg" />
 <title>Dragonborn's Field Journal — Skyrim Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral+SC:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* canvas — deep charcoal slate, in-game menu darkness */
-    --void: #0B0D0E;
-    --stone-1: #0D1012;
-    --stone-2: #121517;
-    --stone-3: #171B1E;
-    --stone-4: #1C2124;
-    --stone-5: #242A2E;
-    /* card/panel surface + etched iron borders + inner highlight */
-    --panel: rgba(18, 22, 26, 0.75);
-    --panel-hi: rgba(255, 255, 255, 0.05);
-    --iron: #2A3138;
-    --iron-light: #8E9499;
-    /* frost starlight — active states / glows / interactive accents */
-    --frost: #A2C4D9;
-    --frost-dim: #5F7D8F;
-    /* antique rune-bronze — key highlights */
-    --gold: #C49E64;
-    --gold-bright: #D8BD8C;
-    --gold-dim: #96794A;
-    /* text & headings — bone/weathered silver-white; meta — muted stone-gray */
-    --heading: #DCD8C8;
-    --ink: #DCD8C8;
-    --ink-soft: #8E9499;
-    --ink-dim: #5F6569;
-    --blood: #A24B45;
-    /* "done"/success accent — a completed quest reads as an active frost glow */
-    --sage-ok: #A2C4D9;
-    /* desaturated moss-green — shared by The Reach's map-hold fill and (historically) the Fishing
-       "Uncommon" tag. The Fishing tag now uses its own --tag-uncommon below instead: --moss's hue sits
-       too close to --ink-soft at a glance to read as a distinct rarity tier next to Common. */
-    --moss: #93A886;
-    /* Fishing rarity tags only — a clearly blue/green/grey trio, desaturated to fit the theme but with
-       enough hue separation to actually read as three different tiers at a glance (Rare reuses --frost). */
+    /* canvas — a clear winter night above the tundra: near-black slate-blue, not flat charcoal */
+    --void: #06090D;
+    --stone-1: #090D12;
+    --stone-2: #0D131A;
+    --stone-3: #131B24;
+    --stone-4: #1A2430;
+    --stone-5: #24313F;
+    /* card/panel surface + etched slate borders + inner highlight */
+    --panel: rgba(15, 20, 27, 0.74);
+    --panel-hi: rgba(255, 255, 255, 0.045);
+    --iron: #263140;
+    --iron-light: #8B98A8;
+    /* aurora frost — pale glacial teal, the northern-lights accent for active states / glows */
+    --frost: #9FDBCF;
+    --frost-dim: #4F7D74;
+    /* aurora bloom — the second borealis band, used for "done"/success so a finished quest reads
+       as a genuinely different signal from an active/selected one instead of reusing frost twice */
+    --aurora: #8FE3A8;
+    --aurora-dim: #4C8A5E;
+    /* antique rune-bronze — key highlights, warmed slightly richer than plain gold-leaf */
+    --gold: #C9A560;
+    --gold-bright: #E9CB8C;
+    --gold-dim: #8C6F3E;
+    /* text & headings — warm bone/parchment white; meta — cool slate-grey (not warm stone-grey) */
+    --heading: #EDE7D8;
+    --ink: #DCD5C4;
+    --ink-soft: #94A0AA;
+    --ink-dim: #56616C;
+    --blood: #B1493F;
+    /* "done"/success accent — the aurora bloom, distinct from frost's "active/selected" signal */
+    --sage-ok: #8FE3A8;
+    /* desaturated moss-green — The Reach's map-hold fill */
+    --moss: #8AA382;
+    /* Fishing rarity tags only — a clearly blue/green/grey trio (Rare reuses --frost) */
     --tag-uncommon: #7FA35E;
-    --tag-common: #9A968C;
+    --tag-common: #929A93;
   }
 
   * { box-sizing: border-box; }
@@ -67,54 +68,88 @@
     margin: 0;
     background: var(--void);
     background-image:
-      radial-gradient(ellipse at 50% -10%, rgba(196,158,100,0.04), transparent 40%),
-      radial-gradient(ellipse at 12% 0%, rgba(162,196,217,0.05), transparent 50%),
-      radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.6) 100%);
-    font-family: 'Spectral', serif;
+      radial-gradient(ellipse 70% 40% at 18% -6%, rgba(143,227,168,0.07), transparent 60%),
+      radial-gradient(ellipse 60% 35% at 85% -4%, rgba(159,219,207,0.06), transparent 60%),
+      radial-gradient(ellipse at 50% 0%, rgba(201,165,96,0.04), transparent 45%),
+      radial-gradient(circle at 50% 46%, transparent 35%, rgba(0,0,0,0.55) 100%);
+    font-family: 'EB Garamond', serif;
     color: var(--ink);
     min-height: 100vh;
-    padding: 24px 16px 60px;
+    padding: 0 16px 60px;
   }
 
   .tome {
-    width: min(95vw, 1520px);
+    width: min(95vw, 1180px);
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
     gap: 0;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(42,49,56,0.7);
-    border-radius: 0;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(38,49,64,0.7);
+    border-radius: 14px;
     overflow: hidden;
   }
 
-  /* ---------- SIDE NAV (desktop) ---------- */
-  .nav {
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(180deg, var(--stone-2), var(--stone-1));
-    padding: 28px 0 20px;
-    min-width: 210px;
-    flex-shrink: 0;
+  /* ---------- MASTHEAD — a carved lintel above the standing-stone nav row, replacing the old
+     vertical spine rail. This is the "hall entrance" every section is read beneath. ---------- */
+  .masthead {
+    background: linear-gradient(180deg, var(--stone-3), var(--stone-1));
+    border-bottom: 1px solid var(--iron);
+    padding: 26px 20px 20px;
+    text-align: center;
     position: relative;
-    border-right: 1px solid var(--iron);
+    overflow: hidden;
   }
-  .nav::before {
+  .masthead::before {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, transparent 2px 44px);
-    pointer-events: none;
+    background: linear-gradient(90deg, rgba(143,227,168,0.5), rgba(159,219,207,0.5) 40%, rgba(201,165,96,0.5) 75%, transparent);
+    height: 2px;
+    top: 0;
+    opacity: 0.65;
   }
-  .nav-brand {
-    font-family: 'Cinzel Decorative', serif;
+  .masthead-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .masthead-rune {
     font-size: 15px;
-    color: var(--gold);
-    text-align: center;
-    letter-spacing: 0.1em;
-    padding: 0 16px 20px;
-    border-bottom: 1px solid var(--iron);
-    margin-bottom: 10px;
+    color: var(--gold-dim);
+    opacity: 0.75;
+    letter-spacing: 0.2em;
   }
-  .nav-brand .rune-row { color: var(--frost-dim); font-size: 11px; letter-spacing: 0.3em; display:block; margin-top:6px; }
+  .masthead-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    font-size: clamp(19px, 3.2vw, 27px);
+    letter-spacing: 0.06em;
+    color: var(--heading);
+    text-shadow: 0 2px 18px rgba(143,227,168,0.15);
+  }
+  .masthead-title .accent { color: var(--gold-bright); }
+  .masthead-sub {
+    margin-top: 8px;
+    font-family: 'EB Garamond', serif;
+    font-variant-caps: small-caps;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- STANDING-STONE NAV — a horizontal hall of waystones beneath the masthead, used at
+     every viewport width (no separate desktop-rail / mobile-strip split). ---------- */
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    background: var(--stone-1);
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--iron);
+    position: relative;
+  }
 
   .nav-btn {
     all: unset;
@@ -122,36 +157,36 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 11px 18px;
-    margin: 1px 8px;
+    gap: 7px;
+    padding: 9px 14px;
     color: var(--ink-soft);
     font-family: 'Cinzel', serif;
     font-weight: 500;
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    border-radius: 0;
-    transition: background .15s ease, color .15s ease;
-    border-left: 2px solid transparent;
+    background: var(--stone-2);
+    border: 1px solid var(--iron);
+    border-radius: 7px 7px 3px 3px;
+    box-shadow: inset 0 1px 0 var(--panel-hi);
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .12s ease;
   }
-  .nav-btn .icon { font-size: 15px; filter: saturate(0.6); flex-shrink: 0; width: 18px; text-align: center; }
+  .nav-btn .icon { font-size: 14px; filter: saturate(0.6); flex-shrink: 0; width: 16px; text-align: center; }
   .nav-btn .count {
     margin-left: auto;
-    font-family: 'Spectral', serif;
+    font-family: 'EB Garamond', serif;
     font-size: 10px;
     opacity: 0.6;
   }
   .nav-btn .count::before { content: '[ '; }
   .nav-btn .count::after { content: ' ]'; }
-  .nav-btn:hover { background: rgba(162,196,217,0.06); color: var(--heading); }
+  .nav-btn:hover { background: var(--stone-4); color: var(--heading); border-color: var(--frost-dim); transform: translateY(-1px); }
   .nav-btn.active {
-    background: rgba(196,158,100,0.09);
+    background: linear-gradient(180deg, rgba(201,165,96,0.16), rgba(201,165,96,0.06));
     color: var(--gold-bright);
-    border-left-color: var(--gold);
-    text-shadow: 0 0 10px rgba(196,158,100,0.25);
+    border-color: var(--gold-dim);
+    box-shadow: inset 0 1px 0 var(--panel-hi), 0 0 14px rgba(201,165,96,0.18);
   }
-  .nav-btn.active .count { color: var(--gold); opacity: 1; }
 
   .nav-mobile { display: none; }
 
@@ -159,13 +194,13 @@
   .page {
     flex: 1;
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(196,158,100,0.03), transparent 45%),
-      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.45), transparent 55%),
+      radial-gradient(ellipse at 15% 0%, rgba(143,227,168,0.03), transparent 45%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.4), transparent 55%),
       linear-gradient(165deg, var(--stone-3), var(--stone-2) 65%, var(--stone-1));
     background-color: var(--stone-2);
-    padding: 34px clamp(24px, 3.4vw, 54px) 50px;
+    padding: 28px clamp(20px, 3.4vw, 46px) 50px;
     position: relative;
-    min-height: 680px;
+    min-height: 560px;
     min-width: 0;
   }
   .page::after {
@@ -173,9 +208,9 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
     background-size: 3px 3px;
-    opacity: 0.5;
+    opacity: 0.4;
     mix-blend-mode: overlay;
   }
 
@@ -192,42 +227,26 @@
   h1 {
     font-family: 'Cinzel', serif;
     font-weight: 700;
-    font-size: clamp(20px, 3vw, 30px);
+    font-size: clamp(18px, 2.6vw, 25px);
     color: var(--heading);
     margin: 0;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
   .subtitle {
-    font-family: 'Spectral SC', serif;
-    font-size: 12px;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
     color: var(--ink-soft);
-    letter-spacing: 0.03em;
+    letter-spacing: 0.01em;
     margin-top: 5px;
   }
-  .seal {
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    color: var(--gold-dim);
-    background: rgba(0,0,0,0.3);
-    border: 2px solid var(--gold-dim);
-    border-radius: 50%;
-    width: 62px;
-    height: 62px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    line-height: 1.15;
-    letter-spacing: 0.04em;
-    transform: rotate(-6deg);
-    opacity: 0.9;
-    flex-shrink: 0;
-    text-transform: uppercase;
-  }
+  /* the old circular wax-seal badge now lives in the masthead as the standing-stone glyphs; the
+     per-section header keeps only title + subtitle so it reads as a page beneath the hall entrance */
+  .seal { display: none; }
 
-  /* Skyrim's signature rule — a razor-thin line fading at the edges, broken by a centered rune */
+  /* Skyrim's signature rule — an aurora-tinted hairline fading at the edges, broken by a centered rune */
   .rune-divider {
     position: relative;
     height: 15px;
@@ -237,15 +256,16 @@
     content: "";
     position: absolute;
     top: 50%; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--iron) 12%, var(--iron) 88%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, var(--frost-dim) 12%, var(--gold-dim) 50%, var(--frost-dim) 88%, transparent 100%);
+    opacity: 0.55;
   }
   .rune-divider::after {
-    content: "◆";
+    content: "ᛟ";
     position: absolute;
     left: 50%; top: 52%;
     transform: translate(-50%,-50%);
     color: var(--gold-dim);
-    font-size: 9px;
+    font-size: 12px;
     background: var(--stone-2);
     padding: 0 10px;
     line-height: 1;
@@ -268,7 +288,7 @@
     background: rgba(11,13,14,0.55);
     color: var(--ink);
     padding: 9px 14px;
-    border-radius: 0;
+    border-radius: 6px;
     border: 1px solid var(--iron);
     box-shadow: inset 0 1px 0 var(--panel-hi);
     flex: 1;
@@ -279,7 +299,7 @@
     border: none;
     outline: none;
     color: var(--ink);
-    font-family: 'Spectral', serif;
+    font-family: 'EB Garamond', serif;
     font-size: 13px;
     width: 100%;
     letter-spacing: 0.02em;
@@ -325,17 +345,17 @@
     border: none;
     border-bottom: 2px solid transparent;
     padding: 7px 10px 6px;
-    border-radius: 0;
+    border-radius: 6px;
     cursor: pointer;
     user-select: none;
     text-transform: uppercase;
     transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  .filter-pill:hover { color: var(--heading); border-bottom-color: rgba(162,196,217,0.5); text-shadow: 0 0 10px rgba(162,196,217,0.3); }
+  .filter-pill:hover { color: var(--heading); border-bottom-color: rgba(159,219,207,0.5); text-shadow: 0 0 10px rgba(159,219,207,0.3); }
   .filter-pill:focus { outline: none; }
-  .filter-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(162,196,217,0.5); text-shadow: 0 0 10px rgba(162,196,217,0.3); }
-  .filter-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(196,158,100,0.25); }
+  .filter-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(159,219,207,0.5); text-shadow: 0 0 10px rgba(159,219,207,0.3); }
+  .filter-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(201,165,96,0.25); }
 
   /* sub nav (questlines) */
   .sub-row {
@@ -355,7 +375,7 @@
     border: none;
     border-bottom: 2px solid transparent;
     padding: 7px 12px 6px;
-    border-radius: 0;
+    border-radius: 6px;
     cursor: pointer;
     text-transform: uppercase;
     transition: color .15s ease, border-color .15s ease, text-shadow .15s ease;
@@ -367,18 +387,18 @@
        used everywhere else (hover's frost underline, or gold if it's also .active — see below). */
     -webkit-tap-highlight-color: transparent;
   }
-  .sub-pill:hover { color: var(--heading); border-bottom-color: rgba(162,196,217,0.5); text-shadow: 0 0 10px rgba(162,196,217,0.3); }
+  .sub-pill:hover { color: var(--heading); border-bottom-color: rgba(159,219,207,0.5); text-shadow: 0 0 10px rgba(159,219,207,0.3); }
   .sub-pill:focus { outline: none; }
-  .sub-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(162,196,217,0.5); text-shadow: 0 0 10px rgba(162,196,217,0.3); }
-  .sub-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(196,158,100,0.25); }
+  .sub-pill:focus-visible { outline: none; color: var(--heading); border-bottom-color: rgba(159,219,207,0.5); text-shadow: 0 0 10px rgba(159,219,207,0.3); }
+  .sub-pill.active { color: var(--gold-bright); border-bottom-color: var(--gold); text-shadow: 0 0 10px rgba(201,165,96,0.25); }
   .sub-pill .n { opacity:0.65; font-size:9px; margin-left:2px; }
   .sub-pill .n::before { content: '[ '; }
   .sub-pill .n::after { content: ' ]'; }
 
   .branch-banner {
-    background: rgba(162,75,69,0.08);
+    background: rgba(177,73,63,0.08);
     border: 1px solid var(--blood);
-    border-radius: 0;
+    border-radius: 6px;
     padding: 12px 16px;
     margin-bottom: 18px;
     font-size: 12.5px;
@@ -401,22 +421,22 @@
     background: var(--panel);
     border: 1px solid var(--iron);
     border-left: 3px solid var(--gold-dim);
-    border-radius: 0;
+    border-radius: 4px 10px 10px 4px;
     padding: 16px;
     cursor: pointer;
     box-shadow: inset 0 1px 0 var(--panel-hi);
     transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
   }
-  .dash-card:hover { transform: translateY(-2px); border-color: var(--frost-dim); box-shadow: 2px 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 var(--panel-hi), 0 0 12px rgba(162,196,217,0.12); }
+  .dash-card:hover { transform: translateY(-2px); border-color: var(--frost-dim); box-shadow: 2px 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 var(--panel-hi), 0 0 14px rgba(159,219,207,0.14); }
   .dash-card.disabled { cursor: default; opacity: 0.5; }
   .dash-card.disabled:hover { transform: none; border-color: var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi); }
   .dash-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .dash-icon { font-size: 18px; }
   .dash-label { font-family: 'Cinzel', serif; font-size: 12px; color: var(--heading); letter-spacing: 0.08em; text-transform: uppercase; }
-  .dash-bar-track { background: rgba(0,0,0,0.4); border: 1px solid var(--iron); border-radius: 0; height: 7px; overflow: hidden; margin-bottom: 8px; }
-  .dash-bar-fill { background: var(--gold); height: 100%; border-radius: 0; transition: width .3s ease; }
-  .dash-count { font-family: 'Spectral', serif; font-size: 11px; color: var(--ink-soft); }
-  .dash-soon { font-family: 'Spectral', serif; font-size: 11px; color: var(--ink-dim); opacity: 0.85; font-style: italic; }
+  .dash-bar-track { background: rgba(0,0,0,0.4); border: 1px solid var(--iron); border-radius: 6px; height: 7px; overflow: hidden; margin-bottom: 8px; }
+  .dash-bar-fill { background: var(--gold); height: 100%; border-radius: 6px; transition: width .3s ease; }
+  .dash-count { font-family: 'EB Garamond', serif; font-size: 11px; color: var(--ink-soft); }
+  .dash-soon { font-family: 'EB Garamond', serif; font-size: 11px; color: var(--ink-dim); opacity: 0.85; font-style: italic; }
 
   /* Overview hero: combined completion ring + achievement points total, distinct from the per-section
      dash-cards below it. The ring is an SVG circle animated via stroke-dashoffset. */
@@ -427,7 +447,8 @@
     flex-wrap: wrap;
     background: var(--panel);
     border: 1px solid var(--iron);
-    box-shadow: inset 0 1px 0 var(--panel-hi);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 var(--panel-hi), 0 0 24px rgba(143,227,168,0.05);
     padding: 22px 26px;
     margin-bottom: 16px;
     position: relative;
@@ -443,11 +464,11 @@
   }
   .overview-hero-info { flex: 1; min-width: 220px; }
   .overview-hero-title { font-family: 'Cinzel', serif; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); margin-bottom: 4px; }
-  .overview-hero-count { font-family: 'Spectral', serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
+  .overview-hero-count { font-family: 'EB Garamond', serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
   .points-total-badge {
     display: inline-flex; align-items: center; gap: 7px;
-    font-family: 'Spectral SC', serif; font-size: 12.5px; letter-spacing: 0.02em; color: var(--gold-bright);
-    background: rgba(196,158,100,0.1); border: 1px solid rgba(196,158,100,0.35);
+    font-family: 'EB Garamond', serif; font-size: 12.5px; letter-spacing: 0.02em; color: var(--gold-bright);
+    background: rgba(201,165,96,0.1); border: 1px solid rgba(201,165,96,0.35);
     padding: 6px 13px;
   }
 
@@ -460,12 +481,12 @@
     letter-spacing: 0.06em;
     color: var(--frost);
     border: 1px solid var(--frost-dim);
-    border-radius: 0;
+    border-radius: 6px;
     padding: 8px 14px;
     text-transform: uppercase;
   }
-  .io-btn:hover { background: rgba(162,196,217,0.1); }
-  .io-status { font-family: 'Spectral', serif; font-size: 11.5px; opacity: 0.9; }
+  .io-btn:hover { background: rgba(159,219,207,0.1); }
+  .io-status { font-family: 'EB Garamond', serif; font-size: 11.5px; opacity: 0.9; }
   .io-status.ok { color: var(--sage-ok); }
   .io-status.err { color: var(--blood); }
 
@@ -487,13 +508,13 @@
     letter-spacing: 0.06em;
     color: var(--blood);
     border: 1px solid var(--blood);
-    border-radius: 0;
+    border-radius: 6px;
     padding: 8px 14px;
     text-transform: uppercase;
   }
-  .reset-btn:hover { background: rgba(162,75,69,0.12); }
+  .reset-btn:hover { background: rgba(177,73,63,0.12); }
   .reset-btn.armed { background: var(--blood); color: var(--stone-1); }
-  .reset-hint { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
+  .reset-hint { font-family: 'EB Garamond', serif; font-size: 11.5px; color: var(--ink-soft); opacity: 0.8; }
 
   /* quest / entry cards */
   .entries { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
@@ -504,41 +525,41 @@
     background: var(--panel);
     border: 1px solid var(--iron);
     border-left: 3px solid var(--gold-dim);
-    border-radius: 0;
+    border-radius: 4px 10px 10px 4px;
     padding: 16px 18px 14px;
     position: relative;
     box-shadow: 0 3px 16px rgba(0,0,0,0.4), inset 0 1px 0 var(--panel-hi);
   }
-  .quest.done { border-left-color: var(--sage-ok); }
+  .quest.done { border-left-color: var(--sage-ok); box-shadow: 0 3px 16px rgba(0,0,0,0.4), inset 0 1px 0 var(--panel-hi), 0 0 16px rgba(143,227,168,0.06); }
   .quest.alt { border-left-color: var(--blood); border-left-style: dashed; }
   .quest.optional { border-left-color: var(--frost-dim); }
 
   .quest-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
   .quest-title-wrap { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-  .quest-order { font-family:'Spectral SC', serif; font-size: 11px; color: var(--gold-dim); }
+  .quest-order { font-family:'EB Garamond', serif; font-size: 11px; color: var(--gold-dim); }
   .quest h3 { font-family: 'Cinzel', serif; font-weight: 600; font-size: 14.5px; margin: 0; color: var(--heading); letter-spacing: 0.02em; line-height: 1.35; }
   .tag-chip {
-    font-family: 'Spectral SC', serif;
+    font-family: 'EB Garamond', serif;
     font-size: 9.5px;
     letter-spacing: 0.03em;
     padding: 2px 7px;
-    border-radius: 0;
+    border-radius: 6px;
     text-transform: uppercase;
   }
-  .tag-optional { background: rgba(162,196,217,0.14); color: var(--frost); }
-  .tag-alt { background: rgba(162,75,69,0.16); color: var(--blood); }
+  .tag-optional { background: rgba(159,219,207,0.14); color: var(--frost); }
+  .tag-alt { background: rgba(177,73,63,0.16); color: var(--blood); }
   /* Fishing rarity tags — Rare reuses frost-blue, Uncommon gets a desaturated moss-green, Common
      stays neutral stone-grey; "Common to uncommon" is treated as the rarer (uncommon) tier. */
-  .tag-rare { background: rgba(162,196,217,0.14); color: var(--frost); }
+  .tag-rare { background: rgba(159,219,207,0.14); color: var(--frost); }
   .tag-uncommon { background: rgba(127,163,94,0.18); color: var(--tag-uncommon); }
-  .tag-common { background: rgba(154,150,140,0.16); color: var(--tag-common); }
+  .tag-common { background: rgba(146,154,147,0.16); color: var(--tag-common); }
 
   .fav-btn, .track-btn { all: unset; cursor: pointer; }
   .fav-btn { font-size: 16px; line-height: 1; flex-shrink: 0; color: var(--ink-dim); opacity: 0.7; transition: color .15s ease, opacity .15s ease, transform .15s ease; }
   .fav-btn:hover { color: var(--gold-dim); opacity: 1; }
   .fav-btn.active { color: var(--gold-bright); opacity: 1; transform: scale(1.12); text-shadow: 0 0 8px rgba(216,189,140,0.45); }
 
-  .quest-meta { font-family: 'Spectral', serif; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
+  .quest-meta { font-family: 'EB Garamond', serif; font-size: 11.5px; color: var(--ink-soft); margin: 3px 0 10px; opacity: 0.95; }
   .quest-meta span { margin-right: 12px; }
   .quest-meta b { color: var(--heading); font-weight: 600; }
 
@@ -546,9 +567,9 @@
   .quest-steps li { margin-bottom: 4px; }
 
   .choice-box {
-    background: rgba(196,158,100,0.07);
+    background: rgba(201,165,96,0.07);
     border: 1px solid var(--gold-dim);
-    border-radius: 0;
+    border-radius: 6px;
     padding: 9px 12px;
     margin: 0 0 10px;
     font-size: 12px;
@@ -559,16 +580,16 @@
 
   .rewards-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
   .reward-chip {
-    font-family: 'Spectral', serif;
+    font-family: 'EB Garamond', serif;
     font-size: 11px;
     color: var(--gold-bright);
-    background: rgba(196,158,100,0.1);
-    border: 1px solid rgba(196,158,100,0.35);
+    background: rgba(201,165,96,0.1);
+    border: 1px solid rgba(201,165,96,0.35);
     padding: 3px 9px;
-    border-radius: 0;
+    border-radius: 6px;
     margin: 0;
   }
-  .reward-chip.matched { background: rgba(196,158,100,0.32); border-color: var(--gold); color: var(--gold-bright); }
+  .reward-chip.matched { background: rgba(201,165,96,0.32); border-color: var(--gold); color: var(--gold-bright); }
 
   /* Alchemy effect-lookup: each ingredient's 4 effect chips become clickable buttons that surface every
      other ingredient sharing that effect — the actual pairing info a player needs to brew a potion. */
@@ -576,13 +597,13 @@
     cursor: pointer;
     transition: background .15s ease, border-color .15s ease, color .15s ease;
   }
-  button.reward-chip.effect-chip:hover { background: rgba(196,158,100,0.22); border-color: var(--gold); }
-  button.reward-chip.effect-chip.active { background: rgba(196,158,100,0.3); border-color: var(--gold); color: var(--gold-bright); }
+  button.reward-chip.effect-chip:hover { background: rgba(201,165,96,0.22); border-color: var(--gold); }
+  button.reward-chip.effect-chip.active { background: rgba(201,165,96,0.3); border-color: var(--gold); color: var(--gold-bright); }
   .effect-lookup-panel {
     margin: 2px 0 12px;
     padding: 10px 12px;
     background: rgba(0,0,0,0.18);
-    border: 1px solid rgba(196,158,100,0.28);
+    border: 1px solid rgba(201,165,96,0.28);
   }
   .effect-lookup-panel .elp-head {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -592,7 +613,7 @@
   .effect-lookup-panel .elp-close { all: unset; cursor: pointer; color: var(--ink-soft); font-size: 13px; line-height: 1; padding: 2px 4px; }
   .effect-lookup-panel .elp-close:hover { color: var(--gold-bright); }
   .elp-list { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; }
-  .elp-row .elp-name { font-family: 'Spectral SC', serif; font-size: 12.5px; color: var(--heading); }
+  .elp-row .elp-name { font-family: 'EB Garamond', serif; font-size: 12.5px; color: var(--heading); }
   .elp-row .rewards-row { margin: 4px 0 0; }
 
   .quest-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -605,7 +626,7 @@
     text-transform: uppercase;
     opacity: 0.85;
   }
-  .track-btn .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); border-radius: 0; display: inline-block; }
+  .track-btn .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); border-radius: 6px; display: inline-block; }
   .quest.done .track-btn .box { background: var(--sage-ok); border-color: var(--sage-ok); }
   .quest.done .track-btn { color: var(--sage-ok); opacity: 1; }
 
@@ -625,7 +646,7 @@
   .placeholder-card {
     background: var(--panel);
     border: 1px dashed var(--iron-light);
-    border-radius: 0;
+    border-radius: 6px;
     padding: 40px 30px;
     text-align: center;
     position: relative;
@@ -633,22 +654,22 @@
   }
   .placeholder-card .p-icon { font-size: 34px; margin-bottom: 12px; opacity: 0.75; }
   .placeholder-card h2 { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--heading); margin: 0 0 8px; }
-  .placeholder-card p { font-family: 'Spectral', serif; font-size: 13px; color: var(--ink-soft); max-width: 440px; margin: 0 auto; line-height: 1.6; }
+  .placeholder-card p { font-family: 'EB Garamond', serif; font-size: 13px; color: var(--ink-soft); max-width: 440px; margin: 0 auto; line-height: 1.6; }
 
   /* achievement cards */
   .points-badge {
-    font-family: 'Spectral SC', serif;
+    font-family: 'EB Garamond', serif;
     font-size: 9.5px;
     letter-spacing: 0.03em;
     padding: 2px 8px;
-    border-radius: 0;
+    border-radius: 6px;
     text-transform: uppercase;
-    background: rgba(196,158,100,0.14);
+    background: rgba(201,165,96,0.14);
     color: var(--gold-bright);
-    border: 1px solid rgba(196,158,100,0.35);
+    border: 1px solid rgba(201,165,96,0.35);
   }
-  .points-badge.gold { background: rgba(196,158,100,0.22); color: var(--gold-bright); border-color: var(--gold); }
-  .points-badge.silver { background: rgba(162,196,217,0.14); color: var(--frost); border-color: rgba(162,196,217,0.4); }
+  .points-badge.gold { background: rgba(201,165,96,0.22); color: var(--gold-bright); border-color: var(--gold); }
+  .points-badge.silver { background: rgba(159,219,207,0.14); color: var(--frost); border-color: rgba(159,219,207,0.4); }
   .ach-desc { font-size: 12.8px; line-height: 1.55; color: var(--ink); margin: 0 0 10px; }
   .ach-link-btn {
     all: unset;
@@ -657,12 +678,12 @@
     font-size: 10px;
     letter-spacing: 0.05em;
     color: var(--frost);
-    border: 1px solid rgba(162,196,217,0.4);
-    border-radius: 0;
+    border: 1px solid rgba(159,219,207,0.4);
+    border-radius: 6px;
     padding: 4px 10px;
     text-transform: uppercase;
   }
-  .ach-link-btn:hover { background: rgba(162,196,217,0.12); }
+  .ach-link-btn:hover { background: rgba(159,219,207,0.12); }
 
   /* Crafting recipe detail: click-to-expand toggle on Smithing/Alchemy/Enchanting cards, replacing the
      old always-on static text with a compact summary + a real expand interaction for the full detail. */
@@ -715,7 +736,7 @@
      result is a clickable card (not a tracked entry, so no fav/track buttons) that jumps to and
      highlights the real entry elsewhere in the app, same as the existing cross-link buttons. */
   .search-result-card { cursor: pointer; transition: border-left-color .15s ease, background .15s ease; }
-  .search-result-card:hover { border-left-color: var(--frost); background: rgba(162,196,217,0.05); }
+  .search-result-card:hover { border-left-color: var(--frost); background: rgba(159,219,207,0.05); }
   .search-result-card .quest-title-wrap { flex-direction: row; align-items: baseline; }
   .search-result-card .result-icon { margin-right: 7px; opacity: 0.85; }
   .search-result-card .ach-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
@@ -758,8 +779,8 @@
   .perk-grid .perk-card .track-btn { font-size: 9.5px; }
 
   @keyframes flashHighlight {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(162,196,217,0); }
-    20% { box-shadow: 0 0 0 4px rgba(162,196,217,0.55); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(159,219,207,0); }
+    20% { box-shadow: 0 0 0 4px rgba(159,219,207,0.55); }
   }
   .quest.flash-highlight { animation: flashHighlight 2.2s ease-out; }
 
@@ -794,7 +815,7 @@
     border-radius: 6px;
     padding: 10px 12px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-    font-family: 'Spectral', serif;
+    font-family: 'EB Garamond', serif;
   }
   .map-popup .mp-close { position: absolute; top: 4px; right: 7px; cursor: pointer; color: var(--ink-soft); font-size: 13px; line-height: 1; background: none; border: none; }
   .map-popup .mp-close:hover { color: var(--gold-bright); }
@@ -806,11 +827,11 @@
   .map-popup .mp-goto {
     display: block; width: 100%; box-sizing: border-box; cursor: pointer;
     font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;
-    color: var(--frost); background: none; border: 1px solid rgba(162,196,217,0.4); border-radius: 0;
+    color: var(--frost); background: none; border: 1px solid rgba(159,219,207,0.4); border-radius: 6px;
     padding: 6px 8px; text-align: center;
   }
   .map-popup .mp-goto:hover { color: var(--frost-dim); border-color: var(--frost); }
-  .map-pin-label { font-family: 'Spectral SC', serif; font-size: 9.5px; fill: var(--ink); paint-order: stroke; stroke: var(--void); stroke-width: 3px; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+  .map-pin-label { font-family: 'EB Garamond', serif; font-size: 9.5px; fill: var(--ink); paint-order: stroke; stroke: var(--void); stroke-width: 3px; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
   .map-pin:hover .map-pin-label, .map-pin:focus .map-pin-label { opacity: 1; }
   .map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 14px; font-size: 11.5px; color: var(--ink-soft); align-items: center; }
   .map-legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; border: 1.5px solid var(--void); }
@@ -818,7 +839,7 @@
   footer.note {
     margin-top: 32px;
     text-align: center;
-    font-family: 'Spectral SC', serif;
+    font-family: 'EB Garamond', serif;
     font-size: 10.5px;
     letter-spacing: 0.04em;
     color: var(--ink-soft);
@@ -842,17 +863,13 @@
   }
 
   @media (max-width: 780px) {
-    .tome { flex-direction: column; width: 100%; }
-    .nav { display: none; }
-    .nav-mobile {
-      display: flex;
-      overflow-x: auto;
-      gap: 6px;
-      padding: 12px;
-      background: var(--stone-1);
-    }
-    .nav-mobile .nav-btn { margin: 0; border-radius: 0; flex-shrink: 0; }
-    .page { padding: 24px 18px 40px; }
+    /* the standing-stone nav is already a single horizontal, wrapping strip at every width, so
+       narrow screens just tighten its spacing rather than swapping to a different nav entirely */
+    .tome { width: 100%; border-radius: 0; }
+    .masthead { padding: 20px 14px 16px; }
+    .nav { padding: 10px 10px; gap: 5px; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+    .nav-btn { padding: 8px 11px; font-size: 10.5px; flex-shrink: 0; }
+    .page { padding: 22px 16px 40px; }
     .entries.grid-mode { grid-template-columns: 1fr; }
   }
 
@@ -876,17 +893,24 @@
 <body>
 
 <div class="tome">
+  <header class="masthead">
+    <div class="masthead-inner">
+      <span class="masthead-rune" aria-hidden="true">ᛝ</span>
+      <div class="masthead-title">Dragonborn's <span class="accent">Field Journal</span></div>
+      <span class="masthead-rune" aria-hidden="true">ᛝ</span>
+    </div>
+    <div class="masthead-sub">A record kept for one Dragonborn — Skyrim</div>
+  </header>
+
   <nav class="nav" id="nav-desktop"></nav>
+  <nav class="nav-mobile" id="nav-mobile"></nav>
 
   <main class="page">
-    <nav class="nav-mobile" id="nav-mobile"></nav>
-
     <header class="title-block">
       <div>
         <h1 id="page-title">Dragonborn's Field Journal</h1>
         <div class="subtitle" id="page-subtitle">— notes from the road, Skyrim —</div>
       </div>
-      <div class="seal">SKYRIM<br/>JOURNAL</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -898,7 +922,7 @@
       <span class="filter-pill active" data-fav="all">All entries</span>
       <span class="filter-pill" data-fav="favorites">★ Favorites only</span>
       <span class="filter-pill" data-hide-done="true">✓ Hide completed</span>
-      <span id="progress-tally" style="display:none; font-family:'Spectral SC', serif; font-size:11px; color: var(--sage-ok);"></span>
+      <span id="progress-tally" style="display:none; font-family:'EB Garamond', serif; font-size:11px; color: var(--sage-ok);"></span>
     </div>
 
     <div class="sub-row" id="sub-row" style="display:none;"></div>
@@ -7467,7 +7491,7 @@ function renderBuildsInner(){
 
     const treeItemsAll = PERKS.filter(p => p.tree === activeSkillTree);
     const treeDoneAll = treeItemsAll.filter(p => tracked.has(p.id)).length;
-    const treeHeaderHtml = `<div style="margin: 4px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${activeSkillTree} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${treeDoneAll}/${treeItemsAll.length})</span></div>`;
+    const treeHeaderHtml = `<div style="margin: 4px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${activeSkillTree} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${treeDoneAll}/${treeItemsAll.length})</span></div>`;
 
     const gridOrEmpty = list.length === 0
       ? `<div class="empty-state">No perks match. Try another search or clear the filter.</div>`
@@ -7694,7 +7718,7 @@ function renderFollowersInner(){
     container.innerHTML = tabsHtml + (list.length === 0
       ? `<div class="empty-state">No followers match. Try another search or clear the filter.</div>`
       : grouped.map(({ g, items }) => `
-        <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(f=>tracked.has(f.id)).length}/${items.length})</span></div>
+        <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.filter(f=>tracked.has(f.id)).length}/${items.length})</span></div>
         <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
       `).join(''));
   } else if (activeFollowerTab === 'housecarls') {
@@ -7752,7 +7776,7 @@ function renderFollowersInner(){
     container.innerHTML = tabsHtml + maraCard + (list.length === 0
       ? `<div class="empty-state">No candidates match. Try another search or clear the filter.</div>`
       : groupedM.map(({ g, items }) => `
-        <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} NPCs <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(m=>tracked.has(m.id)).length}/${items.length})</span></div>
+        <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} NPCs <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.filter(m=>tracked.has(m.id)).length}/${items.length})</span></div>
         <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
       `).join(''));
   }
@@ -8109,7 +8133,7 @@ function renderBestiaryInner(){
       </article>`;
     };
     container.innerHTML = grouped.map(({ g, items }) => `
-      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(c=>tracked.has(c.id)).length}/${items.length})</span></div>
+      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.filter(c=>tracked.has(c.id)).length}/${items.length})</span></div>
       <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
     `).join('');
   }
@@ -8440,7 +8464,7 @@ function renderTreasureInner(){
     };
     const extrasNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">The rest of the 74 Anniversary Edition Creations — armor and weapon packs, pets and mounts, jewelry, and other item drops that don't carry a full narrative quest. Compact reference only; check the box once you've picked one up.</p>`;
     bodyHtml = extrasNote + (list.length === 0 ? `<div class="empty-state">No entries match. Try another search or clear the filter.</div>` : grouped.map(({ cat, items }) => `
-      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${cat} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(e=>tracked.has(e.id)).length}/${items.length})</span></div>
+      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${cat} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.filter(e=>tracked.has(e.id)).length}/${items.length})</span></div>
       <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
     `).join(''));
   } else if (activeTreasureTab === 'oddities') {
@@ -8480,9 +8504,9 @@ function renderTreasureInner(){
       </article>`;
     };
     const oddNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">Two unrelated sets of open-world collectibles that don't fit anywhere else: 5 unique "in a jar" decorations with no gameplay effect, and the 5 Forgotten Vale Paragons used to unlock new areas during Touching the Sky.</p>`;
-    const bugsSection = `<div style="margin: 0 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">Bugs in Jars <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${bugsList.filter(x=>tracked.has(x.id)).length}/${BUGS_IN_JARS.length})</span></div>` +
+    const bugsSection = `<div style="margin: 0 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">Bugs in Jars <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${bugsList.filter(x=>tracked.has(x.id)).length}/${BUGS_IN_JARS.length})</span></div>` +
       (bugsList.length === 0 ? `<div class="empty-state">No matches.</div>` : `<div class="ach-group-list">${bugsList.map(bugCard).join('')}</div>`);
-    const paragonsSection = `<div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">Forgotten Vale Paragons (Dawnguard) <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${paragonsList.filter(x=>tracked.has(x.id)).length}/${VALE_PARAGONS.length})</span></div>` +
+    const paragonsSection = `<div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">Forgotten Vale Paragons (Dawnguard) <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${paragonsList.filter(x=>tracked.has(x.id)).length}/${VALE_PARAGONS.length})</span></div>` +
       (paragonsList.length === 0 ? `<div class="empty-state">No matches.</div>` : `<div class="ach-group-list">${paragonsList.map(paragonCard).join('')}</div>`);
     bodyHtml = oddNote + bugsSection + paragonsSection;
   } else {
@@ -9061,7 +9085,7 @@ function renderLoreInner(){
     const grouped = LORE_ERAS.map(era => ({ era, items: list.filter(b => b.era === era) })).filter(x => x.items.length);
     const loreNote = `<p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">A curated shelf, not all ~800 books in the game — these are the ones with real narrative weight, ordered by the era their events actually happened in, oldest first, so reading down the list traces Tamriel's history up to the eve of Skyrim itself.</p>`;
     bodyHtml = loreNote + (list.length === 0 ? `<div class="empty-state">No books match. Try another search or clear the filter.</div>` : grouped.map(({ era, items }) => `
-      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${era} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(b=>tracked.has(b.id)).length}/${items.length})</span></div>
+      <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${era} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.filter(b=>tracked.has(b.id)).length}/${items.length})</span></div>
       <div class="ach-group-list">${items.map(cardHtml).join('')}</div>
     `).join(''));
   } else {
@@ -9129,7 +9153,7 @@ function renderNotesInner(){
 
   container.innerHTML = `
     <p style="font-size:12px; color: var(--ink-soft); margin: 0 0 14px;">A blank page for whatever the rest of the journal doesn't have a box for — current objectives, a build you're testing, roleplay notes, screenshot reminders. Saved automatically to this browser as you type, separate from your tracked progress.</p>
-    <textarea id="notes-area" spellcheck="false" placeholder="Dear journal..." style="width:100%; min-height:420px; resize:vertical; box-sizing:border-box; background: var(--panel); color: var(--ink); border: 1px solid var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi); padding:18px; font-family:'Spectral', serif; font-size:14px; line-height:1.6;">${journalNotes.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+    <textarea id="notes-area" spellcheck="false" placeholder="Dear journal..." style="width:100%; min-height:420px; resize:vertical; box-sizing:border-box; background: var(--panel); color: var(--ink); border: 1px solid var(--iron); box-shadow: inset 0 1px 0 var(--panel-hi); padding:18px; font-family:'EB Garamond', serif; font-size:14px; line-height:1.6;">${journalNotes.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
     <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
       <span id="notes-status" class="io-status ok" style="opacity:0.7;">Saved</span>
     </div>
@@ -9211,7 +9235,7 @@ function renderAchievementsInner(){
   };
 
   container.innerHTML = `<div class="ach-categories">${grouped.map(({ g, items }) => `
-    <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.filter(a=>tracked.has(a.id)).length}/${items.length})</span></div>
+    <div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${g} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.filter(a=>tracked.has(a.id)).length}/${items.length})</span></div>
     <div class="ach-grid">${items.map(cardHtml).join('')}</div>
   `).join('')}</div>`;
 
@@ -9359,7 +9383,7 @@ function showRenderError(err){
       <div class="p-icon">⚠️</div>
       <h2 style="color: var(--blood);">Something tore in the page</h2>
       <p>The journal hit an unexpected error while drawing this page. Try clicking another tab and back again. If it keeps happening, this is the detail to report:</p>
-      <p style="font-family:'Spectral', monospace; font-size:11px; color: var(--ink-dim); word-break:break-word;">${(err && err.message) ? err.message : String(err)}</p>
+      <p style="font-family:'EB Garamond', monospace; font-size:11px; color: var(--ink-dim); word-break:break-word;">${(err && err.message) ? err.message : String(err)}</p>
     </div>`;
 }
 
@@ -9451,7 +9475,7 @@ function renderGlobalSearchResults(){
   container.innerHTML = `<p class="search-section-note">Searching the whole journal — every quest, perk, follower, crafting entry, creature, shout, treasure, and location, not just this tab.</p>
     <div class="ach-categories">${order.map(label => {
       const items = bySection[label];
-      return `<div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${label} <span style="opacity:0.6; font-family:'Spectral', serif; text-transform:none; letter-spacing:0;">(${items.length})</span></div>
+      return `<div style="margin: 18px 0 10px; font-family:'Cinzel', serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color: var(--gold-dim);">${label} <span style="opacity:0.6; font-family:'EB Garamond', serif; text-transform:none; letter-spacing:0;">(${items.length})</span></div>
         <div class="ach-grid">${items.map(r => resultCardHtml(r, results.indexOf(r))).join('')}</div>`;
     }).join('')}</div>`;
 
