@@ -296,8 +296,18 @@
 
   .countdown-display {
     font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 30px;
-    color: var(--gold-bright); margin: 8px 0 4px; font-variant-numeric: tabular-nums;
+    color: var(--gold-bright); margin: 8px 0 2px; font-variant-numeric: tabular-nums;
   }
+  .countdown-local { font-size: 12px; color: var(--sage-ok); font-weight: 600; margin-bottom: 10px; }
+  .countdown-advanced { margin-top: 10px; }
+  .countdown-advanced summary {
+    cursor: pointer; font-size: 11px; color: var(--ink-dim); letter-spacing: 0.02em;
+    list-style: none;
+  }
+  .countdown-advanced summary::-webkit-details-marker { display: none; }
+  .countdown-advanced summary::before { content: "▸ "; }
+  .countdown-advanced[open] summary::before { content: "▾ "; }
+  .countdown-advanced summary:hover { color: var(--gold-bright); }
 
   .star-btn { all: unset; cursor: pointer; font-size: 16px; color: var(--ink-dim); }
   .star-btn.active { color: var(--amber); }
@@ -804,6 +814,14 @@ function nextWeeklyResetMs(resetHourET){
 
 function pad2(n){ return n.toString().padStart(2, '0'); }
 
+// Formats an absolute timestamp in the *viewer's own* timezone — this is what makes the
+// countdown usable without doing any US-time math yourself, wherever you are.
+function formatLocalMoment(ms){
+  return new Date(ms).toLocaleString(undefined, {
+    weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+}
+
 function formatCountdown(ms){
   if (ms <= 0) return 'Resetting…';
   const totalSec = Math.floor(ms / 1000);
@@ -818,12 +836,20 @@ function formatCountdown(ms){
 // right after the Overview renders. No-ops harmlessly on any other page.
 function tickCountdowns(){
   const weeklyEl = document.getElementById('cd-weekly');
-  if (weeklyEl) weeklyEl.textContent = formatCountdown(nextWeeklyResetMs(countdownSettings.resetHourET) - Date.now());
+  if (weeklyEl) {
+    const targetMs = nextWeeklyResetMs(countdownSettings.resetHourET);
+    weeklyEl.textContent = formatCountdown(targetMs - Date.now());
+    const localEl = document.getElementById('cd-weekly-local');
+    if (localEl) localEl.textContent = 'That’s ' + formatLocalMoment(targetMs) + ' for you';
+  }
 
   const seasonEl = document.getElementById('cd-season');
   if (seasonEl && countdownSettings.seasonEndsAt) {
     const [y, m, d] = countdownSettings.seasonEndsAt.split('-').map(Number);
-    seasonEl.textContent = formatCountdown(etDateTimeToMs(y, m, d, countdownSettings.resetHourET) - Date.now());
+    const targetMs = etDateTimeToMs(y, m, d, countdownSettings.resetHourET);
+    seasonEl.textContent = formatCountdown(targetMs - Date.now());
+    const localEl = document.getElementById('cd-season-local');
+    if (localEl) localEl.textContent = 'That’s ' + formatLocalMoment(targetMs) + ' for you';
   }
 }
 
@@ -882,12 +908,16 @@ function renderOverview(){
           <span class="card-tag">Every Tuesday</span>
         </div>
         <div class="countdown-display" id="cd-weekly">--</div>
-        <div class="card-desc">Daily Ops rotation, weekly challenges & S.C.O.R.E. bonuses roll over at the weekly reset.</div>
-        <div class="card-actions">
-          <label class="field-label" style="margin:0;">Reset hour (ET)</label>
-          <input type="number" id="reset-hour-input" min="0" max="23" value="${countdownSettings.resetHourET}">
-          <span style="font-size:11px; color:var(--ink-dim);">:00 — commonly reported as ~midday ET; adjust if you see it land elsewhere.</span>
-        </div>
+        <div class="countdown-local" id="cd-weekly-local">--</div>
+        <div class="card-desc">Daily Ops rotation, weekly challenges & S.C.O.R.E. bonuses roll over at the weekly reset. This already converts to your own timezone automatically — nothing to set up.</div>
+        <details class="countdown-advanced">
+          <summary>Reset landing at the wrong time? Fine-tune it</summary>
+          <div class="card-actions" style="margin-top:8px;">
+            <label class="field-label" style="margin:0;">Reset hour (US Eastern Time)</label>
+            <input type="number" id="reset-hour-input" min="0" max="23" value="${countdownSettings.resetHourET}">
+            <span style="font-size:11px; color:var(--ink-dim);">:00 ET — commonly reported as ~midday ET. Bethesda doesn't publish an exact time, so nudge this if the countdown drifts from what you see in-game.</span>
+          </div>
+        </details>
       </div>
       <div class="card countdown-card">
         <div class="card-head">
@@ -896,8 +926,9 @@ function renderOverview(){
         </div>
         ${countdownSettings.seasonEndsAt ? `
           <div class="countdown-display" id="cd-season">--</div>
-          <div class="card-desc">Ends ${new Date(countdownSettings.seasonEndsAt + 'T12:00:00').toLocaleDateString(undefined,{month:'long', day:'numeric', year:'numeric'})}, at the reset hour above.</div>
-        ` : `<div class="card-desc">Check the in-game Seasons page for the current Season's end date and set it here to get a live countdown.</div>`}
+          <div class="countdown-local" id="cd-season-local">--</div>
+          <div class="card-desc">Ends at the US reset hour on the date you set below — shown above in your own timezone.</div>
+        ` : `<div class="card-desc">Check the in-game Seasons page for the current Season's end date and set it here to get a live countdown in your own timezone — no time conversion needed.</div>`}
         <div class="card-actions">
           <label class="field-label" style="margin:0;">Season ends</label>
           <input type="date" id="season-date-input" value="${countdownSettings.seasonEndsAt || ''}">
