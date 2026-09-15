@@ -781,13 +781,27 @@
      block (tab pills, selector, and grid) is a single child of #entries instead of letting the outer
      auto-fill grid interleave/misplace the tree header and its card grid as separate items. */
   .skill-view { grid-column: 1 / -1; width: 100%; }
-  .skill-select { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+  /* Wrapped in the same panel language as every other grouped control in the app (was floating
+     directly on the page background before), and each of the three skill constellations gets the
+     same red/blue/green coding Skyrim's own perk-tree menu uses, via nth-child on the fixed
+     Combat/Magic/Stealth order — a plain row of grey text couldn't tell the trees apart at a glance. */
+  .skill-select {
+    display: flex; flex-direction: column; gap: 12px;
+    background: var(--panel); border: 1px solid var(--iron); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 16px;
+  }
   /* No flex-wrap here: the row itself must never break, or the label (as one flex item) gets pushed
      onto its own line above the pills (as the other flex item) — that's what caused the stagger. The
      label has flex-shrink:0 so it always keeps its width; .skill-select-pills is left free to shrink
      and wrap ITS OWN children internally, keeping the label inline at the start of the row. */
-  .skill-select-row { display: flex; align-items: flex-start; gap: 10px; }
-  .skill-select-label { font-family:'Cinzel', serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); opacity: 0.65; width: 60px; flex-shrink: 0; padding-top: 6px; }
+  .skill-select-row { display: flex; align-items: flex-start; gap: 10px; padding-left: 10px; border-left: 2px solid var(--iron); }
+  .skill-select-row:nth-child(1) { border-left-color: var(--blood); }
+  .skill-select-row:nth-child(2) { border-left-color: var(--frost-dim); }
+  .skill-select-row:nth-child(3) { border-left-color: var(--aurora-dim); }
+  .skill-select-label { font-family:'Cinzel', serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); width: 60px; flex-shrink: 0; padding-top: 6px; }
+  .skill-select-row:nth-child(1) .skill-select-label { color: var(--blood); opacity: 0.85; }
+  .skill-select-row:nth-child(2) .skill-select-label { color: var(--frost); opacity: 0.85; }
+  .skill-select-row:nth-child(3) .skill-select-label { color: var(--aurora); opacity: 0.85; }
   .skill-select-pills { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; }
   .skill-select-pills .sub-pill { padding: 5px 9px 4px; font-size: 10px; }
 
