@@ -98,50 +98,78 @@
   /* ---------- MASTHEAD — a carved lintel above the standing-stone nav row, replacing the old
      vertical spine rail. This is the "hall entrance" every section is read beneath. ---------- */
   .masthead {
-    background: linear-gradient(180deg, var(--stone-3), var(--stone-1));
+    background:
+      radial-gradient(ellipse 65% 100% at 22% 0%, rgba(143,227,168,0.09), transparent 60%),
+      radial-gradient(ellipse 55% 90% at 82% 0%, rgba(159,219,207,0.08), transparent 60%),
+      linear-gradient(180deg, var(--stone-3), var(--stone-1));
     border-bottom: 1px solid var(--iron);
-    padding: 26px 20px 20px;
+    padding: 30px 20px 26px;
     text-align: center;
     position: relative;
     overflow: hidden;
   }
+  /* An animated aurora band across the top — three borealis hues drifting sideways on a loop, the
+     one place in the whole journal that's actually alive rather than static "lit" color. */
   .masthead::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(143,227,168,0.5), rgba(159,219,207,0.5) 40%, rgba(201,165,96,0.5) 75%, transparent);
+    background: linear-gradient(90deg,
+      transparent, rgba(143,227,168,0.6), rgba(159,219,207,0.55) 35%, rgba(201,165,96,0.55) 60%, rgba(143,227,168,0.5) 85%, transparent);
+    background-size: 220% 100%;
     height: 2px;
     top: 0;
-    opacity: 0.65;
+    opacity: 0.75;
+    animation: auroraDrift 14s ease-in-out infinite;
+  }
+  @keyframes auroraDrift {
+    0%, 100% { background-position: 0% 0; }
+    50% { background-position: 100% 0; }
+  }
+  /* A jagged mountain skyline silhouette along the masthead floor, tying the "hall entrance" back to
+     the map's own peaks — the one motif that now appears in three places (masthead, nav, map). */
+  .masthead-skyline {
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    width: 100%;
+    height: 22px;
+    fill: var(--stone-4);
+    opacity: 0.55;
+    filter: drop-shadow(0 -1px 0 rgba(159,219,207,0.15));
   }
   .masthead-inner {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    gap: 18px;
+    position: relative;
+    z-index: 1;
   }
   .masthead-rune {
-    font-size: 15px;
+    font-size: 16px;
     color: var(--gold-dim);
-    opacity: 0.75;
+    opacity: 0.8;
     letter-spacing: 0.2em;
+    text-shadow: 0 0 12px rgba(201,165,96,0.35);
   }
   .masthead-title {
     font-family: 'Cinzel Decorative', serif;
     font-weight: 700;
-    font-size: clamp(19px, 3.2vw, 27px);
-    letter-spacing: 0.06em;
+    font-size: clamp(21px, 3.6vw, 31px);
+    letter-spacing: 0.07em;
     color: var(--heading);
-    text-shadow: 0 2px 18px rgba(143,227,168,0.15);
+    text-shadow: 0 2px 22px rgba(143,227,168,0.22), 0 0 46px rgba(159,219,207,0.1);
   }
-  .masthead-title .accent { color: var(--gold-bright); }
+  .masthead-title .accent { color: var(--gold-bright); text-shadow: 0 2px 22px rgba(201,165,96,0.25); }
   .masthead-sub {
-    margin-top: 8px;
+    margin-top: 9px;
     font-family: 'EB Garamond', serif;
     font-variant-caps: small-caps;
     font-size: 14px;
     letter-spacing: 0.08em;
     color: var(--ink-soft);
+    position: relative;
+    z-index: 1;
   }
 
   /* ---------- STANDING-STONE NAV — a horizontal hall of waystones beneath the masthead, used at
@@ -950,6 +978,9 @@
 
 <div class="tome">
   <header class="masthead">
+    <svg class="masthead-skyline" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,40 L0,26 L22,10 L38,22 L58,4 L80,20 L100,14 L124,28 L150,8 L172,24 L196,12 L218,26 L240,6 L262,22 L286,16 L308,30 L332,10 L356,24 L378,14 L400,26 L400,40 Z"></path>
+    </svg>
     <div class="masthead-inner">
       <span class="masthead-rune" aria-hidden="true">ᛝ</span>
       <div class="masthead-title">Dragonborn's <span class="accent">Field Journal</span></div>
