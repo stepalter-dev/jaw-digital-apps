@@ -26,7 +26,7 @@ const ALLOWED_ORIGIN = "https://stepalter-dev.github.io";
 // Cheap, fast model -- plenty for a companion-app Q&A assistant. Override via
 // the MODEL environment variable if you want a different one.
 const DEFAULT_MODEL = "gemini-3.6-flash";
-const MAX_TOKENS = 700;
+const MAX_TOKENS = 1536;
 const MAX_MESSAGE_LEN = 2000;
 const MAX_HISTORY_TURNS = 6; // last N turns kept, to bound token usage
 
@@ -41,9 +41,12 @@ Fallout 76 companion journal built by JAW Digital. You have two jobs:
    suggest concretely what a new entry for it should say (name, category, a one-line description)
    so they can hand that straight to whoever maintains the app's code.
 
-Keep answers concise and skimmable (short paragraphs or a few bullet points, not walls of text).
-Bethesda patches Fallout 76 constantly -- flag when something you're saying might be stale or
-have changed with a recent update, rather than stating it with false confidence.`;
+Answer directly -- start with the actual content, never with a preamble describing how you're
+about to structure or format the reply. Keep answers concise and skimmable: short paragraphs or a
+few markdown bullet points (lines starting with "- "), not walls of text, and use **bold** only
+for names of perks/items/quests. Bethesda patches Fallout 76 constantly -- flag when something
+you're saying might be stale or have changed with a recent update, rather than stating it with
+false confidence.`;
 
 function corsHeaders(origin) {
   return {

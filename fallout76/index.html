@@ -357,10 +357,16 @@
   .chat-log { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; margin-bottom: 12px; padding-right: 2px; }
   .chat-log:empty { display: none; }
   .chat-msg { padding: 9px 13px; border-radius: 10px; font-size: 13.5px; line-height: 1.5; max-width: 88%; white-space: pre-wrap; }
+  .chat-msg.assistant, .chat-msg.error { white-space: normal; }
   .chat-msg.user { align-self: flex-end; background: var(--gold-bright); color: #fff; }
   .chat-msg.assistant { align-self: flex-start; background: var(--stone-2); border: 1px solid var(--iron); }
   .chat-msg.error { align-self: flex-start; background: rgba(163,64,43,0.1); border: 1px solid rgba(163,64,43,0.4); color: var(--blood); }
   .chat-msg.pending { opacity: 0.6; font-style: italic; }
+  .chat-msg p { margin: 0 0 8px; }
+  .chat-msg p:last-child { margin-bottom: 0; }
+  .chat-msg ul { margin: 0 0 8px; padding-left: 18px; }
+  .chat-msg ul:last-child { margin-bottom: 0; }
+  .chat-msg li { margin-bottom: 3px; }
   .chat-input-row { display: flex; gap: 8px; }
   .chat-input-row textarea {
     flex: 1; resize: vertical; min-height: 40px; max-height: 140px;
@@ -1478,12 +1484,36 @@ function chatContextSummary(){
     `${REPEATABLES.length} repeatable quest/event entries, ${STORY_QUESTS.length} story quests, and ${CREATURE_POIS.length} creature POIs.`;
 }
 
+// Minimal markdown -> HTML for chat bubbles: escapes raw HTML first (so the model's own text can
+// never inject markup), then turns **bold**, "- "/"* " bullet lines into a <ul>, and blank lines
+// into paragraph breaks. Deliberately small — just enough that a reply doesn't show literal
+// asterisks, not a full markdown engine.
+function renderChatMarkdown(text){
+  const escaped = (text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const withBold = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  const lines = withBold.split('\n');
+  let html = '';
+  let inList = false;
+  lines.forEach(line => {
+    const bullet = line.match(/^\s*[-*]\s+(.*)/);
+    if (bullet) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${bullet[1]}</li>`;
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      if (line.trim()) html += `<p>${line}</p>`;
+    }
+  });
+  if (inList) html += '</ul>';
+  return html || escaped;
+}
+
 function chatPanelHtml(){
   const endpoint = getChatEndpoint();
   const statusHtml = endpoint
     ? `<span class="chat-endpoint-status ok">✓ URL saved</span>`
     : `<span class="chat-endpoint-status missing">Not set up yet</span>`;
-  const logHtml = chatHistory.map(m => `<div class="chat-msg ${m.role}">${(m.content || '').replace(/</g,'&lt;')}</div>`).join('')
+  const logHtml = chatHistory.map(m => `<div class="chat-msg ${m.role}">${m.role === 'user' ? (m.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : renderChatMarkdown(m.content)}</div>`).join('')
     + (chatPending ? `<div class="chat-msg assistant pending">Thinking…</div>` : '');
   return `
     <div class="chat-panel">
