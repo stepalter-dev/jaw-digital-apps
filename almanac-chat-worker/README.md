@@ -1,24 +1,24 @@
 # Almanac Chat Worker
 
-A tiny Cloudflare Worker that holds your Anthropic API key server-side and
+A tiny Cloudflare Worker that holds your Gemini API key server-side and
 proxies chat requests from the Fallout 76 journal's Finder tab (and later,
 other journals). The journal itself is static HTML on GitHub Pages — it can
 never safely hold an API key, so this Worker is the one small "backend"
 piece that does.
 
-You only need to do this once. It's free (Cloudflare's free tier covers
-this kind of light personal-app traffic) and takes about 10 minutes.
+You only need to do this once. It's free (both Google's and Cloudflare's
+free tiers cover this kind of light personal-app traffic) and takes about
+10 minutes.
 
-## 1. Get an Anthropic API key
+## 1. Get a Gemini API key
 
-1. Go to <https://console.anthropic.com/> and sign in (or create an account).
-2. Go to **API Keys** and create a new key. Copy it somewhere safe — you
-   won't be able to see it again after this.
-3. Anthropic API usage is pay-as-you-go, billed to whatever payment method
-   you add there. This Worker uses a small/cheap model (Claude Haiku) and
-   caps each reply, so casual personal use should run to well under a
-   dollar a month — but it's your account and your card, so keep an eye on
-   <https://console.anthropic.com/settings/usage> if you're curious.
+1. Go to <https://aistudio.google.com/apikey> and sign in with a Google
+   account.
+2. Click **Create API key** and copy it somewhere safe.
+3. Google AI Studio's free tier has a generous no-cost quota for a model
+   like Gemini Flash — for a single-person companion app this typically
+   costs nothing at all. If you outgrow the free tier, usage becomes
+   pay-as-you-go on whatever billing you attach in Google AI Studio.
 
 ## 2. Get a free Cloudflare account
 
@@ -26,44 +26,38 @@ this kind of light personal-app traffic) and takes about 10 minutes.
    (or sign in if you already have one).
 2. No credit card is required for the Workers free tier at this scale.
 
-## 3. Install Wrangler (Cloudflare's CLI) and deploy
+## 3. Create the Worker and set the secret
 
-From this `almanac-chat-worker` folder, run:
+**Using the Cloudflare dashboard (no command line needed):**
+
+1. In the Cloudflare dashboard, go to **Workers & Pages → Create
+   application → Start with Hello World!**, give it a name (e.g.
+   `jaw-almanac-chat`), and deploy.
+2. Open the new Worker → **Settings → Variables and secrets → Add
+   variable**. Set the key to `GEMINI_API_KEY`, toggle **Secret**, and
+   paste in the key from step 1. Save (this redeploys automatically).
+3. Open **Edit code**, select all the placeholder code, and replace it
+   with the contents of `worker.js` from this folder. Click **Deploy**.
+4. Your Worker's URL is shown on its Overview page — it looks like:
+
+   ```
+   https://jaw-almanac-chat.<your-subdomain>.workers.dev
+   ```
+
+   **Copy that URL** — that's what you paste into the journal's chat panel
+   settings (the "Worker URL" field) so the page knows where to send your
+   questions.
+
+**Using Wrangler (the CLI) instead, if you'd rather:**
 
 ```bash
 npm install -g wrangler
 wrangler login
-```
-
-`wrangler login` opens your browser to authorize the CLI against your
-Cloudflare account — do that there, then come back to the terminal.
-
-Then set your Anthropic key as a secret (this stores it encrypted in
-Cloudflare, never in this repo or in the deployed code):
-
-```bash
-wrangler secret put ANTHROPIC_API_KEY
-```
-
-Paste the key from step 1 when prompted.
-
-Finally, deploy:
-
-```bash
+wrangler secret put GEMINI_API_KEY
 wrangler deploy
 ```
 
-Wrangler will print a URL that looks like:
-
-```
-https://jaw-almanac-chat.<your-subdomain>.workers.dev
-```
-
-**Copy that URL** — that's what you paste into the journal's chat panel
-settings (a "Assistant endpoint" field) so the page knows where to send
-your questions. It's a public URL but reveals nothing sensitive on its own;
-only requests with a valid message get an answer, and the API key itself
-never leaves Cloudflare.
+Wrangler will print the same kind of `workers.dev` URL at the end.
 
 ## 4. Lock it down to your site (optional but recommended)
 
@@ -74,13 +68,14 @@ const ALLOWED_ORIGIN = "https://stepalter-dev.github.io";
 ```
 
 to match wherever your journal is actually hosted, if it's different, then
-run `wrangler deploy` again. This stops other websites from quietly using
-your Worker (and your API quota) from their own pages.
+redeploy. This stops other websites from quietly using your Worker (and
+your API quota) from their own pages.
 
 ## Updating later
 
-Whenever you edit `worker.js`, just run `wrangler deploy` again — no need
-to redo the login or secret steps.
+Whenever you edit `worker.js`, just redeploy it (via **Edit code → Deploy**
+in the dashboard, or `wrangler deploy` on the CLI) — no need to redo the
+secret step unless the key itself changes.
 
 ## Costs & limits built in
 
