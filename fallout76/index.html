@@ -383,8 +383,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.3.0 (Daily Journal + this versioning scheme). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.3.0</div>
+           same as normal semver. Current: v2.4.0 (new Weapons section + Finder coverage). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.4.0</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -423,6 +423,7 @@ const SECTIONS = [
   { id: 'builds',    label: 'CAMP & Builds',       icon: '🏕️' },
   { id: 'story',     label: 'Story Quests',        icon: '📜' },
   { id: 'quests',    label: 'Repeatable Quests',   icon: '🔁' },
+  { id: 'weapons',   label: 'Weapons',             icon: '🔫' },
   { id: 'creatures', label: 'Creature POIs',       icon: '👹' },
   { id: 'stockpile', label: 'Junk Stockpile',      icon: '🔩' },
   { id: 'notes',     label: 'Field Log',           icon: '📝' },
@@ -562,6 +563,89 @@ const CRAFT_TAG_TO_PERKS = {
   'camp':                 [],
 };
 
+// Weapons: base weapon types across every combat category, plus a short list of the game's
+// best-known unique/legendary-named drops. This is a reference list, not a full damage-simulator —
+// exact stats shift with balance passes, and Bethesda periodically renames or reworks legendary
+// items, so treat names/effects here as a starting point to verify in-game rather than gospel.
+const WEAPON_CATEGORIES = ['Melee', 'Pistols', 'Rifles', 'Shotguns', 'Heavy Guns', 'Energy Weapons', 'Explosives', 'Bow & Crossbow', 'Unique / Legendary-Named'];
+const WEAPONS = [
+  // ---- MELEE ----
+  { id:'w-board',        category:'Melee', name:'Board', desc:'The most basic makeshift melee weapon — a plank with a nail through it.' },
+  { id:'w-bat',          category:'Melee', name:'Baseball Bat', desc:'Classic wooden bat; the Louisville Slugger reskin is a common find.' },
+  { id:'w-machete',      category:'Melee', name:'Machete', desc:'Fast one-handed blade, good bleed-build weapon.' },
+  { id:'w-bowie',        category:'Melee', name:'Bowie Knife', desc:'Light, fast one-handed blade — often thrown/quickdraw builds.' },
+  { id:'w-pickaxe',      category:'Melee', name:'Pickaxe', desc:'Slow, high per-hit damage two-handed melee tool-weapon.' },
+  { id:'w-supersledge',  category:'Melee', name:'Super Sledge', desc:'Heavy two-handed hammer with a kinetic-boost swing — a Power Attack staple.' },
+  { id:'w-shishkebab',   category:'Melee', name:'Shishkebab', desc:'Fuel-burning fire sword; needs fuel like Oil to swing.' },
+  { id:'w-deathclawgauntlet', category:'Melee', name:'Deathclaw Gauntlet', desc:'Unarmed-class claw weapon crafted from an actual Deathclaw hand.' },
+  { id:'w-pipewrench',   category:'Melee', name:'Pipe Wrench', desc:'Mid-speed one-handed blunt weapon.' },
+  { id:'w-autoaxe',      category:'Melee', name:'Auto Axe', desc:'Motorized chainsaw-style axe — rapid multi-hit swings instead of single strikes.' },
+  { id:'w-cultistblade', category:'Melee', name:'Cultist Blade', desc:'Two-handed sword drop from Cult of the Mothman content.' },
+  { id:'w-grognaksaxe',  category:'Melee', name:"Grognak's Axe", desc:'Two-handed axe skin tied to the in-universe Grognak comics.' },
+  { id:'w-pole-hook',    category:'Melee', name:'Pole Hook', desc:'Long-reach two-handed polearm-style melee weapon.' },
+
+  // ---- PISTOLS ----
+  { id:'w-10mm',         category:'Pistols', name:'10mm Pistol', desc:'The starter sidearm — light, common ammo, good early-game.' },
+  { id:'w-44',           category:'Pistols', name:'.44 Pistol', desc:'Hard-hitting revolver-style pistol; pairs well with sneak-crit builds.' },
+  { id:'w-westernrevolver', category:'Pistols', name:'Western Revolver', desc:'Slower-firing, high per-shot revolver skin.' },
+  { id:'w-blackpowderpistol', category:'Pistols', name:'Black Powder Pistol', desc:'Single-shot, long reload — very high per-shot damage.' },
+  { id:'w-alienblasterpistol', category:'Pistols', name:'Alien Blaster', desc:'The rare crashed-saucer pistol — an iconic series easter-egg weapon firing its own unique energy ammo.' },
+  { id:'w-radiumrifle',  category:'Pistols', name:'Radium Rifle', desc:'Actually rifle-framed, but often built as a light sidearm-style weapon; fires irradiated rounds with a damage-over-time effect.' },
+  { id:'w-flaregun',     category:'Pistols', name:'Flare Gun', desc:'Signal weapon reused as a light utility/ignition sidearm.' },
+  { id:'w-syringer',     category:'Pistols', name:'Syringer', desc:'Fires syringes loaded with crafted status-effect ammo (e.g. Bloodbug/Psychotats) instead of standard rounds.' },
+
+  // ---- RIFLES ----
+  { id:'w-huntingrifle', category:'Rifles', name:'Hunting Rifle', desc:'Reliable mid-tier bolt-action, common early-to-mid ammo.' },
+  { id:'w-combatrifle',  category:'Rifles', name:'Combat Rifle', desc:'Versatile semi/full-auto capable rifle — one of the most common workhorse guns.' },
+  { id:'w-leveraction',  category:'Rifles', name:'Lever Action Rifle', desc:'Classic Western-style rifle, strong per-shot damage.' },
+  { id:'w-blackpowderrifle', category:'Rifles', name:'Black Powder Rifle', desc:'Slow-reloading, very high per-shot rifle.' },
+  { id:'w-gaussrifle',   category:'Rifles', name:'Gauss Rifle', desc:'Charge-and-release railgun-style rifle with high single-shot damage.' },
+  { id:'w-handmaderifle', category:'Rifles', name:'Handmade Rifle', desc:'Full-auto capable rifle built from scrap parts — common automatic-build choice.' },
+  { id:'w-boltaction-pipe', category:'Rifles', name:'Bolt-Action Pipe Rifle', desc:'Cheap, early pipe-gun-family rifle.' },
+
+  // ---- SHOTGUNS ----
+  { id:'w-combatshotgun', category:'Shotguns', name:'Combat Shotgun', desc:'Semi-auto shotgun, close-range workhorse.' },
+  { id:'w-doublebarrel', category:'Shotguns', name:'Double-Barrel Shotgun', desc:'Two shots before reload, very high burst damage.' },
+  { id:'w-pumpaction',   category:'Shotguns', name:'Pump Action Shotgun', desc:'Slow-firing, hard-hitting shotgun.' },
+  { id:'w-gaussshotgun', category:'Shotguns', name:'Gauss Shotgun', desc:'Charge-shot railgun-style shotgun; alt-fire releases a piercing burst.' },
+
+  // ---- HEAVY GUNS ----
+  { id:'w-minigun',      category:'Heavy Guns', name:'Minigun', desc:'Spin-up automatic heavy gun, huge ammo consumption.' },
+  { id:'w-gatlinggun',   category:'Heavy Guns', name:'Gatling Gun', desc:'Heavy automatic weapon using .308-class ammo.' },
+  { id:'w-gatlinglaser', category:'Heavy Guns', name:'Gatling Laser', desc:'Automatic energy heavy weapon — a common late-game workhorse.' },
+  { id:'w-gatlingplasma', category:'Heavy Guns', name:'Gatling Plasma', desc:'High-tier automatic plasma heavy weapon.' },
+  { id:'w-fatman',       category:'Heavy Guns', name:'Fat Man', desc:'Fires Mini Nukes — the game\'s mobile mini-nuke launcher.' },
+  { id:'w-missilelauncher', category:'Heavy Guns', name:'Missile Launcher', desc:'Shoulder-fired explosive launcher, strong vs. tough single targets.' },
+  { id:'w-teslacannon',  category:'Heavy Guns', name:'Tesla Cannon', desc:'Chain-arcing energy heavy weapon that can hit multiple nearby targets.' },
+
+  // ---- ENERGY WEAPONS ----
+  { id:'w-laserrifle',   category:'Energy Weapons', name:'Laser Rifle', desc:'Standard-issue energy rifle, very configurable via mods (auto/scope/beam splitter).' },
+  { id:'w-laserpistol',  category:'Energy Weapons', name:'Laser Pistol', desc:'Light energy sidearm version of the Laser Rifle line.' },
+  { id:'w-plasmarifle',  category:'Energy Weapons', name:'Plasma Rifle', desc:'Higher damage, splash-capable energy rifle.' },
+  { id:'w-plasmapistol', category:'Energy Weapons', name:'Plasma Pistol', desc:'Light plasma sidearm.' },
+  { id:'w-gammagun',     category:'Energy Weapons', name:'Gamma Gun', desc:'Deals radiation damage — heals ghoulified enemies but hurts most others.' },
+  { id:'w-cryolator',    category:'Energy Weapons', name:'Cryolator', desc:'Rare, hard-to-craft cryo rifle that slows and freeze-damages targets.' },
+  { id:'w-teslarifle',   category:'Energy Weapons', name:'Tesla Rifle', desc:'Chain-arcing energy rifle, single-target version of the Tesla Cannon\'s effect.' },
+
+  // ---- EXPLOSIVES ----
+  { id:'w-fraggrenade',  category:'Explosives', name:'Frag Grenade', desc:'Standard thrown explosive.' },
+  { id:'w-plasmagrenade', category:'Explosives', name:'Plasma Grenade', desc:'Thrown energy-damage grenade.' },
+  { id:'w-pulsegrenade', category:'Explosives', name:'Pulse Grenade', desc:'Bonus damage vs. robots and power armor.' },
+  { id:'w-cryomine',     category:'Explosives', name:'Cryo Mine', desc:'Placed trap mine dealing cryo damage.' },
+  { id:'w-bottlecapmine', category:'Explosives', name:'Bottlecap Mine', desc:'Placed trap mine, craftable from common junk.' },
+  { id:'w-autogrenadelauncher', category:'Explosives', name:'Auto Grenade Launcher', desc:'Rapid-fire grenade launcher — a heavy-weapon-class explosive gun.' },
+
+  // ---- BOW & CROSSBOW ----
+  { id:'w-compoundbow',  category:'Bow & Crossbow', name:'Compound Bow', desc:'Silent ranged weapon, good for stealth builds; can fire special arrows.' },
+  { id:'w-crossbow',     category:'Bow & Crossbow', name:'Crossbow', desc:'Slower-firing silent ranged weapon with high per-shot damage.' },
+
+  // ---- UNIQUE / LEGENDARY-NAMED ----
+  { id:'w-thefixer',     category:'Unique / Legendary-Named', name:'The Fixer', desc:'Well-known unique Combat Rifle variant — a Wastelanders-era quest reward prized for its built-in scope, sneak-attack bonus and low weight.' },
+  { id:'w-dragon',       category:'Unique / Legendary-Named', name:'Dragon', desc:'Unique Black Powder Rifle that fires a multi-projectile burst instead of a single round.' },
+  { id:'w-cremator',     category:'Unique / Legendary-Named', name:'Cremator', desc:'Unique heavy weapon combining an explosive grenade-launcher-style payload with fire damage.' },
+  { id:'w-holyfire',     category:'Unique / Legendary-Named', name:'Holy Fire', desc:'Unique flamer-type weapon dealing combined fire and radiation damage.' },
+];
+
 // The one-time main story questlines, in order. Fallout 76 launched in Nov 2018 with NO
 // living human NPCs — the whole story was told through robots, terminals, and holotapes.
 // Wastelanders (Apr 2020) is the update that changed that: it added the game's first
@@ -680,6 +764,7 @@ let plans = [];               // [{id,name,special:{S..L},cards:[ids],notes,upda
 let stockpile = {};           // resourceId -> {target, have, starred, note}
 let notesList = [];           // [{id,title,body,updatedAt}]
 let questProgress = {};       // repeatable id -> {timesRun, favorite, note}
+let weaponProgress = {};      // weapon id -> {favorite, note} — "favorite" marks a go-to loadout pick
 let creatureProgress = {};    // creature POI id -> {hunted, favorite, note}
 let storyProgress = {};       // story quest id -> {done, note}
 let dailyProgress = {};       // DAILY_TASKS id -> {lastDoneDate: 'YYYY-MM-DD'|null, streak}
@@ -716,6 +801,7 @@ function loadProgress(){
       stockpile = parsed.stockpile || {};
       notesList = parsed.notesList || [];
       questProgress = parsed.questProgress || {};
+      weaponProgress = parsed.weaponProgress || {};
       creatureProgress = parsed.creatureProgress || {};
       storyProgress = parsed.storyProgress || {};
       dailyProgress = parsed.dailyProgress || {};
@@ -729,6 +815,9 @@ function loadProgress(){
   });
   REPEATABLES.forEach(q => {
     if (!questProgress[q.id]) questProgress[q.id] = { timesRun: 0, favorite: false, note: '' };
+  });
+  WEAPONS.forEach(w => {
+    if (!weaponProgress[w.id]) weaponProgress[w.id] = { favorite: false, note: '' };
   });
   CREATURE_POIS.forEach(c => {
     if (!creatureProgress[c.id]) creatureProgress[c.id] = { hunted: false, favorite: false, note: '' };
@@ -750,6 +839,7 @@ function saveProgress(){
       stockpile,
       notesList,
       questProgress,
+      weaponProgress,
       creatureProgress,
       storyProgress,
       dailyProgress,
@@ -981,8 +1071,8 @@ function renderOverview(){
     <div class="overview-lede">
       Welcome back, Vault Dweller. This almanac tracks the S.P.E.C.I.A.L. perk cards you’ve found,
       the CAMP & build plans you’re running, your progress through the main story quests, your go-to
-      repeatable quests, the named creatures you’ve hunted down, your junk stockpile, and a field log
-      for anything worth remembering. Everything syncs the same way as the other JAW Digital journals:
+      repeatable quests and weapons, the named creatures you’ve hunted down, your junk stockpile, and
+      a field log for anything worth remembering. Everything syncs the same way as the other JAW Digital journals:
       it lives in this browser, and if you’ve set up sync or signed in below, it follows you to other
       devices too.
       <br/><br/>
@@ -1245,6 +1335,15 @@ function buildFinderIndex(){
     title: q.name, desc: q.desc + (q.creature ? ` Notable creature: ${q.creature}.` : ''), meta: q.category,
   }));
 
+  WEAPONS.forEach(w => {
+    const p = weaponProgress[w.id];
+    idx.push({
+      section: 'weapons', icon: '🔫', type: 'Weapon',
+      title: w.name, desc: w.desc,
+      meta: `${w.category}${p && p.favorite ? ' • ★ Go-to pick' : ''}`,
+    });
+  });
+
   CREATURE_POIS.forEach(c => idx.push({
     section: 'creatures', icon: '👹', type: 'Creature POI',
     title: c.name, desc: c.desc, meta: c.region,
@@ -1274,7 +1373,7 @@ function renderFinderResults(){
   const box = document.getElementById('finder-results');
   if (!box) return;
   if (!term) {
-    box.innerHTML = `<div class="empty-state">Start typing — try an item you picked up ("screw", "crystal"), a playstyle ("stealth", "heavy gun"), or a creature name.</div>`;
+    box.innerHTML = `<div class="empty-state">Start typing — try an item you picked up ("screw", "crystal"), a weapon ("gauss rifle", "fixer"), a playstyle ("stealth", "heavy gun"), or a creature name.</div>`;
     return;
   }
   const idx = buildFinderIndex();
@@ -1307,7 +1406,7 @@ function renderFinderResults(){
 
 function renderFinder(){
   document.getElementById('page-title').textContent = 'Finder';
-  document.getElementById('page-subtitle').textContent = '— search cards, junk, quests, creatures, your builds & field notes at once —';
+  document.getElementById('page-subtitle').textContent = '— search cards, junk, weapons, quests, creatures, your builds & field notes at once —';
   document.getElementById('search-row').style.display = 'none';
 
   document.getElementById('content').innerHTML = `
@@ -1741,6 +1840,44 @@ function renderQuests(){
 }
 
 /* ============================================================
+   RENDER: WEAPONS (reference list, grouped by category)
+   ============================================================ */
+
+function renderWeapons(){
+  document.getElementById('page-title').textContent = 'Weapons';
+  document.getElementById('page-subtitle').textContent = '— every weapon category, plus a few well-known unique drops — star your go-to picks —';
+  document.getElementById('search-row').style.display = 'none';
+
+  let html = '';
+  WEAPON_CATEGORIES.forEach(cat => {
+    const items = WEAPONS.filter(w => w.category === cat);
+    if (!items.length) return;
+    html += `<div class="stat-group-head">${cat}</div><div class="grid2 wide">`;
+    items.forEach(w => {
+      const p = weaponProgress[w.id] || { favorite: false, note: '' };
+      html += `
+        <div class="card ${p.favorite?'owned':''}">
+          <div class="card-head">
+            <span class="card-title">${w.name}</span>
+            <button class="star-btn ${p.favorite?'active':''}" data-star-weapon="${w.id}" title="Mark as a go-to pick">★</button>
+          </div>
+          <div class="card-desc">${w.desc}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-star-weapon]').forEach(el => {
+    el.addEventListener('click', () => {
+      const p = weaponProgress[el.dataset.starWeapon];
+      p.favorite = !p.favorite;
+      saveProgress(); renderWeapons();
+    });
+  });
+}
+
+/* ============================================================
    RENDER: CREATURE POIs (named/legendary spawns)
    ============================================================ */
 
@@ -1872,6 +2009,7 @@ function renderAll(){
   else if (activeSection === 'builds') renderBuilds();
   else if (activeSection === 'story') renderStory();
   else if (activeSection === 'quests') renderQuests();
+  else if (activeSection === 'weapons') renderWeapons();
   else if (activeSection === 'creatures') renderCreatures();
   else if (activeSection === 'stockpile') renderStockpile();
   else if (activeSection === 'notes') renderNotes();
