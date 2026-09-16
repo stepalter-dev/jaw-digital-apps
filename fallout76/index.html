@@ -413,6 +413,7 @@
 
 const SECTIONS = [
   { id: 'overview',  label: 'Overview',           icon: '📻' },
+  { id: 'daily',     label: 'Daily Journal',      icon: '📅' },
   { id: 'finder',    label: 'Finder',             icon: '🔎' },
   { id: 'special',   label: 'S.P.E.C.I.A.L. Cards', icon: '🃏' },
   { id: 'builds',    label: 'CAMP & Builds',       icon: '🏕️' },
@@ -627,6 +628,25 @@ const REPEATABLES = [
   { id:'q-dailyquest', category:'Daily/Weekly', name:'Daily & Weekly Quests', reset:'Daily/Weekly', desc:'Overseer / faction terminal bounties (kill & fetch quests) that refresh on a timer — check in-game terminals for the current rotation.' },
 ];
 
+// Daily Journal: a personal, resettable checklist for the actual daily login loop — distinct
+// from REPEATABLES above (which is a reference list of *what exists*, not a tracker of *did I
+// do it today*). "Done" is derived from lastDoneDate === today (Eastern Time, same clock the
+// game's daily reset runs on) rather than a plain boolean, so the checkbox un-checks itself at
+// the next reset with no separate rollover pass needed — see isDoneToday()/toggleDaily() below.
+// This is a starting checklist of the long-stable parts of the daily loop; add/remove freely
+// since Bethesda reworks specific dailies far more often than this list could track.
+const DAILY_TASKS = [
+  { id:'d-dailyop',    category:'Daily Ops & Events', name:'Run today’s Daily Op', desc:'One randomized vault assignment (Vault 79/94/96) for Legendary Modules, Ops score, and seasonal Ops rewards.' },
+  { id:'d-publicevents', category:'Daily Ops & Events', name:'Do a few Public Events', desc:'Events rotate roughly every 30 minutes and are the fastest XP + S.C.O.R.E. per minute in the game.' },
+  { id:'d-expedition', category:'Daily Ops & Events', name:'Run an Expedition', desc:'The Pitt / Atlantic City expeditions have their own separate reward track and cooldown from Ops.' },
+  { id:'d-workshop',   category:'Daily Ops & Events', name:'Claim an unclaimed workshop', desc:'A rare-resource workshop left empty is free crafting materials for logging in.' },
+  { id:'d-score',      category:'Score & Seasonal', name:'Check today’s S.C.O.R.E. progress', desc:'Most Season activities count automatically — a login plus a few Events/Ops usually keeps the board moving.' },
+  { id:'d-seasonal',   category:'Score & Seasonal', name:'Seasonal event daily (if one’s live)', desc:'Fasnacht, Mothman, Meat Week and other limited-time events add their own dailies while active — check the in-game calendar.' },
+  { id:'d-murmrgh',    category:'Vendors & Camp', name:'Check Purveyor Murmrgh', desc:'She roams between a handful of Ops/Expedition entrances — worth a look if you’re sitting on Legendary Scrip.' },
+  { id:'d-campvendor', category:'Vendors & Camp', name:'Collect camp vendor caps', desc:'Empty the cash box and restock anything that sold out.' },
+  { id:'d-campupkeep', category:'Vendors & Camp', name:'Pay camp budget / repair build', desc:'Camps decay while you\'re away — a quick repair pass keeps turrets, water and power online.' },
+];
+
 // Named/legendary creature spawns worth farming — West Virginia's classic cryptids plus
 // the game's marquee bosses. Region & spawn-trigger notes are approximate; treat this as
 // a hunting checklist, not a guaranteed spawn guide.
@@ -658,9 +678,12 @@ let notesList = [];           // [{id,title,body,updatedAt}]
 let questProgress = {};       // repeatable id -> {timesRun, favorite, note}
 let creatureProgress = {};    // creature POI id -> {hunted, favorite, note}
 let storyProgress = {};       // story quest id -> {done, note}
+let dailyProgress = {};       // DAILY_TASKS id -> {lastDoneDate: 'YYYY-MM-DD'|null, streak}
+let customDailies = [];       // [{id, name, desc, lastDoneDate, streak}] — user-added daily tasks
 
 let editingPlanId = null;     // plan currently open in the builder form, or 'new'
 let editingNoteId = null;
+let addingCustomDaily = false; // whether the "+ Add custom daily task" form is open
 
 // Countdown settings. resetHourET is the hour (0-23, Eastern Time) the weekly reset lands on —
 // widely reported as around midday ET, but Bethesda doesn't publish an exact time and it can
@@ -691,6 +714,8 @@ function loadProgress(){
       questProgress = parsed.questProgress || {};
       creatureProgress = parsed.creatureProgress || {};
       storyProgress = parsed.storyProgress || {};
+      dailyProgress = parsed.dailyProgress || {};
+      customDailies = parsed.customDailies || [];
       countdownSettings = Object.assign({ resetHourET: 12, seasonEndsAt: '' }, parsed.countdownSettings || {});
     }
   } catch (e) { /* start fresh */ }
@@ -707,6 +732,9 @@ function loadProgress(){
   STORY_QUESTS.forEach(q => {
     if (!storyProgress[q.id]) storyProgress[q.id] = { done: false, note: '' };
   });
+  DAILY_TASKS.forEach(t => {
+    if (!dailyProgress[t.id]) dailyProgress[t.id] = { lastDoneDate: null, streak: 0 };
+  });
 }
 
 function saveProgress(){
@@ -720,6 +748,8 @@ function saveProgress(){
       questProgress,
       creatureProgress,
       storyProgress,
+      dailyProgress,
+      customDailies,
       countdownSettings,
       updatedAt: Date.now(),
     };
@@ -816,6 +846,47 @@ function nextWeeklyResetMs(resetHourET){
   return etDateTimeToMs(target.getUTCFullYear(), target.getUTCMonth() + 1, target.getUTCDate(), resetHourET);
 }
 
+// Next occurrence of the *daily* reset — same reset hour as the weekly one, but every day
+// instead of only Tuesdays (Bethesda runs the daily rollover at the same time of day).
+function nextDailyResetMs(resetHourET){
+  const now = new Date();
+  const p = etParts(now);
+  const passedToday = (p.hour * 60 + p.minute) >= resetHourET * 60;
+  const baseUTC = Date.UTC(p.year, p.month - 1, p.day) + (passedToday ? 86400000 : 0);
+  const target = new Date(baseUTC);
+  return etDateTimeToMs(target.getUTCFullYear(), target.getUTCMonth() + 1, target.getUTCDate(), resetHourET);
+}
+
+// 'YYYY-MM-DD' for the daily-reset calendar day currently in effect (Eastern Time), so
+// "today" flips at the game's own reset hour rather than at local midnight — the same clock
+// DAILY_TASKS/customDailies compare lastDoneDate against.
+function currentResetDayKey(resetHourET){
+  const p = etParts(new Date());
+  const passedToday = (p.hour * 60 + p.minute) >= resetHourET * 60;
+  const baseUTC = Date.UTC(p.year, p.month - 1, p.day) - (passedToday ? 0 : 86400000);
+  const d = new Date(baseUTC);
+  return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth()+1)}-${pad2(d.getUTCDate())}`;
+}
+function dayBeforeKey(key){
+  const [y,m,d] = key.split('-').map(Number);
+  const d2 = new Date(Date.UTC(y, m-1, d) - 86400000);
+  return `${d2.getUTCFullYear()}-${pad2(d2.getUTCMonth()+1)}-${pad2(d2.getUTCDate())}`;
+}
+function isDoneToday(entry){ return entry.lastDoneDate === currentResetDayKey(countdownSettings.resetHourET); }
+// Toggles a daily task's done-for-today state. Marking done bumps the streak if yesterday
+// (by the reset clock) was also done, otherwise starts a new streak at 1; un-marking just
+// clears today's date (streak isn't decremented — that's for the next missed reset to handle
+// naturally, since streak is derived from lastDoneDate rather than stored history).
+function toggleDaily(entry){
+  const today = currentResetDayKey(countdownSettings.resetHourET);
+  if (entry.lastDoneDate === today) {
+    entry.lastDoneDate = null;
+  } else {
+    entry.streak = (entry.lastDoneDate === dayBeforeKey(today)) ? (entry.streak || 0) + 1 : 1;
+    entry.lastDoneDate = today;
+  }
+}
+
 function pad2(n){ return n.toString().padStart(2, '0'); }
 
 // Formats an absolute timestamp in the *viewer's own* timezone — this is what makes the
@@ -839,6 +910,14 @@ function formatCountdown(ms){
 // Updates the two countdown displays in place (no full re-render) — called every second and
 // right after the Overview renders. No-ops harmlessly on any other page.
 function tickCountdowns(){
+  const dailyEl = document.getElementById('cd-daily');
+  if (dailyEl) {
+    const targetMs = nextDailyResetMs(countdownSettings.resetHourET);
+    dailyEl.textContent = formatCountdown(targetMs - Date.now());
+    const localEl = document.getElementById('cd-daily-local');
+    if (localEl) localEl.textContent = 'That’s ' + formatLocalMoment(targetMs) + ' for you';
+  }
+
   const weeklyEl = document.getElementById('cd-weekly');
   if (weeklyEl) {
     const targetMs = nextWeeklyResetMs(countdownSettings.resetHourET);
@@ -989,6 +1068,142 @@ function renderOverview(){
   });
 
   tickCountdowns();
+}
+
+/* ============================================================
+   RENDER: DAILY JOURNAL — the day's login checklist, resetting itself
+   against the game's own daily-reset clock (see isDoneToday/toggleDaily).
+   ============================================================ */
+
+const DAILY_CATEGORIES = ['Daily Ops & Events', 'Score & Seasonal', 'Vendors & Camp'];
+
+function renderDaily(){
+  document.getElementById('page-title').textContent = 'Daily Journal';
+  document.getElementById('page-subtitle').textContent = '— today’s login loop — checks itself off against the game’s own reset clock —';
+  document.getElementById('search-row').style.display = 'none';
+
+  const allEntries = DAILY_TASKS.map(t => ({ def: t, p: dailyProgress[t.id], custom: false }))
+    .concat(customDailies.map(c => ({ def: c, p: c, custom: true })));
+  const doneCount = allEntries.filter(e => isDoneToday(e.p)).length;
+  const bestStreak = allEntries.reduce((max, e) => Math.max(max, e.p.streak || 0), 0);
+
+  let html = `
+    <div class="stat-group-head">⏱️ Daily Reset</div>
+    <div class="grid2 wide">
+      <div class="card countdown-card">
+        <div class="card-head">
+          <span class="card-title">Next Daily Reset</span>
+          <span class="card-tag">Every day</span>
+        </div>
+        <div class="countdown-display" id="cd-daily">--</div>
+        <div class="countdown-local" id="cd-daily-local">--</div>
+        <div class="card-desc">Uses the same reset-hour setting as the Weekly Reset card on Overview — nudge it there if this drifts from what you see in-game.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">Today So Far</span></div>
+        <div class="stat-tally-row" style="margin:0;">
+          <div class="stat-tally"><div class="n">${doneCount} / ${allEntries.length}</div><div class="l">Done Today</div></div>
+          <div class="stat-tally"><div class="n">${bestStreak ? '🔥 ' + bestStreak : '—'}</div><div class="l">Best Streak</div></div>
+        </div>
+        <div class="card-desc">Check something off once you've done it for the day — it un-checks itself at the next reset. Streaks count consecutive resets done, not consecutive calendar days, so they track the game's clock instead of yours.</div>
+      </div>
+    </div>`;
+
+  DAILY_CATEGORIES.forEach(cat => {
+    const items = DAILY_TASKS.filter(t => t.category === cat);
+    if (!items.length) return;
+    html += `<div class="stat-group-head">${cat}</div><div class="entries">`;
+    items.forEach(t => {
+      const p = dailyProgress[t.id];
+      const done = isDoneToday(p);
+      html += `
+        <div class="card ${done?'owned':''}">
+          <div class="card-head">
+            <span class="card-title">${t.name}</span>
+            <span class="checkbox ${done?'checked':''}" data-toggle-daily="${t.id}">${done?'✓':''}</span>
+          </div>
+          <div class="card-desc">${t.desc}</div>
+          ${p.streak ? `<div class="card-meta"><span>🔥 ${p.streak}-reset streak</span></div>` : ''}
+        </div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<div class="stat-group-head">Custom</div>`;
+  if (addingCustomDaily) {
+    html += `
+      <div class="form-panel">
+        <div class="form-row">
+          <label class="field-label">Task</label>
+          <input type="text" id="custom-daily-name" style="width:100%;" placeholder="e.g. Feed the dog in-game (Fallout 1st perk)">
+        </div>
+        <div class="form-row">
+          <label class="field-label">Note (optional)</label>
+          <input type="text" id="custom-daily-desc" style="width:100%;" placeholder="Anything worth remembering about it">
+        </div>
+        <div class="card-actions">
+          <button class="btn primary" id="save-custom-daily-btn">Add</button>
+          <button class="btn" id="cancel-custom-daily-btn">Cancel</button>
+        </div>
+      </div>`;
+  } else {
+    html += `<div class="card-actions" style="margin-bottom:12px;"><button class="btn primary" id="new-custom-daily-btn">+ Add Custom Daily Task</button></div>`;
+  }
+  if (customDailies.length) {
+    html += `<div class="entries">` + customDailies.map(c => {
+      const done = isDoneToday(c);
+      return `
+        <div class="card ${done?'owned':''}">
+          <div class="card-head">
+            <span class="card-title">${c.name}</span>
+            <span class="checkbox ${done?'checked':''}" data-toggle-daily-custom="${c.id}">${done?'✓':''}</span>
+          </div>
+          ${c.desc ? `<div class="card-desc">${c.desc}</div>` : ''}
+          <div class="card-actions">
+            ${c.streak ? `<span class="card-meta"><span>🔥 ${c.streak}-reset streak</span></span>` : ''}
+            <button class="btn small danger" data-delete-custom-daily="${c.id}">Remove</button>
+          </div>
+        </div>`;
+    }).join('') + `</div>`;
+  } else if (!addingCustomDaily) {
+    html += `<div class="empty-state">No custom daily tasks yet — add anything from your own routine that isn't listed above.</div>`;
+  }
+
+  document.getElementById('content').innerHTML = html;
+  tickCountdowns();
+
+  document.querySelectorAll('[data-toggle-daily]').forEach(el => {
+    el.addEventListener('click', () => {
+      toggleDaily(dailyProgress[el.dataset.toggleDaily]);
+      saveProgress(); renderDaily();
+    });
+  });
+  document.querySelectorAll('[data-toggle-daily-custom]').forEach(el => {
+    el.addEventListener('click', () => {
+      const c = customDailies.find(x => x.id === el.dataset.toggleDailyCustom);
+      toggleDaily(c);
+      saveProgress(); renderDaily();
+    });
+  });
+  document.querySelectorAll('[data-delete-custom-daily]').forEach(el => {
+    el.addEventListener('click', () => {
+      customDailies = customDailies.filter(c => c.id !== el.dataset.deleteCustomDaily);
+      saveProgress(); renderDaily();
+    });
+  });
+  const newCustomBtn = document.getElementById('new-custom-daily-btn');
+  if (newCustomBtn) newCustomBtn.addEventListener('click', () => { addingCustomDaily = true; renderDaily(); });
+  const cancelCustomBtn = document.getElementById('cancel-custom-daily-btn');
+  if (cancelCustomBtn) cancelCustomBtn.addEventListener('click', () => { addingCustomDaily = false; renderDaily(); });
+  const saveCustomBtn = document.getElementById('save-custom-daily-btn');
+  if (saveCustomBtn) saveCustomBtn.addEventListener('click', () => {
+    const name = document.getElementById('custom-daily-name').value.trim();
+    if (!name) return;
+    const desc = document.getElementById('custom-daily-desc').value.trim();
+    customDailies.push({ id: uid(), name, desc, lastDoneDate: null, streak: 0 });
+    addingCustomDaily = false;
+    saveProgress(); renderDaily();
+  });
 }
 
 /* ============================================================
@@ -1645,7 +1860,9 @@ function renderAll(){
   renderNav();
   editingPlanId = activeSection === 'builds' ? editingPlanId : null;
   editingNoteId = activeSection === 'notes' ? editingNoteId : null;
+  addingCustomDaily = activeSection === 'daily' ? addingCustomDaily : false;
   if (activeSection === 'overview') renderOverview();
+  else if (activeSection === 'daily') renderDaily();
   else if (activeSection === 'finder') renderFinder();
   else if (activeSection === 'special') renderLibrary();
   else if (activeSection === 'builds') renderBuilds();
