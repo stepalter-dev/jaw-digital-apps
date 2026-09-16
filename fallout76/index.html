@@ -351,6 +351,7 @@
   .chat-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
   .chat-panel-head h3 { margin: 0; font-size: 15px; }
   .chat-panel-sub { font-size: 12px; color: var(--ink-dim); margin: 0 0 12px; line-height: 1.5; }
+  .chat-panel-tagline { font-size: 11px; color: var(--ink-dim); font-style: italic; margin: 0 0 10px; }
   .chat-endpoint-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   .chat-endpoint-row input { flex: 1; min-width: 200px; }
   .chat-endpoint-status { font-size: 11px; }
@@ -418,8 +419,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.5.3 (footer trademark). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.5.3</div>
+           same as normal semver. Current: v2.5.4 (VERA acronym always shown). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.5.4</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -1519,10 +1520,9 @@ function chatPanelHtml(){
     : `<span class="chat-endpoint-status missing">Not set up yet</span>`;
   const settingsHtml = showSettings ? `
       <p class="chat-panel-sub">
-        VERA (Vault-Tec Emergency Response Assistant) answers Fallout 76 questions and helps check
-        whether something should be added to this almanac. Requires a one-time setup — see
-        <code>/almanac-chat-worker/README.md</code> in the repo for the 10-minute walkthrough
-        (a free Cloudflare Worker + your own Gemini API key).
+        Answers Fallout 76 questions and helps check whether something should be added to this
+        almanac. Requires a one-time setup — see <code>/almanac-chat-worker/README.md</code> in the
+        repo for the 10-minute walkthrough (a free Cloudflare Worker + your own Gemini API key).
       </p>
       <div class="chat-endpoint-row">
         <label class="field-label" style="margin:0;">Worker URL</label>
@@ -1534,6 +1534,7 @@ function chatPanelHtml(){
   return `
     <div class="chat-panel">
       <div class="chat-panel-head"><h3>💬 Ask VERA</h3>${statusHtml}</div>
+      <p class="chat-panel-tagline">VERA — Vault-Tec Emergency Response Assistant</p>
       ${settingsHtml}
       <div class="chat-log" id="chat-log">${logHtml}</div>
       <div class="chat-input-row">
