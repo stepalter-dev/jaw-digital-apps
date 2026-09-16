@@ -140,6 +140,61 @@
     color: #fff8ee;
   }
 
+  /* hamburger menu beside the brand — jumps straight to any section without
+     having to horizontal-scroll the tab strip, which is otherwise the only
+     way to reach tabs once they overflow the visible width. */
+  .nav-menu-btn {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 0 6px 0 2px;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    flex-shrink: 0;
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-menu-btn:hover, .nav-menu-btn.open { background: rgba(168,78,42,0.08); color: var(--heading); }
+
+  .nav-dropdown {
+    display: none;
+    position: fixed;
+    min-width: 220px;
+    max-width: calc(100vw - 32px);
+    background: var(--panel);
+    border: 1px solid var(--iron);
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(60, 44, 20, 0.18);
+    padding: 6px;
+    z-index: 40;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .nav-dropdown.open { display: block; }
+  .nav-dropdown-item {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 12px;
+    color: var(--ink-soft);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    border-radius: 7px;
+  }
+  .nav-dropdown-item .icon { font-size: 15px; flex-shrink: 0; width: 18px; text-align: center; }
+  .nav-dropdown-item:hover { background: rgba(168,78,42,0.08); color: var(--heading); }
+  .nav-dropdown-item.active { background: var(--gold); color: #fff8ee; }
+
   .nav-mobile { display: none !important; }
 
   /* ---------- MAIN PAGE ---------- */
@@ -407,6 +462,7 @@
 
 <div class="tome">
   <nav class="nav" id="nav-desktop"></nav>
+  <div class="nav-dropdown" id="nav-dropdown"></div>
   <nav class="nav-mobile" id="nav-mobile"></nav>
 
   <main class="page">
@@ -418,8 +474,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.5.3 (footer trademark). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.5.3</div>
+           same as normal semver. Current: v2.6.0 (nav dropdown menu). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.6.0</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -1073,11 +1129,57 @@ function renderNav(){
   const btns = SECTIONS.map(s => `<button class="nav-btn ${activeSection===s.id?'active':''}" data-section="${s.id}">
       <span class="icon">${s.icon}</span><span>${s.label}</span>
     </button>`).join('');
-  document.getElementById('nav-desktop').innerHTML = `<div class="nav-brand">Almanac</div>` + btns;
+  const dropdownItems = SECTIONS.map(s => `<button class="nav-dropdown-item ${activeSection===s.id?'active':''}" data-section="${s.id}">
+      <span class="icon">${s.icon}</span><span>${s.label}</span>
+    </button>`).join('');
+  document.getElementById('nav-desktop').innerHTML =
+    `<div class="nav-brand">Almanac</div>` +
+    `<button class="nav-menu-btn" id="nav-menu-btn" aria-label="All sections">☰</button>` +
+    btns;
+  document.getElementById('nav-dropdown').innerHTML = dropdownItems;
   document.querySelectorAll('[data-section]').forEach(b => {
-    b.addEventListener('click', () => { activeSection = b.dataset.section; saveNavState(); renderAll(); });
+    b.addEventListener('click', () => {
+      activeSection = b.dataset.section;
+      saveNavState();
+      closeNavDropdown();
+      renderAll();
+    });
+  });
+  const menuBtn = document.getElementById('nav-menu-btn');
+  if (menuBtn) menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleNavDropdown();
   });
 }
+
+function toggleNavDropdown(){
+  const dropdown = document.getElementById('nav-dropdown');
+  const menuBtn = document.getElementById('nav-menu-btn');
+  if (!dropdown || !menuBtn) return;
+  const opening = !dropdown.classList.contains('open');
+  if (opening) {
+    const rect = menuBtn.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 8) + 'px';
+    dropdown.style.left = rect.left + 'px';
+  }
+  dropdown.classList.toggle('open', opening);
+  menuBtn.classList.toggle('open', opening);
+}
+
+function closeNavDropdown(){
+  const dropdown = document.getElementById('nav-dropdown');
+  const menuBtn = document.getElementById('nav-menu-btn');
+  if (dropdown) dropdown.classList.remove('open');
+  if (menuBtn) menuBtn.classList.remove('open');
+}
+
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('nav-dropdown');
+  if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) {
+    closeNavDropdown();
+  }
+});
+window.addEventListener('scroll', closeNavDropdown, { passive: true });
 
 /* ============================================================
    RENDER: OVERVIEW
