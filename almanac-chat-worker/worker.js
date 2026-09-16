@@ -5,7 +5,7 @@
  * (Fallout 76's Finder tab, and later others) to the Google Gemini API.
  *
  * WHY THIS EXISTS: the journals are static HTML/JS hosted on GitHub Pages.
- * An API key can never be embedded in that client-side code — anyone who
+ * An API key can never be embedded in that client-side code -- anyone who
  * views the page source could copy it and run up your bill. This Worker is
  * the one small piece of "real backend" that holds the key server-side; the
  * page only ever talks to this Worker's public URL, never to Google directly.
@@ -23,9 +23,9 @@
 // from riding on your API quota. "*" works for local testing.
 const ALLOWED_ORIGIN = "https://stepalter-dev.github.io";
 
-// Cheap, fast model — plenty for a companion-app Q&A assistant. Override via
+// Cheap, fast model -- plenty for a companion-app Q&A assistant. Override via
 // the MODEL environment variable if you want a different one.
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-3.6-flash";
 const MAX_TOKENS = 700;
 const MAX_MESSAGE_LEN = 2000;
 const MAX_HISTORY_TURNS = 6; // last N turns kept, to bound token usage
@@ -33,8 +33,8 @@ const MAX_HISTORY_TURNS = 6; // last N turns kept, to bound token usage
 const SYSTEM_PROMPT = `You are the in-app assistant for "Vault Dweller's Almanac", a fan-made
 Fallout 76 companion journal built by JAW Digital. You have two jobs:
 
-1. Answer the player's Fallout 76 questions directly and helpfully — weapons, perks, quests,
-   events, crafting, lore, mechanics — using your general knowledge of the game.
+1. Answer the player's Fallout 76 questions directly and helpfully -- weapons, perks, quests,
+   events, crafting, lore, mechanics -- using your general knowledge of the game.
 2. Help the person maintain the almanac itself: if they describe something (an item, a quest, a
    creature, a weapon) and ask "is this in the app" or "should this be added", tell them plainly
    whether it sounds like something the app's Finder search should already cover, and if not,
@@ -42,7 +42,7 @@ Fallout 76 companion journal built by JAW Digital. You have two jobs:
    so they can hand that straight to whoever maintains the app's code.
 
 Keep answers concise and skimmable (short paragraphs or a few bullet points, not walls of text).
-Bethesda patches Fallout 76 constantly — flag when something you're saying might be stale or
+Bethesda patches Fallout 76 constantly -- flag when something you're saying might be stale or
 have changed with a recent update, rather than stating it with false confidence.`;
 
 function corsHeaders(origin) {
