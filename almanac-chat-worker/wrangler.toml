@@ -1,0 +1,7 @@
+name = "jaw-almanac-chat"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# Optional: override the model without touching worker.js.
+# [vars]
+# MODEL = "claude-sonnet-5"
