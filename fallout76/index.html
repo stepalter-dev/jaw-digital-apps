@@ -217,6 +217,8 @@
   .btn.danger { border-color: #d3ada0; color: var(--blood); }
   .btn.danger:hover { background: rgba(163,64,43,0.08); }
   .btn.small { padding: 6px 11px; font-size: 10px; }
+  .btn.ghost { border-color: transparent; background: transparent; padding: 4px 8px; }
+  .btn.ghost:hover { border-color: var(--iron); background: var(--panel); }
 
   /* ---------- GRIDS / CARDS ---------- */
   .entries { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -416,8 +418,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.5.1 (named the AI assistant "VERA"). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.5.1</div>
+           same as normal semver. Current: v2.5.2 (chat panel collapses Worker URL setup once configured). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.5.2</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -1474,6 +1476,7 @@ function renderFinder(){
 const CHAT_ENDPOINT_KEY = 'fallout76-chat-endpoint';
 let chatHistory = []; // [{role:'user'|'assistant', content}] — cleared on page reload
 let chatPending = false;
+let chatSettingsOpen = false; // set to true automatically until a Worker URL is saved
 
 function getChatEndpoint(){ try { return localStorage.getItem(CHAT_ENDPOINT_KEY) || ''; } catch(e){ return ''; } }
 function setChatEndpoint(url){ try { localStorage.setItem(CHAT_ENDPOINT_KEY, url); } catch(e){} }
@@ -1510,14 +1513,11 @@ function renderChatMarkdown(text){
 
 function chatPanelHtml(){
   const endpoint = getChatEndpoint();
+  const showSettings = !endpoint || chatSettingsOpen;
   const statusHtml = endpoint
-    ? `<span class="chat-endpoint-status ok">✓ URL saved</span>`
+    ? `<span class="chat-endpoint-status ok">✓ URL saved</span> <button class="btn small ghost" id="chat-settings-toggle">${showSettings ? 'Hide' : 'Change'}</button>`
     : `<span class="chat-endpoint-status missing">Not set up yet</span>`;
-  const logHtml = chatHistory.map(m => `<div class="chat-msg ${m.role}">${m.role === 'user' ? (m.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : renderChatMarkdown(m.content)}</div>`).join('')
-    + (chatPending ? `<div class="chat-msg assistant pending">Thinking…</div>` : '');
-  return `
-    <div class="chat-panel">
-      <div class="chat-panel-head"><h3>💬 Ask VERA</h3>${statusHtml}</div>
+  const settingsHtml = showSettings ? `
       <p class="chat-panel-sub">
         VERA (Vault-Tec Emergency Response Assistant) answers Fallout 76 questions and helps check
         whether something should be added to this almanac. Requires a one-time setup — see
@@ -1528,7 +1528,13 @@ function chatPanelHtml(){
         <label class="field-label" style="margin:0;">Worker URL</label>
         <input type="text" id="chat-endpoint-input" placeholder="https://jaw-almanac-chat.your-subdomain.workers.dev" value="${endpoint.replace(/"/g,'&quot;')}">
         <button class="btn small" id="chat-endpoint-save">Save</button>
-      </div>
+      </div>` : '';
+  const logHtml = chatHistory.map(m => `<div class="chat-msg ${m.role}">${m.role === 'user' ? (m.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : renderChatMarkdown(m.content)}</div>`).join('')
+    + (chatPending ? `<div class="chat-msg assistant pending">Thinking…</div>` : '');
+  return `
+    <div class="chat-panel">
+      <div class="chat-panel-head"><h3>💬 Ask VERA</h3>${statusHtml}</div>
+      ${settingsHtml}
       <div class="chat-log" id="chat-log">${logHtml}</div>
       <div class="chat-input-row">
         <textarea id="chat-input" placeholder="e.g. &quot;Is the Cremator in here?&quot; or &quot;What perks help a heavy gunner?&quot;" ${endpoint ? '' : 'disabled'}></textarea>
@@ -1548,6 +1554,12 @@ function wireChatPanel(){
   if (saveBtn) saveBtn.addEventListener('click', () => {
     const val = document.getElementById('chat-endpoint-input').value.trim().replace(/\/+$/, '');
     setChatEndpoint(val);
+    chatSettingsOpen = false;
+    renderFinder();
+  });
+  const settingsToggle = document.getElementById('chat-settings-toggle');
+  if (settingsToggle) settingsToggle.addEventListener('click', () => {
+    chatSettingsOpen = !chatSettingsOpen;
     renderFinder();
   });
   const sendBtn = document.getElementById('chat-send-btn');
