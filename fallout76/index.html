@@ -476,8 +476,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.7.0 (Reclamation Day teal/mustard palette). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.7.0</div>
+           same as normal semver. Current: v2.8.0 (Patch 70 / Season 26 content). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.8.0</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -806,7 +806,11 @@ const REPEATABLES = [
   { id:'q-fasnacht',  category:'Public Event', name:'Fasnacht Day', reset:'Seasonal (recurring)', desc:'Defend the Fasnacht parade in Helvetia from costumed "masked" enemies, capped by a unique masked boss.' },
 
   { id:'q-score',     category:'Seasonal', name:'S.C.O.R.E. Season Board', reset:'Each Season', desc:'The current Season’s ranked reward track — challenges rotate every Season. Note current Season goals in the Field Log rather than here, since content changes each cycle.' },
+  { id:'q-slasher',   category:'Seasonal', name:'The Slasher (Season 26 event, Patch 70)', reset:'Season 26 — runs through roughly Dec 2026', desc:'A four-part Halloween-flavored questline that weaves "Pint-Sized Phantoms" into existing activities: The Slasher: Masked Truth → Secrets to the Grave → Out of the Shadows → Blood Will Have Blood. Starts automatically — check the Radio tab for a "Breaking News" broadcast. Each part awards a unique plan; the finale has a chance at a unique Power Armor piece and the "Super Slasher" melee weapon. Temporary — remove this entry once Season 26 ends.' },
   { id:'q-dailyquest', category:'Daily/Weekly', name:'Daily & Weekly Quests', reset:'Daily/Weekly', desc:'Overseer / faction terminal bounties (kill & fetch quests) that refresh on a timer — check in-game terminals for the current rotation.' },
+
+  { id:'q-legmod', category:'Systems', name:'Legendary Mod swapping & the 4th slot (Patch 70)', reset:null, desc:'As of Patch 70, a unique weapon or armor piece\'s legendary mods (slots 1-3) can be changed at an Armor/Weapons workbench for Legendary Scrip — the unique effect itself stays intact. The scrip cost is now a flat fixed amount instead of the old escalating cost. There\'s also a new 4th mod slot: a "4-star mod" obtained from scrapping, crafting, or drops can be slotted into any existing 3-star item completely free. Worth revisiting old uniques you shelved because their fixed legendary rolls didn\'t fit your build.' },
+  { id:'q-legacyseasons', category:'Systems', name:'Legacy Seasons (Patch 70)', reset:null, desc:'Starting with Season 26, each new Season now runs concurrently with a returning past "classic" Season, and both share the same S.C.O.R.E. tickets. That means you can spend tickets earned from normal play on rewards from a Season you missed the first time around, alongside the current Season\'s board, instead of that content being gone for good.' },
 ];
 
 // Daily Journal: a personal, resettable checklist for the actual daily login loop — distinct
@@ -2061,7 +2065,7 @@ function renderQuests(){
   document.getElementById('page-subtitle').textContent = '— Daily Ops, world Public Events & the seasonal grind — track what’s worth farming —';
   document.getElementById('search-row').style.display = 'none';
 
-  const categories = ['Daily Ops', 'Public Event', 'Seasonal', 'Daily/Weekly'];
+  const categories = ['Daily Ops', 'Public Event', 'Seasonal', 'Daily/Weekly', 'Systems'];
   let html = '';
   categories.forEach(cat => {
     const items = REPEATABLES.filter(q => q.category === cat);
@@ -2076,6 +2080,7 @@ function renderQuests(){
             <button class="star-btn ${p.favorite?'active':''}" data-star-quest="${q.id}" title="Mark as a go-to farm">★</button>
           </div>
           <div class="card-desc">${q.desc}${q.creature?`<br/><em>Notable creature: ${q.creature}</em>`:''}</div>
+          ${q.reset ? `
           <div class="card-meta"><span>Resets: ${q.reset}</span></div>
           <div class="card-actions">
             <div class="rank-stepper">
@@ -2084,7 +2089,7 @@ function renderQuests(){
               <span>${p.timesRun}</span>
               <button data-run-up="${q.id}">+</button>
             </div>
-          </div>
+          </div>` : ''}
         </div>`;
     });
     html += `</div>`;
