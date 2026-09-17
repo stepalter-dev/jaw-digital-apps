@@ -476,8 +476,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.8.1 (Season End defaults to estimated date). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.8.1</div>
+           same as normal semver. Current: v2.8.2 (VERA works out of the box, no Worker URL setup). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.8.2</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -1581,17 +1581,23 @@ function renderFinder(){
    ASK THE ASSISTANT — a real Claude-backed chat, proxied through a small
    Cloudflare Worker (see /almanac-chat-worker in the repo) so the API key
    never has to live in this static page. Good for "does the almanac cover
-   X" questions and general Fallout 76 Q&A. Endpoint URL + chat history are
-   both per-browser only (localStorage / in-memory) — nothing is synced.
+   X" questions and general Fallout 76 Q&A. Chat history is per-browser only
+   (in-memory) — nothing is synced. The endpoint URL defaults to the deployed
+   Worker below (it's a public URL, not a secret, so it's safe to ship as a
+   default) so VERA works out of the box in any browser with no setup step;
+   it's still overridable per-browser via localStorage if the Worker ever
+   moves.
    ============================================================ */
 
 const CHAT_ENDPOINT_KEY = 'fallout76-chat-endpoint';
+const DEFAULT_CHAT_ENDPOINT = 'https://jaw-almanac-chat.windsorkerrj.workers.dev';
 let chatHistory = []; // [{role:'user'|'assistant', content}] — cleared on page reload
 let chatPending = false;
 let chatSettingsOpen = false; // set to true automatically until a Worker URL is saved
 
-function getChatEndpoint(){ try { return localStorage.getItem(CHAT_ENDPOINT_KEY) || ''; } catch(e){ return ''; } }
+function getChatEndpoint(){ try { return localStorage.getItem(CHAT_ENDPOINT_KEY) || DEFAULT_CHAT_ENDPOINT; } catch(e){ return DEFAULT_CHAT_ENDPOINT; } }
 function setChatEndpoint(url){ try { localStorage.setItem(CHAT_ENDPOINT_KEY, url); } catch(e){} }
+function resetChatEndpoint(){ try { localStorage.removeItem(CHAT_ENDPOINT_KEY); } catch(e){} }
 
 function chatContextSummary(){
   return `Vault Dweller's Almanac currently tracks ${PERKS.length} S.P.E.C.I.A.L. perk cards, ` +
@@ -1625,20 +1631,20 @@ function renderChatMarkdown(text){
 
 function chatPanelHtml(){
   const endpoint = getChatEndpoint();
-  const showSettings = !endpoint || chatSettingsOpen;
-  const statusHtml = endpoint
-    ? `<span class="chat-endpoint-status ok">✓ URL saved</span> <button class="btn small ghost" id="chat-settings-toggle">${showSettings ? 'Hide' : 'Change'}</button>`
-    : `<span class="chat-endpoint-status missing">Not set up yet</span>`;
+  const usingDefault = endpoint === DEFAULT_CHAT_ENDPOINT;
+  const showSettings = chatSettingsOpen;
+  const statusHtml = `<span class="chat-endpoint-status ok">✓ ${usingDefault ? 'Ready' : 'Custom URL saved'}</span> <button class="btn small ghost" id="chat-settings-toggle">${showSettings ? 'Hide' : 'Change'}</button>`;
   const settingsHtml = showSettings ? `
       <p class="chat-panel-sub">
         Answers Fallout 76 questions and helps check whether something should be added to this
-        almanac. Requires a one-time setup — see <code>/almanac-chat-worker/README.md</code> in the
-        repo for the 10-minute walkthrough (a free Cloudflare Worker + your own Gemini API key).
+        almanac. Ships pre-configured with the deployed Worker — only change this if you've set up
+        your own (see <code>/almanac-chat-worker/README.md</code> in the repo).
       </p>
       <div class="chat-endpoint-row">
         <label class="field-label" style="margin:0;">Worker URL</label>
         <input type="text" id="chat-endpoint-input" placeholder="https://jaw-almanac-chat.your-subdomain.workers.dev" value="${endpoint.replace(/"/g,'&quot;')}">
         <button class="btn small" id="chat-endpoint-save">Save</button>
+        ${usingDefault ? '' : '<button class="btn small ghost" id="chat-endpoint-reset">Reset to default</button>'}
       </div>` : '';
   const logHtml = chatHistory.map(m => `<div class="chat-msg ${m.role}">${m.role === 'user' ? (m.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : renderChatMarkdown(m.content)}</div>`).join('')
     + (chatPending ? `<div class="chat-msg assistant pending">Thinking…</div>` : '');
@@ -1672,6 +1678,11 @@ function wireChatPanel(){
   const settingsToggle = document.getElementById('chat-settings-toggle');
   if (settingsToggle) settingsToggle.addEventListener('click', () => {
     chatSettingsOpen = !chatSettingsOpen;
+    renderFinder();
+  });
+  const resetBtn = document.getElementById('chat-endpoint-reset');
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    resetChatEndpoint();
     renderFinder();
   });
   const sendBtn = document.getElementById('chat-send-btn');

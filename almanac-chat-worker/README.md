@@ -61,15 +61,19 @@ Wrangler will print the same kind of `workers.dev` URL at the end.
 
 ## 4. Lock it down to your site (optional but recommended)
 
-Open `worker.js` and change this line near the top:
+Open `worker.js` and edit the list near the top:
 
 ```js
-const ALLOWED_ORIGIN = "https://stepalter-dev.github.io";
+const ALLOWED_ORIGINS = [
+  "https://stepalter-dev.github.io",
+  "https://journals.bw8.dev",
+];
 ```
 
-to match wherever your journal is actually hosted, if it's different, then
-redeploy. This stops other websites from quietly using your Worker (and
-your API quota) from their own pages.
+to match wherever your journal is actually hosted (add every domain it's
+served from -- e.g. keep the GitHub Pages URL even after moving to a custom
+domain, in case you ever need it), then redeploy. This stops other websites
+from quietly using your Worker (and your API quota) from their own pages.
 
 ## Updating later
 
