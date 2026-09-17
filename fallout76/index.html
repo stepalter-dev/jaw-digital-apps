@@ -25,29 +25,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Editorial almanac — warm paper, ink, rust & olive field-guide accents */
-    --void: #f2ebda;
-    --stone-1: #eee5d0;
-    --stone-2: #e7dabd;
-    --stone-3: #ddccA5;
-    --stone-4: #d0bb8c;
-    --stone-5: #bfa877;
-    --panel: rgba(255, 253, 246, 0.86);
-    --panel-hi: rgba(34, 26, 15, 0.035);
-    --iron: #ddccA5;
-    --iron-light: #c9a876;
-    /* olive — secondary accent, used for favorites/stars */
-    --amber: #6a7a45;
-    --amber-dim: #4e5b33;
-    /* rust — primary accent, key highlights */
-    --gold: #a84e2a;
-    --gold-bright: #7d3a1f;
-    --gold-dim: #c98a5e;
+    /* Reclamation Day almanac — a Vault-Tec tourism-poster palette (cool paper,
+       teal & mustard) so this reads distinct from RDR2's warm rust/sage leather-journal look */
+    --void: #eef2e9;
+    --stone-1: #e7ebdc;
+    --stone-2: #dbe2cc;
+    --stone-3: #c8d3b4;
+    --stone-4: #b2c199;
+    --stone-5: #99aa7d;
+    --panel: rgba(255, 253, 248, 0.86);
+    --panel-hi: rgba(15, 28, 24, 0.035);
+    --iron: #c8d3b4;
+    --iron-light: #9db07c;
+    /* mustard — secondary accent, used for favorites/stars */
+    --amber: #c9932f;
+    --amber-dim: #96691c;
+    /* teal — primary accent, key highlights */
+    --gold: #23837a;
+    --gold-bright: #145c56;
+    --gold-dim: #6fb3ac;
     /* text */
-    --heading: #201a10;
-    --ink: #3c3521;
-    --ink-soft: #756b4e;
-    --ink-dim: #9c8f6c;
+    --heading: #16211c;
+    --ink: #26332c;
+    --ink-soft: #4c5c50;
+    --ink-dim: #7c8f7f;
     --blood: #a3402b;
     --sage-ok: #5f7440;
     --moss: #6a7a45;
@@ -61,7 +62,7 @@
     margin: 0;
     background: var(--void);
     background-image:
-      radial-gradient(ellipse at 20% -10%, rgba(168,78,42,0.05), transparent 45%),
+      radial-gradient(ellipse at 20% -10%, rgba(35,131,122,0.05), transparent 45%),
       radial-gradient(ellipse at 100% 0%, rgba(106,122,69,0.05), transparent 40%);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--ink);
@@ -134,7 +135,7 @@
     flex-shrink: 0;
   }
   .nav-btn .icon { font-size: 14px; flex-shrink: 0; width: 16px; text-align: center; }
-  .nav-btn:hover { background: rgba(168,78,42,0.08); color: var(--heading); }
+  .nav-btn:hover { background: rgba(35,131,122,0.08); color: var(--heading); }
   .nav-btn.active {
     background: var(--gold);
     color: #fff8ee;
@@ -158,7 +159,7 @@
     flex-shrink: 0;
     transition: background .15s ease, color .15s ease;
   }
-  .nav-menu-btn:hover, .nav-menu-btn.open { background: rgba(168,78,42,0.08); color: var(--heading); }
+  .nav-menu-btn:hover, .nav-menu-btn.open { background: rgba(35,131,122,0.08); color: var(--heading); }
 
   .nav-dropdown {
     display: none;
@@ -192,7 +193,7 @@
     border-radius: 7px;
   }
   .nav-dropdown-item .icon { font-size: 15px; flex-shrink: 0; width: 18px; text-align: center; }
-  .nav-dropdown-item:hover { background: rgba(168,78,42,0.08); color: var(--heading); }
+  .nav-dropdown-item:hover { background: rgba(35,131,122,0.08); color: var(--heading); }
   .nav-dropdown-item.active { background: var(--gold); color: #fff8ee; }
 
   .nav-mobile { display: none !important; }
@@ -287,7 +288,7 @@
     position: relative;
     box-shadow: 0 1px 2px rgba(60,44,20,0.03);
   }
-  .card.owned { border-color: var(--gold-dim); box-shadow: inset 0 0 0 1px rgba(168,78,42,0.18), 0 1px 2px rgba(60,44,20,0.03); }
+  .card.owned { border-color: var(--gold-dim); box-shadow: inset 0 0 0 1px rgba(35,131,122,0.18), 0 1px 2px rgba(60,44,20,0.03); }
   .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
   .card-title { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 19px; color: var(--heading); letter-spacing: -0.005em; }
   .card-tag { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-bright); border: 1px solid var(--iron); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
@@ -307,7 +308,7 @@
     all: unset; cursor: pointer; width: 21px; height: 21px; text-align: center;
     border: 1px solid var(--iron); border-radius: 5px; color: var(--gold-bright); line-height: 19px;
   }
-  .rank-stepper button:hover { background: rgba(168,78,42,0.08); }
+  .rank-stepper button:hover { background: rgba(35,131,122,0.08); }
 
   input[type=number], input[type=text], textarea, select {
     background: var(--panel); border: 1px solid var(--iron); border-radius: 7px; color: var(--ink);
@@ -349,7 +350,7 @@
   .stat-tally .l { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
 
   .overview-lede { font-size: 14.5px; color: var(--ink-soft); line-height: 1.75; max-width: 640px; }
-  .overview-lede code { color: var(--gold-bright); font-family: 'Inter', sans-serif; font-weight: 600; background: rgba(168,78,42,0.08); padding: 1px 5px; border-radius: 4px; }
+  .overview-lede code { color: var(--gold-bright); font-family: 'Inter', sans-serif; font-weight: 600; background: rgba(35,131,122,0.08); padding: 1px 5px; border-radius: 4px; }
 
   .countdown-display {
     font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 30px;
@@ -475,8 +476,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.6.1 (VERA acronym always shown). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.6.1</div>
+           same as normal semver. Current: v2.7.0 (Reclamation Day teal/mustard palette). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.7.0</div>
     </header>
     <div class="rune-divider"></div>
 
