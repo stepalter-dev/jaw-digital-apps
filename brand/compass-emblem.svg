@@ -1,0 +1,33 @@
+<!--
+  JAW Digital — compass emblem (final)
+  =====================================
+  A compass with one tick that isn't a direction: set at a bearing of
+  exactly 15 degrees off true north, with no cardinal purpose. It's meant
+  to look like plain decoration at a glance, and to be the one honest,
+  countable detail if anyone ever looks closely enough to ask what it
+  means. The number ties to 15 years lived with a schizoaffective
+  disorder diagnosis — not stated anywhere on the site, just true.
+
+  Palette: ink #1c222c, brass #b8863b, brass-bright #d3a355,
+  slate #4c5665, parchment #f4efe2, footer tan #a89b7f.
+
+  Used at:
+  - index.html header brand mark (two-tone, on ink circle)
+  - index.html footer brand mark (monochrome tan, no fill)
+  - index.html favicon (data URI copy of the header version)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <circle cx="512" cy="512" r="464" fill="#1c222c"/>
+  <circle cx="512" cy="512" r="464" fill="none" stroke="#b8863b" stroke-width="22.4"/>
+  <g stroke="#b8863b" stroke-width="20.8">
+    <line x1="512" y1="96" x2="512" y2="192"/>
+    <line x1="512" y1="832" x2="512" y2="928"/>
+    <line x1="96" y1="512" x2="192" y2="512"/>
+    <line x1="832" y1="512" x2="928" y2="512"/>
+  </g>
+  <!-- the tick with no cardinal purpose: bearing 15 degrees off true north -->
+  <line x1="611.2" y1="140.8" x2="628.8" y2="80" stroke="#d3a355" stroke-width="14.4" opacity="0.85"/>
+  <path d="M512 224 L608 512 L512 464 L416 512 Z" fill="#d3a355"/>
+  <path d="M512 800 L416 512 L512 560 L608 512 Z" fill="#4c5665"/>
+  <circle cx="512" cy="512" r="41.6" fill="#f4efe2"/>
+</svg>
