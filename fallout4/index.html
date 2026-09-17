@@ -26,21 +26,23 @@
 <style>
   /* A Vault-Tec field dossier, not a Pip-Boy screen. Manila-folder tabs standing up
      from a blueprint-navy shelf, a clean technical sans for reading, monospace
-     reserved only for small labels/meta — no CRT scanlines, no glow, no VT323. */
+     reserved only for small labels/meta — no CRT scanlines, no glow, no VT323.
+     Accent is drafting-ink indigo (not bright cyan) so this doesn't read as a
+     reskinned netrunner HUD next to the Cyberpunk journal's neon cyan. */
   :root {
     --blueprint: #0c1420;
     --blueprint-2: #101b2c;
     --shelf: #0a121c;
-    --grid-line: rgba(107,168,214,0.08);
+    --grid-line: rgba(107,124,214,0.08);
 
     --card: #16233a;
     --card-hi: #1c2c47;
     --line: #2b3f5c;
     --line-soft: #223351;
 
-    --cyan: #5bc7f0;
-    --cyan-bright: #9fe0ff;
-    --cyan-dim: #2f6f96;
+    --cyan: #6b7fd6;
+    --cyan-bright: #a3aeed;
+    --cyan-dim: #3a4480;
     --amber: #e8a23a;
 
     --heading: #eaf3fb;
@@ -220,7 +222,7 @@
   .quest-steps li { margin-bottom: 4px; }
 
   .rewards-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .reward-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--cyan-bright); background: rgba(91,199,240,0.1); border: 1px solid rgba(91,199,240,0.35); border-radius: 3px; padding: 3px 8px; margin: 0; }
+  .reward-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--cyan-bright); background: rgba(107,127,214,0.1); border: 1px solid rgba(107,127,214,0.35); border-radius: 3px; padding: 3px 8px; margin: 0; }
 
   .quest-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .track-btn { display: flex; align-items: center; gap: 6px; color: var(--ink-soft); font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 10.5px; letter-spacing: 0.03em; text-transform: uppercase; }
