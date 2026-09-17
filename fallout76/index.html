@@ -476,8 +476,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.8.0 (Patch 70 / Season 26 content). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.8.0</div>
+           same as normal semver. Current: v2.8.1 (Season End defaults to estimated date). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.8.1</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -873,10 +873,12 @@ let addingCustomDaily = false; // whether the "+ Add custom daily task" form is 
 
 // Countdown settings. resetHourET is the hour (0-23, Eastern Time) the weekly reset lands on —
 // widely reported as around midday ET, but Bethesda doesn't publish an exact time and it can
-// drift, so it's editable rather than hardcoded as fact. seasonEndsAt is a plain YYYY-MM-DD the
-// player enters themselves (checked in-game / on the Seasons page) since there's no live feed
-// of the current Season's end date to pull from.
-let countdownSettings = { resetHourET: 12, seasonEndsAt: '' };
+// drift, so it's editable rather than hardcoded as fact. seasonEndsAt is a plain YYYY-MM-DD,
+// defaulted below to the current Season's estimated end so the countdown works out of the box
+// without the player having to look it up — still editable since there's no live feed of the
+// real date and Bethesda hasn't officially confirmed it (see SEASON_END_ESTIMATE below).
+const SEASON_END_ESTIMATE = '2026-12-15'; // Season 26 "Beware the Blood Moon" — estimated from the ~91-day season cadence, not yet Bethesda-confirmed. Update this when a new Season starts or the real date is announced.
+let countdownSettings = { resetHourET: 12, seasonEndsAt: SEASON_END_ESTIMATE };
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
@@ -903,7 +905,7 @@ function loadProgress(){
       storyProgress = parsed.storyProgress || {};
       dailyProgress = parsed.dailyProgress || {};
       customDailies = parsed.customDailies || [];
-      countdownSettings = Object.assign({ resetHourET: 12, seasonEndsAt: '' }, parsed.countdownSettings || {});
+      countdownSettings = Object.assign({ resetHourET: 12, seasonEndsAt: SEASON_END_ESTIMATE }, parsed.countdownSettings || {});
     }
   } catch (e) { /* start fresh */ }
   // seed default stars for resources not yet touched
@@ -1250,12 +1252,14 @@ function renderOverview(){
       <div class="card countdown-card">
         <div class="card-head">
           <span class="card-title">Season End</span>
-          <span class="card-tag">${countdownSettings.seasonEndsAt ? 'Set' : 'Not set'}</span>
+          <span class="card-tag">${!countdownSettings.seasonEndsAt ? 'Not set' : countdownSettings.seasonEndsAt === SEASON_END_ESTIMATE ? 'Estimated' : 'Set'}</span>
         </div>
         ${countdownSettings.seasonEndsAt ? `
           <div class="countdown-display" id="cd-season">--</div>
           <div class="countdown-local" id="cd-season-local">--</div>
-          <div class="card-desc">Ends at the US reset hour on the date you set below — shown above in your own timezone.</div>
+          <div class="card-desc">${countdownSettings.seasonEndsAt === SEASON_END_ESTIMATE
+            ? 'Season 26 ("Beware the Blood Moon") runs a typical ~91-day cycle from its Sept 15, 2026 start — Bethesda hasn\'t officially confirmed the exact end date yet, so this is an estimate. Correct it below once the real date is announced or a new Season starts.'
+            : 'Ends at the US reset hour on the date you set below — shown above in your own timezone.'}</div>
         ` : `<div class="card-desc">Check the in-game Seasons page for the current Season's end date and set it here to get a live countdown in your own timezone — no time conversion needed.</div>`}
         <div class="card-actions">
           <label class="field-label" style="margin:0;">Season ends</label>
