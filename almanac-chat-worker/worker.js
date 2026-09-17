@@ -19,9 +19,14 @@
  *   returns: { reply: string } on success, { error: string } on failure
  */
 
-// Change this to your GitHub Pages origin once deployed, to stop other sites
-// from riding on your API quota. "*" works for local testing.
-const ALLOWED_ORIGIN = "https://stepalter-dev.github.io";
+// Origins allowed to call this Worker, to stop other sites from riding on your
+// API quota. Add every domain the journals are actually served from -- the
+// GitHub Pages URL still works as a fallback even after moving to a custom
+// domain. Set to ["*"] to allow any origin (fine for local testing only).
+const ALLOWED_ORIGINS = [
+  "https://stepalter-dev.github.io",
+  "https://journals.bw8.dev",
+];
 
 // Cheap, fast model -- plenty for a companion-app Q&A assistant. Override via
 // the MODEL environment variable if you want a different one.
@@ -51,7 +56,7 @@ false confidence.`;
 
 function corsHeaders(origin) {
   return {
-    "Access-Control-Allow-Origin": origin || ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": origin || ALLOWED_ORIGINS[0],
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
@@ -67,7 +72,7 @@ function json(data, status, origin) {
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
-    const allowOrigin = ALLOWED_ORIGIN === "*" || origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN;
+    const allowOrigin = ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders(allowOrigin) });
