@@ -1,0 +1,14 @@
+<!-- JAW Digital — compass emblem, monochrome footer variant. See compass-emblem.svg for the full story. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <circle cx="512" cy="512" r="464" fill="none" stroke="#a89b7f" stroke-width="22.4"/>
+  <g stroke="#a89b7f" stroke-width="20.8">
+    <line x1="512" y1="96" x2="512" y2="192"/>
+    <line x1="512" y1="832" x2="512" y2="928"/>
+    <line x1="96" y1="512" x2="192" y2="512"/>
+    <line x1="832" y1="512" x2="928" y2="512"/>
+  </g>
+  <line x1="611.2" y1="140.8" x2="628.8" y2="80" stroke="#a89b7f" stroke-width="14.4" opacity="0.85"/>
+  <path d="M512 224 L608 512 L512 464 L416 512 Z" fill="#a89b7f"/>
+  <path d="M512 800 L416 512 L512 560 L608 512 Z" fill="#a89b7f" opacity="0.55"/>
+  <circle cx="512" cy="512" r="41.6" fill="none" stroke="#a89b7f" stroke-width="8.8"/>
+</svg>
