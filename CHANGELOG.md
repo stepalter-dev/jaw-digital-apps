@@ -7,6 +7,15 @@ own revision history.
 
 ## 2026-09-18
 
+- **Fallout 76 content:** added Legendary Scrip economy and Treasury Notes & Gold Bullion
+  reference entries to Repeatable Quests / Systems (flat 50-Scrip Mod Box cost, Purveyor
+  Murmrgh modules, the scrap/exchange-machine loop, Gold Press conversion rate and daily
+  cap, and where to spend Bullion). PIP-OS v2.9.0.
+- **VERA (Fallout 76 chat assistant):** chat history now persists to localStorage instead
+  of living only in memory, so it survives page reloads (a "Clear" button resets it on
+  purpose). Also tightened the Worker's system prompt to stop it inventing specific
+  identifiers (relay tower codes, coordinates) it isn't actually sure about, and to call
+  out conflicts with earlier answers instead of silently asserting a new version. PIP-OS v2.8.4.
 - **Site brand mark:** replaced the header/footer glyph and favicon with a new compass
   emblem. One tick on the bezel sits at a bearing of exactly 15 degrees off true
   north — no cardinal purpose, just a private, countable detail. Source: `brand/compass-emblem.svg`
