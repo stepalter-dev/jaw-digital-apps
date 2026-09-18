@@ -474,8 +474,8 @@
       <!-- PIP-OS version is this journal's own revision number, not flavor text — bump it by
            hand on every merged change to this file: +0.0.1 for a fix/tweak, +0.1.0 for a new
            section/feature, +1.0.0 for a full redesign. Reset the lower part(s) to 0 on a bump,
-           same as normal semver. Current: v2.8.4 (VERA remembers across reloads; less confident guessing). -->
-      <div class="seal">RobCo<br/>PIP-OS v2.8.4</div>
+           same as normal semver. Current: v2.9.0 (Legendary Scrip & Gold Bullion economy entries). -->
+      <div class="seal">RobCo<br/>PIP-OS v2.9.0</div>
     </header>
     <div class="rune-divider"></div>
 
@@ -809,6 +809,8 @@ const REPEATABLES = [
 
   { id:'q-legmod', category:'Systems', name:'Legendary Mod swapping & the 4th slot (Patch 70)', reset:null, desc:'As of Patch 70, a unique weapon or armor piece\'s legendary mods (slots 1-3) can be changed at an Armor/Weapons workbench for Legendary Scrip — the unique effect itself stays intact. The scrip cost is now a flat fixed amount instead of the old escalating cost. There\'s also a new 4th mod slot: a "4-star mod" obtained from scrapping, crafting, or drops can be slotted into any existing 3-star item completely free. Worth revisiting old uniques you shelved because their fixed legendary rolls didn\'t fit your build.' },
   { id:'q-legacyseasons', category:'Systems', name:'Legacy Seasons (Patch 70)', reset:null, desc:'Starting with Season 26, each new Season now runs concurrently with a returning past "classic" Season, and both share the same S.C.O.R.E. tickets. That means you can spend tickets earned from normal play on rewards from a Season you missed the first time around, alongside the current Season\'s board, instead of that content being gone for good.' },
+  { id:'q-scripeconomy', category:'Systems', name:'Legendary Scrip economy', reset:null, desc:'Legendary Scrip is the currency for target-crafting perfect legendary gear instead of relying on vendor luck (wallet cap: 11,000). Since Patch 70/The Slasher, attaching a Legendary Mod Box to a weapon or armor piece costs a flat 50 Scrip — the old scaling cost is gone. Legendary Modules (used to craft mod recipes at a Tinker\'s Workbench, ~15 per box) come from Purveyor Murmrgh at the Rusty Pick for 100 Scrip each. To earn Scrip and unlock recipes: scrap top-tier legendary weapons (Anti-Armor, Bloodied, Instigating, +50% VATS Crit, -25% AP Cost, etc.) at a workbench for a small permanent recipe-unlock chance and mod-box-drop chance, or feed useless gear into a train station Legendary Exchange Machine for guaranteed raw Scrip.' },
+  { id:'q-goldbullion', category:'Systems', name:'Treasury Notes & Gold Bullion', reset:'Daily', desc:'Treasury Notes are the progression currency for high-tier blueprint vendors. Turn them in at any Gold Press Machine (Whitespring Mall, Foundation, Crater) at 1 Note = 10 Gold Bullion, capped at 40 Notes (400 Bullion) cashed in per day. Sourced from Public Events (2-6 Notes), World Bosses (up to 8), and Faction Daily Missions (3). Spend Bullion with Regs, Samuel, or Mortimer — Secret Service Armor and Covert Scout Armor plans are the top defensive/stealth picks, and the Plasma Caster is a strong pick for public-event support.' },
 ];
 
 // Daily Journal: a personal, resettable checklist for the actual daily login loop — distinct
